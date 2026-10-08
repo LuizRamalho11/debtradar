@@ -1,0 +1,569 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "psf",
+    "repo": "requests",
+    "label": "",
+    "sources": [
+      "issues",
+      "prs",
+      "commits"
+    ],
+    "requested": 8,
+    "collected": 24,
+    "collected_at": "2026-10-08T11:00:35+00:00",
+    "comments_complete": true,
+    "warning": ""
+  },
+  "issues": [
+    {
+      "type": "issue",
+      "id": "#7633",
+      "number": 7633,
+      "title": "2.34.0+: merge_cookies raises \"You can only merge into CookieJar\" when http.cookiejar is loaded twice",
+      "body": "<!-- Summary. -->\nIn 2.34.0 `RequestsCookieJar` inherits from `http.cookiejar.CookieJar` (imported directly in `cookies.py`), while `merge_cookies` and other checks use `compat.cookielib.CookieJar`.\nIn 2.33.1 both used `compat.cookielib`. If `http.cookiejar` ends up loaded twice.\n\nThis is only reproducable under PyCharms Behave runner.\nWorks with 2.34.0 with plain behave in a terminal.\nWorks also with 2.33.1 with PyCharms Behave runner.\n\n## Expected Result\n\nNo  \"ValueError: You can only merge into CookieJar\" using Pycharms behave runner with 2.34.0 or later.\n\n## Actual Result\n\nRunning request in combination of Pycharms behave runner following error appears:\n\n\n```\n  File \"<project>/adapters/api/rest_client/requests_rest_client.py\", line 101, in _request\n    prepared: PreparedRequest = self._session.prepare_request(request)\n                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"<project>/.venv/lib/python3.13/site-packages/requests/sessions.py\", line 532, in prepare_request\n    merge_cookies(RequestsCookieJar(), self.cookies), cookies\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<project>/.venv/lib/python3.13/site-packages/requests/cookies.py\", line 614, in merge_cookies\n    raise ValueError(\"You can only merge into CookieJar\")\nValueError: You can only merge into CookieJar\n```\n\n\nIt seems that the behave runner is loading the package twice.\nRan following code at the failining line inside `prepare_request`:\n\n```\nimport http.cookiejar, requests.cookies as rc, requests.sessions as rs\n\njar = RequestsCookieJar()\nbase = type(jar).__mro__[1]\nchecked = rc.cookielib.CookieJar\n\nprint(\"RequestsCookieJar same in both modules:\", rs.RequestsCookieJar is rc.RequestsCookieJar)\nprint(\"base:   \", base, base.__module__, id(base))\nprint(\"checked:\", checked, checked.__module__, id(checked))\nprint(\"stdlib: \", http.cookiejar.CookieJar, id(http.cookiejar.CookieJar))\nprint(\"cookielib module:\", rc.cookielib, getattr(rc.cookielib, \"__file__\", None))\n```\n\nOutput:\n\n```\n('RequestsCookieJar same in both modules:', True)\n('base:   ', <class 'http.cookiejar.CookieJar'>, 'http.cookiejar', 50096408592)\n('checked:', <class 'http.cookiejar.CookieJar'>, 'http.cookiejar', 50100923408)\n('stdlib: ', <class 'http.cookiejar.CookieJar'>, 50096408592)\n('cookielib module:', <module 'http.cookiejar' from '~/.local/share/uv/python/cpython-3.13.1-macos-aarch64-none/lib/python3.13/http/cookiejar.py'>, '~/.local/share/uv/python/cpython-3.13.1-macos-aarch64-none/lib/python3.13/http/cookiejar.py')\n```\n\n## Reproduction Steps\n\nUse requests inside a behave project. \nStart a test, which uses the problematic code via the pycharm runner.\n\n##Suggested fix:\nUse the same `CookieJar` reference for the base class and the `isinstance` checks (e.g. use `CookieJar` in `merge_cookies`, `cookiejar_from_dict` callers and `RequestsCookieJar.update`, or inherit from `cookielib.CookieJar `again)\n\n\n## System Information\n```\nPython 3.13.1 (main, Jan 14 2025, 23:31:50) [Clang 19.1.6 ]\nmacOS-26.6.2-arm64-arm-64bit-Mach-O\nrequests 2.34.0\nbehave 1.3.3\n\n\nPyCharm 2026.1.5\nRuntime version: 25.0.4+1-b329.128 aarch64137.0.17-261-b89\nVM: OpenJDK 64-Bit Server VM by JetBrains s.r.o.\nToolkit: sun.lwawt.macosx.LWCToolkit\nmacOS 26.6.2\nException reporter ID: 2410252600a21f4-742c-4ac8-8e11-3dc948c99881\nGC: G1 Young Generation, G1 Concurrent GC, G1 Old Generation\nMemory: 2048M\nCores: 14\nMetal Rendering is ON\nRegistry:\n  ide.experimental.ui=true\n  trace.state.event.service.url=https://api.jetbrains.cloud/trace-status\n  editor.ux.survey.enabled=false\nNon-Bundled Plugins:\n  ru.adelf.idea.dotenv (261.27258.78)\n  Subversion (261.27258.78)\n  com.intellij.plugins.riderkeymap (201.6251.22)\n  com.intellij.plugins.visualstudiokeymap (261.22158.195)\n  com.intellij.plugins.resharperkeymap (261.22158.185)\n  indent-rainbow.indent-rainbow (2.2.0)\n  gherkin (261.22158.182)\n  io.nimbly.tzatziki (25.0.1)\n  works.szabope.mypy (2.2.2)\n```\n",
+      "author": "Ur5u5",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-10-08T09:54:09Z",
+      "updated_at": "2026-10-08T10:00:27Z",
+      "closed_at": "2026-10-08T10:00:27Z",
+      "url": "https://github.com/psf/requests/issues/7633",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "Ur5u5",
+          "body": "Can be closed.\nIt is already under scope of Pycharm https://youtrack.jetbrains.com/issue/PY-89530/Behave-runner-imports-project-modules-twice-on-launch-breaks-module-level-state",
+          "created_at": "2026-10-08T10:00:27Z",
+          "url": "https://github.com/psf/requests/issues/7633#issuecomment-6057404842"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "issue",
+      "id": "#7632",
+      "number": 7632,
+      "title": "Lingering docstring references to python2.7 cookielib",
+      "body": "In #6214, most docstring references to the python2.7 cookielib were updated to the python3 `http.cookiejar`. Two references appear to have been overlooked, however. I've created a trivial commit to fix the issue, but cannot create a PR since I'm not a collaborator:\n\nhttps://github.com/psf/requests/compare/main...hemberger:requests:fix-cookielib-doc-references?expand=1\n\nHopefully someone with permission can get this submitted. Thanks!",
+      "author": "hemberger",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-10-06T11:40:32Z",
+      "updated_at": "2026-10-06T11:40:32Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/issues/7632",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "issue",
+      "id": "#7631",
+      "number": 7631,
+      "title": "TestTimeout abandons three delay/10 requests and later tests wait out the server",
+      "body": "`TestTimeout` makes three requests to `httpbin(\"delay/10\")` and abandons all of them:\n\n- `tests/test_requests.py:2539`, `test_stream_timeout`, `timeout=2.0`\n- `tests/test_requests.py:2573`, `test_read_timeout`, parametrized, `timeout=0.1` (two params)\n\nThe client raises at 2.0s and 0.1s, but the pytest-httpbin server keeps sleeping the full 10 seconds and serves requests serially. The next test that needs the server blocks until those sleeps finish.\n\n```\n$ pytest \"tests/test_requests.py::TestTimeout::test_encoded_methods\" -p no:randomly\n1 passed in 0.56s\n\n$ pytest \"tests/test_requests.py::TestTimeout::test_read_timeout\" \\\n         \"tests/test_requests.py::TestTimeout::test_encoded_methods\" \\\n         -p no:randomly --durations=5\n19.79s call     tests/test_requests.py::TestTimeout::test_encoded_methods\n 0.11s call     tests/test_requests.py::TestTimeout::test_read_timeout[timeout1]\n 0.10s call     tests/test_requests.py::TestTimeout::test_read_timeout[timeout0]\n3 passed in 20.55s\n```\n\n`test_encoded_methods` is one line (`requests.request(b\"GET\", httpbin(\"get\"))`). The 19.79s is 2 x 10s of server sleep minus the 0.2s the two clients used. In a full run the cost lands on whichever tests happen to follow:\n\n```\n19.35s call     TestTimeout::test_encoded_methods\n 8.00s call     TestTimeout::test_none_timeout[None]\n```\n\nBoth call sites need the server to outlast the client timeout, not to sleep for 10 seconds. Lowering the delays leaves the assertions unchanged:\n\n- line 2539, `delay/10` to `delay/3` (client timeout 2.0)\n- line 2573, `delay/10` to `delay/1` (client timeout 0.1)\n\nWith that change, `TestTimeout` goes from 30.56s to 5.70s and the full suite from 167.44s to 142.04s, with the same results either way: 630 passed, 3 skipped, 1 xpassed. The single failure in both runs is `TestPreparingURLs::test_different_connection_pool_for_tls_settings_verify_bundle_unexpired_cert`, which is unrelated and fails before the change as well.\n\nMeasured at 611c616 on Windows 11, Python 3.14.2, pytest 9.1.1.\n",
+      "author": "quotentiroler",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-30T13:54:45Z",
+      "updated_at": "2026-10-03T14:31:31Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/issues/7631",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "nightcityblade",
+          "body": "Hi, I'd like to work on this. I'll submit a PR shortly.",
+          "created_at": "2026-09-30T16:53:49Z",
+          "url": "https://github.com/psf/requests/issues/7631#issuecomment-5915790534"
+        },
+        {
+          "author": "nightcityblade",
+          "body": "I’m unable to open a pull request in this repository because GitHub rejects both the GraphQL and REST PR-creation endpoints for my account. I’m unclaiming this so someone else can pick it up.",
+          "created_at": "2026-09-30T17:08:21Z",
+          "url": "https://github.com/psf/requests/issues/7631#issuecomment-5916018080"
+        },
+        {
+          "author": "abhinav-TB",
+          "body": "I can take this one. I’ll keep the delays just long enough to exercise the client timeouts, then run the timeout tests and the tests that currently get stuck behind them.",
+          "created_at": "2026-10-01T03:19:54Z",
+          "url": "https://github.com/psf/requests/issues/7631#issuecomment-5924048366"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "issue",
+      "id": "#7630",
+      "number": 7630,
+      "title": "Incorrect type annotation for iter_lines",
+      "body": "The type annotation for `Response.iter_lines` misses that `chunk_size` can be `None`, causing valid code to fail type checks.\n\nThis seems pretty trivial to fix (e.g. https://github.com/psf/requests/compare/main...grantisu:requests:gmathews/tiny-type-fix), but I'm not able to open a PR since I'm not a collaborator on the repo.",
+      "author": "grantisu",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-24T17:18:05Z",
+      "updated_at": "2026-10-07T11:49:04Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/issues/7630",
+      "comments_count": 5,
+      "comments": [
+        {
+          "author": "nightcityblade",
+          "body": "Hi, I'd like to work on this. I'll submit a focused typing fix with regression coverage shortly.",
+          "created_at": "2026-09-24T18:10:40Z",
+          "url": "https://github.com/psf/requests/issues/7630#issuecomment-5819550674"
+        },
+        {
+          "author": "nightcityblade",
+          "body": "I see the reporter already has the fix prepared on a comparison branch, so I’m stepping back to avoid duplicating that work.",
+          "created_at": "2026-09-24T18:10:54Z",
+          "url": "https://github.com/psf/requests/issues/7630#issuecomment-5819553944"
+        },
+        {
+          "author": "grantisu",
+          "body": "> I see the reporter already has the fix prepared on a comparison branch, so I’m stepping back to avoid duplicating that work.\n\nThe work was pretty minor; feel free to duplicate/copy/steal/expand/etc if it leads to a better/quicker outcome.",
+          "created_at": "2026-09-24T19:17:41Z",
+          "url": "https://github.com/psf/requests/issues/7630#issuecomment-5820616489"
+        },
+        {
+          "author": "agustin18",
+          "body": "Hi @grantisu @nateprewitt,\n\nFollowing up on this, I've prepared and verified the fix along with parameterized tests and static typing validation.\n\nSince PR creation is restricted to collaborators on this repository, the tested changes are available on my fork here:\n**Branch:** [`agustin18:requests:fix/iter-lines-chunk-size-type-7630`](https://github.com/agustin18/requests/tree/fix/iter-lines-chunk-size-type-7630)\n**Compare Diff:** [`psf/requests/compare/main...agustin18:requests:fix/iter-lines-chunk-size-type-7630`](https://github.com/psf/requests/compare/main...agustin18:requests:fix/iter-lines-chunk-size-type-7630)\n\n### Changes\n1. Updated `chunk_size: int | None = ITER_CHUNK_SIZE` in both `@overload` signatures and the `iter_lines` method definition in `src/requests/models.py`.\n2. Added parameterized regression tests in `tests/test_requests.py` covering `chunk_size=None` and `chunk_size=512` with both `decode_unicode=False` and `True`.\n3. Verified locally:\n   - `pyright src/requests/`: 0 errors.\n   - All 6 `iter_lines` overload variants pass Pyright strict type check.\n   - All 343 pytest tests pass.\n   - All pre-commit hooks (ruff check, ruff format, whitespace) pass cleanly.\n\nMaintainers can pull directly from this branch or grant access to open the PR.",
+          "created_at": "2026-09-25T15:22:05Z",
+          "url": "https://github.com/psf/requests/issues/7630#issuecomment-5834878579"
+        },
+        {
+          "author": "DevMubarak1",
+          "body": "Put together the typing fix along with unit test coverage on a branch here if a collaborator wants to pull or cherry-pick it: https://github.com/DevMubarak1/requests/tree/fix/iter-lines-chunk-size-type (diff: https://github.com/psf/requests/compare/main...DevMubarak1:requests:fix/iter-lines-chunk-size-type)",
+          "created_at": "2026-10-07T09:56:39Z",
+          "url": "https://github.com/psf/requests/issues/7630#issuecomment-6035513860"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "issue",
+      "id": "#7629",
+      "number": 7629,
+      "title": "proxy_bypass_registry uses unanchored re.match (Windows proxy bypass)",
+      "body": "This was discussed here multiple times in the past so I'm opening it as a public bug report.\n\n`src/requests/utils.py`, `proxy_bypass_registry` (main, 2.34.2):\n\n```python\nif re.match(test, host, re.I):   # start-anchored only\n    return True\n```\n\nre.match anchors only the start, so ProxyOverride=google.com matches google.com.evil.com and bypasses the proxy for it — an attacker-influenced hostname can escape a proxy meant to inspect traffic.\n\nDiverges from CPython: this is a copy of CPython's old code. CPython now matches with fnmatch (anchored both ends, wildcards preserved). Verified on 3.14:\n- `fnmatch(\"google.com.evil.com\", \"google.com\")` → False (requests returns True)\n- `fnmatch(\"a.example.net\", \"*.example.net\")` → True\n\nFix: use fnmatch(host, test) to match CPython, or minimally anchor: re.match(test + r\"\\Z\", host, re.I).",
+      "author": "frenzymadness",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-23T11:31:17Z",
+      "updated_at": "2026-09-30T20:37:16Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/issues/7629",
+      "comments_count": 4,
+      "comments": [
+        {
+          "author": "nateprewitt",
+          "body": "Thanks for the issue, @frenzymadness. We're already tracking this work for our next release.",
+          "created_at": "2026-09-23T14:41:07Z",
+          "url": "https://github.com/psf/requests/issues/7629#issuecomment-5796892945"
+        },
+        {
+          "author": "ege-arhan",
+          "body": "Not blocking — I know this is already tracked for the next release, just leaving a tested reference fix in case it's useful.\n\nOne-line change in `proxy_bypass_registry`: anchor the converted pattern so a suffix can't escape it:\n\n```diff\n- if re.match(test, host, re.I):\n+ if re.match(test + r\"\\Z\", host, re.I):\n```\n\nBehaviour I verified locally (Windows registry path monkeypatched, Python 3.13):\n\n| override | host | before | after |\n|---|---|---|---|\n| `google.com` | `google.com.evil.com` | bypassed ❌ | proxied ✅ |\n| `internal` | `internal` | bypassed | bypassed ✅ |\n| `*.corp` | `a.corp.evil.com` | bypassed ❌ | proxied ✅ |\n| `*.corp` | `a.corp` | bypassed | bypassed ✅ |\n| `10.0.0.1` | `10.0.0.1x` | bypassed ❌ | proxied ✅ |\n\nExisting exact and wildcard entries keep working because `fnmatch.translate` already emits `\\Z` for them; only the plain-entry branch needs the extra anchor.\n\nBranch: https://github.com/ege-arhan/requests/tree/fix/issue-7629 (`e825f8e7` fix + `eb5f5e45` regression tests added to the `test_should_bypass_proxies_win_registry` parametrize block, 5 cases). Happy to close this if the internal patch differs.\n",
+          "created_at": "2026-09-24T21:08:21Z",
+          "url": "https://github.com/psf/requests/issues/7629#issuecomment-5822272950"
+        },
+        {
+          "author": "Maurenz2530",
+          "body": "I prepared a focused fix for the unanchored Windows ProxyOverride match. Exact entries still match and wildcard entries remain supported, while suffix hosts such as google.com.evil.com no longer bypass the proxy for google.com. Added exact-host and wildcard regression cases; the Windows registry-path tests pass locally (16 passed).\\n\\nBranch: https://github.com/Maurenz2530/requests/tree/fix-windows-proxy-bypass-anchor\\nCompare: https://github.com/psf/requests/compare/main...Maurenz2530:fix-windows-proxy-bypass-anchor\\nCommit: 6bfa9105\\n\\nI understand this is already tracked for a future release. GitHub does not allow me to open an upstream PR, so I’m sharing the tested branch in case it is useful to review or pull in.",
+          "created_at": "2026-09-26T10:50:52Z",
+          "url": "https://github.com/psf/requests/issues/7629#issuecomment-5845619334"
+        },
+        {
+          "author": "januththedev",
+          "body": "I have a tested fix for this ready, but GitHub is currently refusing to let this account open a pull request against `psf/requests` (`CreatePullRequest` permission denied), so posting the patch here for a maintainer to apply or to let me open.\n\n- branch: [`januththedev/requests:fix/proxy-override-anchor`](https://github.com/januththedev/requests/tree/fix/proxy-override-anchor)\n- commit: `7b68766`\n\n## The change\n\n`src/requests/utils.py`:\n\n```diff\n             test = test.replace(\".\", r\"\\.\")  # mask dots\n             test = test.replace(\"*\", r\".*\")  # change glob sequence\n             test = test.replace(\"?\", r\".\")  # change glob char\n-            if re.match(test, host, re.I):\n+            # The whole host must match. re.match only anchors the start, so\n+            # \"example.com\" would also bypass the proxy for \"example.com.evil.net\".\n+            if re.fullmatch(test, host, re.I):\n                 return True\n         return False\n```\n\n`re.fullmatch` is the smallest change that makes the intent explicit, and it matches what the `no_proxy` path already does — `test_should_bypass_proxies` in `tests/test_utils.py` already covers \"does not greedily match domains that merely endswith the no_proxy entry. See CPython bpo-39057\", so the registry path was the one left on the old behaviour.\n\nThe `<local>` branch above returns before reaching the pattern match, so it is unaffected.\n\n## Tests\n\nFour cases added to the existing `test_should_bypass_proxies_win_registry` table — two that fail before the change, and two controls that already passed:\n\n| URL | ProxyOverride | Expected |\n|---|---|---|\n| `http://example.com.evil.net/` | `example.com` | `False` (was `True`) |\n| `http://notexample.com/` | `example.com` | `False` (control, unchanged) |\n| `http://www.example.com/` | `*.example.com` | `True` (control: globs still work) |\n| `http://www.example.com.evil.net/` | `*.example.com` | `False` (was `True`) |\n\n- Before: `2 failed, 14 passed`.\n- After: `16 passed`.\n- `pytest tests/test_utils.py` → 232 passed, 1 skipped.\n- `ruff check` clean on both files.\n\nThe new cases inherit the existing `skipif(os.name != \"nt\")` guard, since `proxy_bypass_registry` only exists on `win32`.\n",
+          "created_at": "2026-09-27T02:29:50Z",
+          "url": "https://github.com/psf/requests/issues/7629#issuecomment-5851973945"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "issue",
+      "id": "#7627",
+      "number": 7627,
+      "title": "Docstring examples in `from_key_val_list` show the pre-3.12 OrderedDict repr",
+      "body": "`src/requests/utils.py`'s `from_key_val_list` docstring shows:\n\n    >>> from_key_val_list([('key', 'val')])\n    OrderedDict([('key', 'val')])\n\nSince Python 3.12, `collections.OrderedDict.__repr__` uses the regular dict form ([cpython gh-101446](https://github.com/python/cpython/issues/101446)), so on any currently supported Python this actually prints:\n\n    OrderedDict({'key': 'val'})\n\nReproducer (Python 3.13.5, requests 2.34.2):\n\n```\n>>> from requests.utils import from_key_val_list\n>>> from_key_val_list([('key', 'val')])\nOrderedDict({'key': 'val'})\n>>> from_key_val_list({'key': 'val'})\nOrderedDict({'key': 'val'})\n```\n\nThe `ValueError` example in the same docstring is still accurate. Both stale occurrences are on lines 351 and 357, and a grep of the rest of the package found no others.\n\nI have a two-line fix ready on a fork and would be glad to open a pull request if that's welcome. (The compare page says PRs are limited to collaborators, hence this issue.)",
+      "author": "pactender",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-17T17:40:45Z",
+      "updated_at": "2026-09-26T11:08:37Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/issues/7627",
+      "comments_count": 5,
+      "comments": [
+        {
+          "author": "Abirami-26",
+          "body": "Hi! I’d like to work on this issue and submit a PR for the docstring update. Is it okay if I take this up?",
+          "created_at": "2026-09-25T06:39:46Z",
+          "url": "https://github.com/psf/requests/issues/7627#issuecomment-5828071786"
+        },
+        {
+          "author": "TastyHeadphones",
+          "body": "Opened a PR that updates those two doctest lines to the 3.12+ OrderedDict repr.",
+          "created_at": "2026-09-26T01:04:40Z",
+          "url": "https://github.com/psf/requests/issues/7627#issuecomment-5841784406"
+        },
+        {
+          "author": "TastyHeadphones",
+          "body": "Got a two-line docstring fix up for this — PR incoming.",
+          "created_at": "2026-09-26T01:05:06Z",
+          "url": "https://github.com/psf/requests/issues/7627#issuecomment-5841787333"
+        },
+        {
+          "author": "TastyHeadphones",
+          "body": "Correction: I pushed a two-line fix on my fork (TastyHeadphones:fix/from-key-val-list-ordereddict-repr) but this repo does not allow me to open the PR. Happy for a maintainer or collaborator to pull that branch, or for anyone with access to open it.",
+          "created_at": "2026-09-26T01:05:14Z",
+          "url": "https://github.com/psf/requests/issues/7627#issuecomment-5841788211"
+        },
+        {
+          "author": "TastyHeadphones",
+          "body": "Branch is ready but this repo blocks CreatePullRequest for non-collaborators:\n\nhttps://github.com/psf/requests/compare/main...TastyHeadphones:requests:fix/ordereddict-repr-docstring?expand=1\n\nHappy for a maintainer to open it from that, or grant access and I'll file the PR.",
+          "created_at": "2026-09-26T01:06:09Z",
+          "url": "https://github.com/psf/requests/issues/7627#issuecomment-5841794176"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "issue",
+      "id": "#7624",
+      "number": 7624,
+      "title": "CSOAI — Requests AI governance HTTP",
+      "body": "https://github.com/CSOAI-ORG/gspc-harness | 22 axes | pip: gspc-harness | redacted@example.com",
+      "author": "CSOAI-ORG",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-15T03:47:20Z",
+      "updated_at": "2026-10-03T14:31:00Z",
+      "closed_at": "2026-09-15T04:21:54Z",
+      "url": "https://github.com/psf/requests/issues/7624",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "issue",
+      "id": "#7623",
+      "number": 7623,
+      "title": "tok perm test - close",
+      "body": "x",
+      "author": "project-afterlife",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-12T14:58:18Z",
+      "updated_at": "2026-09-12T14:58:24Z",
+      "closed_at": "2026-09-12T14:58:24Z",
+      "url": "https://github.com/psf/requests/issues/7623",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7628",
+      "number": 7628,
+      "title": "Bump the actions group with 3 updates",
+      "body": "Bumps the actions group with 3 updates: [github/codeql-action/init](https://github.com/github/codeql-action), [github/codeql-action/autobuild](https://github.com/github/codeql-action) and [github/codeql-action/analyze](https://github.com/github/codeql-action).\n\nUpdates `github/codeql-action/init` from 4.37.0 to 4.38.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/github/codeql-action/releases\">github/codeql-action/init's releases</a>.</em></p>\n<blockquote>\n<h2>v4.38.0</h2>\n<ul>\n<li>On GitHub-hosted runners, the CodeQL Action now deletes unused CodeQL bundles from the toolcache before downloading a different bundle, which frees up disk space for the analysis. We expect to roll this change out to everyone in September. <a href=\"https://redirect.github.com/github/codeql-action/pull/4124\">#4124</a></li>\n<li>The CodeQL Action now supports CodeQL releases that are compatible with Linux Arm64 and downloads the native <code>linux-arm64</code> CodeQL bundle when available. <a href=\"https://redirect.github.com/github/codeql-action/pull/4072\">#4072</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.0\">2.27.0</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4129\">#4129</a></li>\n</ul>\n<h2>v4.37.9</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.4\">2.26.4</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4106\">#4106</a></li>\n</ul>\n<h2>v4.37.8</h2>\n<p>No user facing changes.</p>\n<h2>v4.37.7</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.3\">2.26.3</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4085\">#4085</a></li>\n</ul>\n<h2>v4.37.6</h2>\n<ul>\n<li>Changed the default filepath for the new remote file address format that was introduced in CodeQL Action 4.37.0 / 3.37.0 to <code>.github/codeql-config.yml</code> to align it with the suggested path that is used elsewhere. <a href=\"https://redirect.github.com/github/codeql-action/pull/4070\">#4070</a></li>\n</ul>\n<h2>v4.37.5</h2>\n<ul>\n<li>Fixed a bug where a network error while streaming the download of the CodeQL bundle could terminate the <code>init</code> Action instead of falling back to downloading the bundle before extracting it. <a href=\"https://redirect.github.com/github/codeql-action/pull/4061\">#4061</a></li>\n</ul>\n<h2>v4.37.4</h2>\n<ul>\n<li>This version of the CodeQL Action adds support for the <code>tools</code> input for the <code>codeql-action/init</code> step to be specified using a <code>github-codeql-tools</code> <a href=\"https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization\">repository property</a>. This feature will gradually be rolled out following the release of this version. Once rolled out, this allows for the CodeQL CLI version that is used in GitHub-managed workflows, such as Default Setup, to be set to a custom value. For example, customers who run into issues with rate limits when a new CodeQL CLI version is released can set the value to <code>toolcache</code> to always use the CodeQL CLI version that is available in the runner toolcache. For Advanced Setup workflows, the value provided for <code>tools</code> in the workflow definition always takes precedence unless the value of the repository property starts with <code>!</code>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4037\">#4037</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.2\">2.26.2</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4051\">#4051</a></li>\n</ul>\n<h2>v4.37.3</h2>\n<p>No user facing changes.</p>\n<h2>v4.37.2</h2>\n<ul>\n<li>The new address format for the <code>config-file</code> input that was introduced in CodeQL Action 4.37.0 is now enabled by default. In addition to the format described there, the <code>remote=</code> prefix can now be used to explicitly indicate that the input refers to a remote file. All previous input formats continue to be accepted as well. <a href=\"https://redirect.github.com/github/codeql-action/pull/4023\">#4023</a></li>\n<li>The CodeQL Action can now make use of <a href=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">configured private registries</a> in Default Setup to retrieve CodeQL configuration files from remote repositories that require authentication. This will allow customers to store their CodeQL configuration in a single repository that can then be referenced by Default Setup workflows in other repositories. We expect to roll this and other, related changes out to everyone in July. <a href=\"https://redirect.github.com/github/codeql-action/pull/4007\">#4007</a></li>\n</ul>\n<h2>v4.37.1</h2>\n<ul>\n<li><em>Upcoming breaking change</em>: Add a deprecation warning for customers using CodeQL version 2.20.6 and earlier. These versions of CodeQL were discontinued on 1 July 2026 alongside GitHub Enterprise Server 3.16, and will be unsupported by the next minor release of the CodeQL Action. <a href=\"https://redirect.github.com/github/codeql-action/pull/3956\">#3956</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.1\">2.26.1</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4019\">#4019</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a href=\"https://github.com/github/codeql-action/blob/main/CHANGELOG.md\">github/codeql-action/init's changelog</a>.</em></p>\n<blockquote>\n<h1>CodeQL Action Changelog</h1>\n<p>See the <a href=\"https://github.com/github/codeql-action/releases\">releases page</a> for the relevant changes to the CodeQL CLI and language packs.</p>\n<h2>[UNRELEASED]</h2>\n<p>No user facing changes.</p>\n<h2>4.38.1 - 18 Sept 2026</h2>\n<ul>\n<li>The CodeQL Action now has experimental support for CodeQL releases for which per-language bundles are available. Per-language bundles support analysis for a single language and are therefore smaller than the combined bundles that allow analysis for all supported languages. As a result, per-language bundles take up less space on disk and are faster to download. We expect to roll this change out to everyone in the coming weeks. <a href=\"https://redirect.github.com/github/codeql-action/pull/4146\">#4146</a></li>\n</ul>\n<h2>4.38.0 - 09 Sept 2026</h2>\n<ul>\n<li>On GitHub-hosted runners, the CodeQL Action now deletes unused CodeQL bundles from the toolcache before downloading a different bundle, which frees up disk space for the analysis. We expect to roll this change out to everyone in September. <a href=\"https://redirect.github.com/github/codeql-action/pull/4124\">#4124</a></li>\n<li>The CodeQL Action now supports CodeQL releases that are compatible with Linux Arm64 and downloads the native <code>linux-arm64</code> CodeQL bundle when available. <a href=\"https://redirect.github.com/github/codeql-action/pull/4072\">#4072</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.0\">2.27.0</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4129\">#4129</a></li>\n</ul>\n<h2>4.37.9 - 26 Aug 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.4\">2.26.4</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4106\">#4106</a></li>\n</ul>\n<h2>4.37.8 - 21 Aug 2026</h2>\n<p>No user facing changes.</p>\n<h2>4.37.7 - 13 Aug 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.3\">2.26.3</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4085\">#4085</a></li>\n</ul>\n<h2>4.37.6 - 04 Aug 2026</h2>\n<ul>\n<li>Changed the default filepath for the new remote file address format that was introduced in CodeQL Action 4.37.0 / 3.37.0 to <code>.github/codeql-config.yml</code> to align it with the suggested path that is used elsewhere. <a href=\"https://redirect.github.com/github/codeql-action/pull/4070\">#4070</a></li>\n</ul>\n<h2>4.37.5 - 03 Aug 2026</h2>\n<ul>\n<li>Fixed a bug where a network error while streaming the download of the CodeQL bundle could terminate the <code>init</code> Action instead of falling back to downloading the bundle before extracting it. <a href=\"https://redirect.github.com/github/codeql-action/pull/4061\">#4061</a></li>\n</ul>\n<h2>4.37.4 - 29 Jul 2026</h2>\n<ul>\n<li>This version of the CodeQL Action adds support for the <code>tools</code> input for the <code>codeql-action/init</code> step to be specified using a <code>github-codeql-tools</code> <a href=\"https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization\">repository property</a>. This feature will gradually be rolled out following the release of this version. Once rolled out, this allows for the CodeQL CLI version that is used in GitHub-managed workflows, such as Default Setup, to be set to a custom value. For example, customers who run into issues with rate limits when a new CodeQL CLI version is released can set the value to <code>toolcache</code> to always use the CodeQL CLI version that is available in the runner toolcache. For Advanced Setup workflows, the value provided for <code>tools</code> in the workflow definition always takes precedence unless the value of the repository property starts with <code>!</code>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4037\">#4037</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.2\">2.26.2</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4051\">#4051</a></li>\n</ul>\n<h2>4.37.3 - 22 Jul 2026</h2>\n<p>No user facing changes.</p>\n<h2>4.37.2 - 21 Jul 2026</h2>\n<ul>\n<li>The new address format for the <code>config-file</code> input that was introduced in CodeQL Action 4.37.0 is now enabled by default. In addition to the format described there, the <code>remote=</code> prefix can now be used to explicitly indicate that the input refers to a remote file. All previous input formats continue to be accepted as well. <a href=\"https://redirect.github.com/github/codeql-action/pull/4023\">#4023</a></li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/github/codeql-action/commit/b96794f015dfd88f77b49b1c93e0fa7110f94c63\"><code>b96794f</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4131\">#4131</a> from github/update-v4.38.0-7e08580a9</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/02d5093871674ea20274117103ce3038c73c77ef\"><code>02d5093</code></a> Update changelog for v4.38.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/7e08580a93dc4e4b9dda167e364577035cf504c6\"><code>7e08580</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4130\">#4130</a> from github/henrymercer/workflow-runner-sizing</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/bfcc52b4f5d98468a5993daa0bf0e4fb3f3ed698\"><code>bfcc52b</code></a> Run slow macOS checks on larger runners</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/8c251e757c0260283fc50214a06ac768b61d3af4\"><code>8c251e7</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4129\">#4129</a> from github/update-bundle/codeql-bundle-v2.27.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/0b7ca400df35985869d4b9146a067865d4115da1\"><code>0b7ca40</code></a> Add changelog note</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/40484b339517c6bcf00f81eebc95ca041ddca505\"><code>40484b3</code></a> Update default bundle to codeql-bundle-v2.27.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/977e6ceaea7361825998245d787fa3b4d6b9e5df\"><code>977e6ce</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4124\">#4124</a> from github/henrymercer/toolcache-bundle-cleanup</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/40a6b3824794ae1156e1a5320d32e364bf1dcebc\"><code>40a6b38</code></a> Address toolcache cleanup review feedback</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/deece8f852f048bc3f52fd42c9cc7a99b1ebb252\"><code>deece8f</code></a> Apply suggestion from <a href=\"https://github.com/henrymercer\"><code>@​henrymercer</code></a></li>\n<li>Additional commits viewable in <a href=\"https://github.com/github/codeql-action/compare/99df26d4f13ea111d4ec1a7dddef6063f76b97e9...b96794f015dfd88f77b49b1c93e0fa7110f94c63\">compare view</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `github/codeql-action/autobuild` from 4.37.0 to 4.38.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/github/codeql-action/releases\">github/codeql-action/autobuild's releases</a>.</em></p>\n<blockquote>\n<h2>v4.38.0</h2>\n<ul>\n<li>On GitHub-hosted runners, the CodeQL Action now deletes unused CodeQL bundles from the toolcache before downloading a different bundle, which frees up disk space for the analysis. We expect to roll this change out to everyone in September. <a href=\"https://redirect.github.com/github/codeql-action/pull/4124\">#4124</a></li>\n<li>The CodeQL Action now supports CodeQL releases that are compatible with Linux Arm64 and downloads the native <code>linux-arm64</code> CodeQL bundle when available. <a href=\"https://redirect.github.com/github/codeql-action/pull/4072\">#4072</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.0\">2.27.0</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4129\">#4129</a></li>\n</ul>\n<h2>v4.37.9</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.4\">2.26.4</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4106\">#4106</a></li>\n</ul>\n<h2>v4.37.8</h2>\n<p>No user facing changes.</p>\n<h2>v4.37.7</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.3\">2.26.3</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4085\">#4085</a></li>\n</ul>\n<h2>v4.37.6</h2>\n<ul>\n<li>Changed the default filepath for the new remote file address format that was introduced in CodeQL Action 4.37.0 / 3.37.0 to <code>.github/codeql-config.yml</code> to align it with the suggested path that is used elsewhere. <a href=\"https://redirect.github.com/github/codeql-action/pull/4070\">#4070</a></li>\n</ul>\n<h2>v4.37.5</h2>\n<ul>\n<li>Fixed a bug where a network error while streaming the download of the CodeQL bundle could terminate the <code>init</code> Action instead of falling back to downloading the bundle before extracting it. <a href=\"https://redirect.github.com/github/codeql-action/pull/4061\">#4061</a></li>\n</ul>\n<h2>v4.37.4</h2>\n<ul>\n<li>This version of the CodeQL Action adds support for the <code>tools</code> input for the <code>codeql-action/init</code> step to be specified using a <code>github-codeql-tools</code> <a href=\"https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization\">repository property</a>. This feature will gradually be rolled out following the release of this version. Once rolled out, this allows for the CodeQL CLI version that is used in GitHub-managed workflows, such as Default Setup, to be set to a custom value. For example, customers who run into issues with rate limits when a new CodeQL CLI version is released can set the value to <code>toolcache</code> to always use the CodeQL CLI version that is available in the runner toolcache. For Advanced Setup workflows, the value provided for <code>tools</code> in the workflow definition always takes precedence unless the value of the repository property starts with <code>!</code>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4037\">#4037</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.2\">2.26.2</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4051\">#4051</a></li>\n</ul>\n<h2>v4.37.3</h2>\n<p>No user facing changes.</p>\n<h2>v4.37.2</h2>\n<ul>\n<li>The new address format for the <code>config-file</code> input that was introduced in CodeQL Action 4.37.0 is now enabled by default. In addition to the format described there, the <code>remote=</code> prefix can now be used to explicitly indicate that the input refers to a remote file. All previous input formats continue to be accepted as well. <a href=\"https://redirect.github.com/github/codeql-action/pull/4023\">#4023</a></li>\n<li>The CodeQL Action can now make use of <a href=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">configured private registries</a> in Default Setup to retrieve CodeQL configuration files from remote repositories that require authentication. This will allow customers to store their CodeQL configuration in a single repository that can then be referenced by Default Setup workflows in other repositories. We expect to roll this and other, related changes out to everyone in July. <a href=\"https://redirect.github.com/github/codeql-action/pull/4007\">#4007</a></li>\n</ul>\n<h2>v4.37.1</h2>\n<ul>\n<li><em>Upcoming breaking change</em>: Add a deprecation warning for customers using CodeQL version 2.20.6 and earlier. These versions of CodeQL were discontinued on 1 July 2026 alongside GitHub Enterprise Server 3.16, and will be unsupported by the next minor release of the CodeQL Action. <a href=\"https://redirect.github.com/github/codeql-action/pull/3956\">#3956</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.1\">2.26.1</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4019\">#4019</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a href=\"https://github.com/github/codeql-action/blob/main/CHANGELOG.md\">github/codeql-action/autobuild's changelog</a>.</em></p>\n<blockquote>\n<h1>CodeQL Action Changelog</h1>\n<p>See the <a href=\"https://github.com/github/codeql-action/releases\">releases page</a> for the relevant changes to the CodeQL CLI and language packs.</p>\n<h2>[UNRELEASED]</h2>\n<p>No user facing changes.</p>\n<h2>4.38.1 - 18 Sept 2026</h2>\n<ul>\n<li>The CodeQL Action now has experimental support for CodeQL releases for which per-language bundles are available. Per-language bundles support analysis for a single language and are therefore smaller than the combined bundles that allow analysis for all supported languages. As a result, per-language bundles take up less space on disk and are faster to download. We expect to roll this change out to everyone in the coming weeks. <a href=\"https://redirect.github.com/github/codeql-action/pull/4146\">#4146</a></li>\n</ul>\n<h2>4.38.0 - 09 Sept 2026</h2>\n<ul>\n<li>On GitHub-hosted runners, the CodeQL Action now deletes unused CodeQL bundles from the toolcache before downloading a different bundle, which frees up disk space for the analysis. We expect to roll this change out to everyone in September. <a href=\"https://redirect.github.com/github/codeql-action/pull/4124\">#4124</a></li>\n<li>The CodeQL Action now supports CodeQL releases that are compatible with Linux Arm64 and downloads the native <code>linux-arm64</code> CodeQL bundle when available. <a href=\"https://redirect.github.com/github/codeql-action/pull/4072\">#4072</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.0\">2.27.0</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4129\">#4129</a></li>\n</ul>\n<h2>4.37.9 - 26 Aug 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.4\">2.26.4</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4106\">#4106</a></li>\n</ul>\n<h2>4.37.8 - 21 Aug 2026</h2>\n<p>No user facing changes.</p>\n<h2>4.37.7 - 13 Aug 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.3\">2.26.3</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4085\">#4085</a></li>\n</ul>\n<h2>4.37.6 - 04 Aug 2026</h2>\n<ul>\n<li>Changed the default filepath for the new remote file address format that was introduced in CodeQL Action 4.37.0 / 3.37.0 to <code>.github/codeql-config.yml</code> to align it with the suggested path that is used elsewhere. <a href=\"https://redirect.github.com/github/codeql-action/pull/4070\">#4070</a></li>\n</ul>\n<h2>4.37.5 - 03 Aug 2026</h2>\n<ul>\n<li>Fixed a bug where a network error while streaming the download of the CodeQL bundle could terminate the <code>init</code> Action instead of falling back to downloading the bundle before extracting it. <a href=\"https://redirect.github.com/github/codeql-action/pull/4061\">#4061</a></li>\n</ul>\n<h2>4.37.4 - 29 Jul 2026</h2>\n<ul>\n<li>This version of the CodeQL Action adds support for the <code>tools</code> input for the <code>codeql-action/init</code> step to be specified using a <code>github-codeql-tools</code> <a href=\"https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization\">repository property</a>. This feature will gradually be rolled out following the release of this version. Once rolled out, this allows for the CodeQL CLI version that is used in GitHub-managed workflows, such as Default Setup, to be set to a custom value. For example, customers who run into issues with rate limits when a new CodeQL CLI version is released can set the value to <code>toolcache</code> to always use the CodeQL CLI version that is available in the runner toolcache. For Advanced Setup workflows, the value provided for <code>tools</code> in the workflow definition always takes precedence unless the value of the repository property starts with <code>!</code>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4037\">#4037</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.2\">2.26.2</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4051\">#4051</a></li>\n</ul>\n<h2>4.37.3 - 22 Jul 2026</h2>\n<p>No user facing changes.</p>\n<h2>4.37.2 - 21 Jul 2026</h2>\n<ul>\n<li>The new address format for the <code>config-file</code> input that was introduced in CodeQL Action 4.37.0 is now enabled by default. In addition to the format described there, the <code>remote=</code> prefix can now be used to explicitly indicate that the input refers to a remote file. All previous input formats continue to be accepted as well. <a href=\"https://redirect.github.com/github/codeql-action/pull/4023\">#4023</a></li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/github/codeql-action/commit/b96794f015dfd88f77b49b1c93e0fa7110f94c63\"><code>b96794f</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4131\">#4131</a> from github/update-v4.38.0-7e08580a9</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/02d5093871674ea20274117103ce3038c73c77ef\"><code>02d5093</code></a> Update changelog for v4.38.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/7e08580a93dc4e4b9dda167e364577035cf504c6\"><code>7e08580</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4130\">#4130</a> from github/henrymercer/workflow-runner-sizing</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/bfcc52b4f5d98468a5993daa0bf0e4fb3f3ed698\"><code>bfcc52b</code></a> Run slow macOS checks on larger runners</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/8c251e757c0260283fc50214a06ac768b61d3af4\"><code>8c251e7</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4129\">#4129</a> from github/update-bundle/codeql-bundle-v2.27.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/0b7ca400df35985869d4b9146a067865d4115da1\"><code>0b7ca40</code></a> Add changelog note</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/40484b339517c6bcf00f81eebc95ca041ddca505\"><code>40484b3</code></a> Update default bundle to codeql-bundle-v2.27.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/977e6ceaea7361825998245d787fa3b4d6b9e5df\"><code>977e6ce</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4124\">#4124</a> from github/henrymercer/toolcache-bundle-cleanup</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/40a6b3824794ae1156e1a5320d32e364bf1dcebc\"><code>40a6b38</code></a> Address toolcache cleanup review feedback</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/deece8f852f048bc3f52fd42c9cc7a99b1ebb252\"><code>deece8f</code></a> Apply suggestion from <a href=\"https://github.com/henrymercer\"><code>@​henrymercer</code></a></li>\n<li>Additional commits viewable in <a href=\"https://github.com/github/codeql-action/compare/99df26d4f13ea111d4ec1a7dddef6063f76b97e9...b96794f015dfd88f77b49b1c93e0fa7110f94c63\">compare view</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `github/codeql-action/analyze` from 4.37.0 to 4.38.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/github/codeql-action/releases\">github/codeql-action/analyze's releases</a>.</em></p>\n<blockquote>\n<h2>v4.38.0</h2>\n<ul>\n<li>On GitHub-hosted runners, the CodeQL Action now deletes unused CodeQL bundles from the toolcache before downloading a different bundle, which frees up disk space for the analysis. We expect to roll this change out to everyone in September. <a href=\"https://redirect.github.com/github/codeql-action/pull/4124\">#4124</a></li>\n<li>The CodeQL Action now supports CodeQL releases that are compatible with Linux Arm64 and downloads the native <code>linux-arm64</code> CodeQL bundle when available. <a href=\"https://redirect.github.com/github/codeql-action/pull/4072\">#4072</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.0\">2.27.0</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4129\">#4129</a></li>\n</ul>\n<h2>v4.37.9</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.4\">2.26.4</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4106\">#4106</a></li>\n</ul>\n<h2>v4.37.8</h2>\n<p>No user facing changes.</p>\n<h2>v4.37.7</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.3\">2.26.3</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4085\">#4085</a></li>\n</ul>\n<h2>v4.37.6</h2>\n<ul>\n<li>Changed the default filepath for the new remote file address format that was introduced in CodeQL Action 4.37.0 / 3.37.0 to <code>.github/codeql-config.yml</code> to align it with the suggested path that is used elsewhere. <a href=\"https://redirect.github.com/github/codeql-action/pull/4070\">#4070</a></li>\n</ul>\n<h2>v4.37.5</h2>\n<ul>\n<li>Fixed a bug where a network error while streaming the download of the CodeQL bundle could terminate the <code>init</code> Action instead of falling back to downloading the bundle before extracting it. <a href=\"https://redirect.github.com/github/codeql-action/pull/4061\">#4061</a></li>\n</ul>\n<h2>v4.37.4</h2>\n<ul>\n<li>This version of the CodeQL Action adds support for the <code>tools</code> input for the <code>codeql-action/init</code> step to be specified using a <code>github-codeql-tools</code> <a href=\"https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization\">repository property</a>. This feature will gradually be rolled out following the release of this version. Once rolled out, this allows for the CodeQL CLI version that is used in GitHub-managed workflows, such as Default Setup, to be set to a custom value. For example, customers who run into issues with rate limits when a new CodeQL CLI version is released can set the value to <code>toolcache</code> to always use the CodeQL CLI version that is available in the runner toolcache. For Advanced Setup workflows, the value provided for <code>tools</code> in the workflow definition always takes precedence unless the value of the repository property starts with <code>!</code>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4037\">#4037</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.2\">2.26.2</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4051\">#4051</a></li>\n</ul>\n<h2>v4.37.3</h2>\n<p>No user facing changes.</p>\n<h2>v4.37.2</h2>\n<ul>\n<li>The new address format for the <code>config-file</code> input that was introduced in CodeQL Action 4.37.0 is now enabled by default. In addition to the format described there, the <code>remote=</code> prefix can now be used to explicitly indicate that the input refers to a remote file. All previous input formats continue to be accepted as well. <a href=\"https://redirect.github.com/github/codeql-action/pull/4023\">#4023</a></li>\n<li>The CodeQL Action can now make use of <a href=\"https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/manage-usage-and-access/giving-org-access-private-registries\">configured private registries</a> in Default Setup to retrieve CodeQL configuration files from remote repositories that require authentication. This will allow customers to store their CodeQL configuration in a single repository that can then be referenced by Default Setup workflows in other repositories. We expect to roll this and other, related changes out to everyone in July. <a href=\"https://redirect.github.com/github/codeql-action/pull/4007\">#4007</a></li>\n</ul>\n<h2>v4.37.1</h2>\n<ul>\n<li><em>Upcoming breaking change</em>: Add a deprecation warning for customers using CodeQL version 2.20.6 and earlier. These versions of CodeQL were discontinued on 1 July 2026 alongside GitHub Enterprise Server 3.16, and will be unsupported by the next minor release of the CodeQL Action. <a href=\"https://redirect.github.com/github/codeql-action/pull/3956\">#3956</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.1\">2.26.1</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4019\">#4019</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a href=\"https://github.com/github/codeql-action/blob/main/CHANGELOG.md\">github/codeql-action/analyze's changelog</a>.</em></p>\n<blockquote>\n<h1>CodeQL Action Changelog</h1>\n<p>See the <a href=\"https://github.com/github/codeql-action/releases\">releases page</a> for the relevant changes to the CodeQL CLI and language packs.</p>\n<h2>[UNRELEASED]</h2>\n<p>No user facing changes.</p>\n<h2>4.38.1 - 18 Sept 2026</h2>\n<ul>\n<li>The CodeQL Action now has experimental support for CodeQL releases for which per-language bundles are available. Per-language bundles support analysis for a single language and are therefore smaller than the combined bundles that allow analysis for all supported languages. As a result, per-language bundles take up less space on disk and are faster to download. We expect to roll this change out to everyone in the coming weeks. <a href=\"https://redirect.github.com/github/codeql-action/pull/4146\">#4146</a></li>\n</ul>\n<h2>4.38.0 - 09 Sept 2026</h2>\n<ul>\n<li>On GitHub-hosted runners, the CodeQL Action now deletes unused CodeQL bundles from the toolcache before downloading a different bundle, which frees up disk space for the analysis. We expect to roll this change out to everyone in September. <a href=\"https://redirect.github.com/github/codeql-action/pull/4124\">#4124</a></li>\n<li>The CodeQL Action now supports CodeQL releases that are compatible with Linux Arm64 and downloads the native <code>linux-arm64</code> CodeQL bundle when available. <a href=\"https://redirect.github.com/github/codeql-action/pull/4072\">#4072</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.27.0\">2.27.0</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4129\">#4129</a></li>\n</ul>\n<h2>4.37.9 - 26 Aug 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.4\">2.26.4</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4106\">#4106</a></li>\n</ul>\n<h2>4.37.8 - 21 Aug 2026</h2>\n<p>No user facing changes.</p>\n<h2>4.37.7 - 13 Aug 2026</h2>\n<ul>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.3\">2.26.3</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4085\">#4085</a></li>\n</ul>\n<h2>4.37.6 - 04 Aug 2026</h2>\n<ul>\n<li>Changed the default filepath for the new remote file address format that was introduced in CodeQL Action 4.37.0 / 3.37.0 to <code>.github/codeql-config.yml</code> to align it with the suggested path that is used elsewhere. <a href=\"https://redirect.github.com/github/codeql-action/pull/4070\">#4070</a></li>\n</ul>\n<h2>4.37.5 - 03 Aug 2026</h2>\n<ul>\n<li>Fixed a bug where a network error while streaming the download of the CodeQL bundle could terminate the <code>init</code> Action instead of falling back to downloading the bundle before extracting it. <a href=\"https://redirect.github.com/github/codeql-action/pull/4061\">#4061</a></li>\n</ul>\n<h2>4.37.4 - 29 Jul 2026</h2>\n<ul>\n<li>This version of the CodeQL Action adds support for the <code>tools</code> input for the <code>codeql-action/init</code> step to be specified using a <code>github-codeql-tools</code> <a href=\"https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization\">repository property</a>. This feature will gradually be rolled out following the release of this version. Once rolled out, this allows for the CodeQL CLI version that is used in GitHub-managed workflows, such as Default Setup, to be set to a custom value. For example, customers who run into issues with rate limits when a new CodeQL CLI version is released can set the value to <code>toolcache</code> to always use the CodeQL CLI version that is available in the runner toolcache. For Advanced Setup workflows, the value provided for <code>tools</code> in the workflow definition always takes precedence unless the value of the repository property starts with <code>!</code>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4037\">#4037</a></li>\n<li>Update default CodeQL bundle version to <a href=\"https://github.com/github/codeql-action/releases/tag/codeql-bundle-v2.26.2\">2.26.2</a>. <a href=\"https://redirect.github.com/github/codeql-action/pull/4051\">#4051</a></li>\n</ul>\n<h2>4.37.3 - 22 Jul 2026</h2>\n<p>No user facing changes.</p>\n<h2>4.37.2 - 21 Jul 2026</h2>\n<ul>\n<li>The new address format for the <code>config-file</code> input that was introduced in CodeQL Action 4.37.0 is now enabled by default. In addition to the format described there, the <code>remote=</code> prefix can now be used to explicitly indicate that the input refers to a remote file. All previous input formats continue to be accepted as well. <a href=\"https://redirect.github.com/github/codeql-action/pull/4023\">#4023</a></li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/github/codeql-action/commit/b96794f015dfd88f77b49b1c93e0fa7110f94c63\"><code>b96794f</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4131\">#4131</a> from github/update-v4.38.0-7e08580a9</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/02d5093871674ea20274117103ce3038c73c77ef\"><code>02d5093</code></a> Update changelog for v4.38.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/7e08580a93dc4e4b9dda167e364577035cf504c6\"><code>7e08580</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4130\">#4130</a> from github/henrymercer/workflow-runner-sizing</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/bfcc52b4f5d98468a5993daa0bf0e4fb3f3ed698\"><code>bfcc52b</code></a> Run slow macOS checks on larger runners</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/8c251e757c0260283fc50214a06ac768b61d3af4\"><code>8c251e7</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4129\">#4129</a> from github/update-bundle/codeql-bundle-v2.27.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/0b7ca400df35985869d4b9146a067865d4115da1\"><code>0b7ca40</code></a> Add changelog note</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/40484b339517c6bcf00f81eebc95ca041ddca505\"><code>40484b3</code></a> Update default bundle to codeql-bundle-v2.27.0</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/977e6ceaea7361825998245d787fa3b4d6b9e5df\"><code>977e6ce</code></a> Merge pull request <a href=\"https://redirect.github.com/github/codeql-action/issues/4124\">#4124</a> from github/henrymercer/toolcache-bundle-cleanup</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/40a6b3824794ae1156e1a5320d32e364bf1dcebc\"><code>40a6b38</code></a> Address toolcache cleanup review feedback</li>\n<li><a href=\"https://github.com/github/codeql-action/commit/deece8f852f048bc3f52fd42c9cc7a99b1ebb252\"><code>deece8f</code></a> Apply suggestion from <a href=\"https://github.com/henrymercer\"><code>@​henrymercer</code></a></li>\n<li>Additional commits viewable in <a href=\"https://github.com/github/codeql-action/compare/99df26d4f13ea111d4ec1a7dddef6063f76b97e9...b96794f015dfd88f77b49b1c93e0fa7110f94c63\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this group update PR and stop Dependabot creating any more for the specific dependency's major version (unless you unignore this specific dependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this group update PR and stop Dependabot creating any more for the specific dependency's minor version (unless you unignore this specific dependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR and stop Dependabot creating any more for the specific dependency (unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore conditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will remove the ignore condition of the specified dependency and ignore conditions\n\n\n</details>",
+      "author": "dependabot[bot]",
+      "state": "closed",
+      "labels": [
+        "dependencies",
+        "github_actions"
+      ],
+      "created_at": "2026-09-21T16:56:09Z",
+      "updated_at": "2026-09-22T07:29:51Z",
+      "closed_at": "2026-09-21T20:22:34Z",
+      "url": "https://github.com/psf/requests/pull/7628",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7619",
+      "number": 7619,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit from v0.16.4 to 0.16.8 in the pre-commit group across 1 directory",
+      "body": "Bumps the pre-commit group with 1 update in the / directory: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.4 to 0.16.8\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/astral-sh/ruff-pre-commit/releases\">https://github.com/astral-sh/ruff-pre-commit's releases</a>.</em></p>\n<blockquote>\n<h2>v0.16.8</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.8\">https://github.com/astral-sh/ruff/releases/tag/0.16.8</a></p>\n<h2>v0.16.7</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.7\">https://github.com/astral-sh/ruff/releases/tag/0.16.7</a></p>\n<h2>v0.16.6</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.6\">https://github.com/astral-sh/ruff/releases/tag/0.16.6</a></p>\n<h2>v0.16.5</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.5\">https://github.com/astral-sh/ruff/releases/tag/0.16.5</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/2eeb5678de71a00c0902cbda7105d328432f72cb\"><code>2eeb567</code></a> Mirror: 0.16.8</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/e8f7d69b957a30acb2c875078d5fd012de24b64c\"><code>e8f7d69</code></a> Mirror: 0.16.7</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/321478e58f4938179c6b86e4ddfa923d1547a49b\"><code>321478e</code></a> Mirror: 0.16.6</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/1f1e8bf348ff38fc88619a38d3ca4d9c56abea49\"><code>1f1e8bf</code></a> Mirror: 0.16.5</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/e4c52d6d4347f27067c744764511bbf7c5500c8a\"><code>e4c52d6</code></a> Add <code>markdown</code> to <code>types_or</code> (<a href=\"https://redirect.github.com/astral-sh/ruff-pre-commit/issues/159\">#159</a>)</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/e602328bc581dae429dff4cca17708f5154e487e\"><code>e602328</code></a> Bump astral-sh/setup-uv from 9.0.0 to 10.0.1 in the github-actions group (<a href=\"https://redirect.github.com/astral-sh/ruff-pre-commit/issues/180\">#180</a>)</li>\n<li>See full diff in <a href=\"https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.4...v0.16.8\">compare view</a></li>\n</ul>\n</details>\n<br />",
+      "author": "dependabot[bot]",
+      "state": "open",
+      "labels": [
+        "dependencies",
+        "pre_commit"
+      ],
+      "created_at": "2026-09-07T16:54:40Z",
+      "updated_at": "2026-10-05T16:54:53Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/pull/7619",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "Pjrich1313",
+          "body": "Why do I have some dude on my authority panel ",
+          "created_at": "2026-09-29T00:54:10Z",
+          "url": "https://github.com/psf/requests/pull/7619#issuecomment-5881549552"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7616",
+      "number": 7616,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit from v0.16.3 to 0.16.4 in the pre-commit group",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.3 to 0.16.4\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/astral-sh/ruff-pre-commit/releases\">https://github.com/astral-sh/ruff-pre-commit's releases</a>.</em></p>\n<blockquote>\n<h2>v0.16.4</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.4\">https://github.com/astral-sh/ruff/releases/tag/0.16.4</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/aab412d509121cb5f7533134b7e67f9fab59c682\"><code>aab412d</code></a> Mirror: 0.16.4</li>\n<li>See full diff in <a href=\"https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.3...v0.16.4\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=https://github.com/astral-sh/ruff-pre-commit&package-manager=pre_commit&previous-version=v0.16.3&new-version=0.16.4)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this group update PR and stop Dependabot creating any more for the specific dependency's major version (unless you unignore this specific dependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this group update PR and stop Dependabot creating any more for the specific dependency's minor version (unless you unignore this specific dependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR and stop Dependabot creating any more for the specific dependency (unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore conditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will remove the ignore condition of the specified dependency and ignore conditions\n\n\n</details>",
+      "author": "dependabot[bot]",
+      "state": "closed",
+      "labels": [
+        "dependencies",
+        "pre_commit"
+      ],
+      "created_at": "2026-08-31T16:55:53Z",
+      "updated_at": "2026-09-02T18:15:55Z",
+      "closed_at": "2026-09-02T18:15:53Z",
+      "url": "https://github.com/psf/requests/pull/7616",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7609",
+      "number": 7609,
+      "title": "Update lock-issues.yml to latest dependencies",
+      "body": "GitHub has been rolling out longer tokens and it seems like we finally got them recently. The lock issues action is failing because it has unnecessary validation on the token length that's been removed in 6.0.2 (see dessant/lock-threads#55).",
+      "author": "nateprewitt",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-25T00:34:49Z",
+      "updated_at": "2026-08-25T00:45:59Z",
+      "closed_at": "2026-08-25T00:45:57Z",
+      "url": "https://github.com/psf/requests/pull/7609",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7608",
+      "number": 7608,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit from v0.16.2 to 0.16.3 in the pre-commit group",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.2 to 0.16.3\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/astral-sh/ruff-pre-commit/releases\">https://github.com/astral-sh/ruff-pre-commit's releases</a>.</em></p>\n<blockquote>\n<h2>v0.16.3</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.3\">https://github.com/astral-sh/ruff/releases/tag/0.16.3</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/65dbdb59d2f2d9c3bdc343c566821ad3319ddaa3\"><code>65dbdb5</code></a> Mirror: 0.16.3</li>\n<li>See full diff in <a href=\"https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.2...v0.16.3\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=https://github.com/astral-sh/ruff-pre-commit&package-manager=pre_commit&previous-version=v0.16.2&new-version=0.16.3)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this group update PR and stop Dependabot creating any more for the specific dependency's major version (unless you unignore this specific dependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this group update PR and stop Dependabot creating any more for the specific dependency's minor version (unless you unignore this specific dependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR and stop Dependabot creating any more for the specific dependency (unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore conditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will remove the ignore condition of the specified dependency and ignore conditions\n\n\n</details>",
+      "author": "dependabot[bot]",
+      "state": "closed",
+      "labels": [
+        "dependencies",
+        "pre_commit"
+      ],
+      "created_at": "2026-08-24T16:54:28Z",
+      "updated_at": "2026-08-24T17:33:18Z",
+      "closed_at": "2026-08-24T17:33:15Z",
+      "url": "https://github.com/psf/requests/pull/7608",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7606",
+      "number": 7606,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit from v0.16.1 to 0.16.2 in the pre-commit group",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.1 to 0.16.2\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/astral-sh/ruff-pre-commit/releases\">https://github.com/astral-sh/ruff-pre-commit's releases</a>.</em></p>\n<blockquote>\n<h2>v0.16.2</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.2\">https://github.com/astral-sh/ruff/releases/tag/0.16.2</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/7c55798a78262d14b2074abf623d8a992ebb70d4\"><code>7c55798</code></a> Mirror: 0.16.2</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/6a246aba31a0bfb3ce68f50a5a3f8bd9a8e2c99c\"><code>6a246ab</code></a> Bump astral-sh/setup-uv from 8.3.2 to 9.0.0 in the github-actions group (<a href=\"https://redirect.github.com/astral-sh/ruff-pre-commit/issues/179\">#179</a>)</li>\n<li>See full diff in <a href=\"https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.1...v0.16.2\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=https://github.com/astral-sh/ruff-pre-commit&package-manager=pre_commit&previous-version=v0.16.1&new-version=0.16.2)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this group update PR and stop Dependabot creating any more for the specific dependency's major version (unless you unignore this specific dependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this group update PR and stop Dependabot creating any more for the specific dependency's minor version (unless you unignore this specific dependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR and stop Dependabot creating any more for the specific dependency (unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore conditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will remove the ignore condition of the specified dependency and ignore conditions\n\n\n</details>",
+      "author": "dependabot[bot]",
+      "state": "closed",
+      "labels": [
+        "dependencies",
+        "pre_commit"
+      ],
+      "created_at": "2026-08-17T18:41:18Z",
+      "updated_at": "2026-08-17T19:03:16Z",
+      "closed_at": "2026-08-17T19:03:14Z",
+      "url": "https://github.com/psf/requests/pull/7606",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7603",
+      "number": 7603,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit from v0.16.0 to 0.16.1 in the pre-commit group",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.0 to 0.16.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/astral-sh/ruff-pre-commit/releases\">https://github.com/astral-sh/ruff-pre-commit's releases</a>.</em></p>\n<blockquote>\n<h2>v0.16.1</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.1\">https://github.com/astral-sh/ruff/releases/tag/0.16.1</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/39d9ac5938dadb73df0564a45f163e25ff9fa6e2\"><code>39d9ac5</code></a> Mirror: 0.16.1</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/299cd31aad8a2860ecc9dd4cb4269be2b50bc1a0\"><code>299cd31</code></a> Bump actions/checkout from 7.0.0 to 7.0.1 in the github-actions group (<a href=\"https://redirect.github.com/astral-sh/ruff-pre-commit/issues/177\">#177</a>)</li>\n<li>See full diff in <a href=\"https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.0...v0.16.1\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=https://github.com/astral-sh/ruff-pre-commit&package-manager=pre_commit&previous-version=v0.16.0&new-version=0.16.1)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this group update PR and stop Dependabot creating any more for the specific dependency's major version (unless you unignore this specific dependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this group update PR and stop Dependabot creating any more for the specific dependency's minor version (unless you unignore this specific dependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR and stop Dependabot creating any more for the specific dependency (unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore conditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will remove the ignore condition of the specified dependency and ignore conditions\n\n\n</details>",
+      "author": "dependabot[bot]",
+      "state": "closed",
+      "labels": [
+        "dependencies",
+        "pre_commit"
+      ],
+      "created_at": "2026-08-10T16:55:26Z",
+      "updated_at": "2026-08-11T16:14:28Z",
+      "closed_at": "2026-08-11T16:14:27Z",
+      "url": "https://github.com/psf/requests/pull/7603",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#7598",
+      "number": 7598,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit from v0.15.22 to 0.16.0 in the pre-commit group",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.15.22 to 0.16.0\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/astral-sh/ruff-pre-commit/releases\">https://github.com/astral-sh/ruff-pre-commit's releases</a>.</em></p>\n<blockquote>\n<h2>v0.16.0</h2>\n<p>See: <a href=\"https://github.com/astral-sh/ruff/releases/tag/0.16.0\">https://github.com/astral-sh/ruff/releases/tag/0.16.0</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/cb8c523fd4835aba42af70f4cad5568db4df0b6c\"><code>cb8c523</code></a> Mirror: 0.16.0</li>\n<li><a href=\"https://github.com/astral-sh/ruff-pre-commit/commit/162e162e9b0552199b118016d8a6ae499a66818c\"><code>162e162</code></a> Bump astral-sh/setup-uv from 8.2.0 to 8.3.2 in the github-actions group (<a href=\"https://redirect.github.com/astral-sh/ruff-pre-commit/issues/176\">#176</a>)</li>\n<li>See full diff in <a href=\"https://github.com/astral-sh/ruff-pre-commit/compare/v0.15.22...v0.16.0\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=https://github.com/astral-sh/ruff-pre-commit&package-manager=pre_commit&previous-version=v0.15.22&new-version=0.16.0)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this group update PR and stop Dependabot creating any more for the specific dependency's major version (unless you unignore this specific dependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this group update PR and stop Dependabot creating any more for the specific dependency's minor version (unless you unignore this specific dependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR and stop Dependabot creating any more for the specific dependency (unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore conditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will remove the ignore condition of the specified dependency and ignore conditions\n\n\n</details>",
+      "author": "dependabot[bot]",
+      "state": "closed",
+      "labels": [
+        "dependencies",
+        "pre_commit"
+      ],
+      "created_at": "2026-08-03T16:54:57Z",
+      "updated_at": "2026-08-03T17:52:46Z",
+      "closed_at": "2026-08-03T17:52:45Z",
+      "url": "https://github.com/psf/requests/pull/7598",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "611c616",
+      "number": null,
+      "title": "Bump the actions group with 3 updates (#7628)",
+      "body": "Bumps the actions group with 3 updates: [github/codeql-action/init](https://github.com/github/codeql-action), [github/codeql-action/autobuild](https://github.com/github/codeql-action) and [github/codeql-action/analyze](https://github.com/github/codeql-action).\n\n\nUpdates `github/codeql-action/init` from 4.37.0 to 4.38.0\n- [Release notes](https://github.com/github/codeql-action/releases)\n- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/github/codeql-action/compare/99df26d4f13ea111d4ec1a7dddef6063f76b97e9...b96794f015dfd88f77b49b1c93e0fa7110f94c63)\n\nUpdates `github/codeql-action/autobuild` from 4.37.0 to 4.38.0\n- [Release notes](https://github.com/github/codeql-action/releases)\n- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/github/codeql-action/compare/99df26d4f13ea111d4ec1a7dddef6063f76b97e9...b96794f015dfd88f77b49b1c93e0fa7110f94c63)\n\nUpdates `github/codeql-action/analyze` from 4.37.0 to 4.38.0\n- [Release notes](https://github.com/github/codeql-action/releases)\n- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/github/codeql-action/compare/99df26d4f13ea111d4ec1a7dddef6063f76b97e9...b96794f015dfd88f77b49b1c93e0fa7110f94c63)\n\n---\nupdated-dependencies:\n- dependency-name: github/codeql-action/init\n  dependency-version: 4.38.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: actions\n- dependency-name: github/codeql-action/autobuild\n  dependency-version: 4.38.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: actions\n- dependency-name: github/codeql-action/analyze\n  dependency-version: 4.38.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: actions\n...\n\nSigned-off-by: dependabot[bot] <redacted@example.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+      "author": "dependabot[bot]",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-09-21T20:22:33Z",
+      "updated_at": "2026-09-21T20:22:33Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/611c6162cbc4ac2020a2f91c7cfa4f3abf9bbb60",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "dae7ef6",
+      "number": null,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit (#7616)",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.3 to 0.16.4\n- [Release notes](https://github.com/astral-sh/ruff-pre-commit/releases)\n- [Commits](https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.3...v0.16.4)\n\n---\nupdated-dependencies:\n- dependency-name: https://github.com/astral-sh/ruff-pre-commit\n  dependency-version: 0.16.4\n  dependency-type: direct:production\n  dependency-group: pre-commit\n...\n\nSigned-off-by: dependabot[bot] <redacted@example.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+      "author": "dependabot[bot]",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-09-02T18:15:52Z",
+      "updated_at": "2026-09-02T18:15:52Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/dae7ef63b4df6eded86637f251fc4e3a06c3b479",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "5460f46",
+      "number": null,
+      "title": "Update lock-issues.yml to latest dependencies (#7609)",
+      "body": "",
+      "author": "nateprewitt",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-08-25T00:45:57Z",
+      "updated_at": "2026-08-25T00:45:57Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/5460f467b02e49471c0fd6cfc9ca0adab6351f98",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "6af0b94",
+      "number": null,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit (#7608)",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.2 to 0.16.3\n- [Release notes](https://github.com/astral-sh/ruff-pre-commit/releases)\n- [Commits](https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.2...v0.16.3)\n\n---\nupdated-dependencies:\n- dependency-name: https://github.com/astral-sh/ruff-pre-commit\n  dependency-version: 0.16.3\n  dependency-type: direct:production\n  dependency-group: pre-commit\n...\n\nSigned-off-by: dependabot[bot] <redacted@example.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+      "author": "dependabot[bot]",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-08-24T17:33:15Z",
+      "updated_at": "2026-08-24T17:33:15Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/6af0b94158bbe10c45e754e85f9701f401e6aa9c",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "8f8b212",
+      "number": null,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit (#7606)",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.1 to 0.16.2\n- [Release notes](https://github.com/astral-sh/ruff-pre-commit/releases)\n- [Commits](https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.1...v0.16.2)\n\n---\nupdated-dependencies:\n- dependency-name: https://github.com/astral-sh/ruff-pre-commit\n  dependency-version: 0.16.2\n  dependency-type: direct:production\n  dependency-group: pre-commit\n...\n\nSigned-off-by: dependabot[bot] <redacted@example.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+      "author": "dependabot[bot]",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-08-17T19:03:13Z",
+      "updated_at": "2026-08-17T19:03:13Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/8f8b212de8c2129d7954c6cd373762880375620a",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "8068356",
+      "number": null,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit (#7603)",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.16.0 to 0.16.1\n- [Release notes](https://github.com/astral-sh/ruff-pre-commit/releases)\n- [Commits](https://github.com/astral-sh/ruff-pre-commit/compare/v0.16.0...v0.16.1)\n\n---\nupdated-dependencies:\n- dependency-name: https://github.com/astral-sh/ruff-pre-commit\n  dependency-version: 0.16.1\n  dependency-type: direct:production\n  dependency-group: pre-commit\n...\n\nSigned-off-by: dependabot[bot] <redacted@example.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+      "author": "dependabot[bot]",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-08-11T16:14:26Z",
+      "updated_at": "2026-08-11T16:14:26Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/8068356288978c4f54661ae6f95afe0e0831885e",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "1f6589e",
+      "number": null,
+      "title": "Bump https://github.com/astral-sh/ruff-pre-commit (#7598)",
+      "body": "Bumps the pre-commit group with 1 update: [https://github.com/astral-sh/ruff-pre-commit](https://github.com/astral-sh/ruff-pre-commit).\n\n\nUpdates `https://github.com/astral-sh/ruff-pre-commit` from v0.15.22 to 0.16.0\n- [Release notes](https://github.com/astral-sh/ruff-pre-commit/releases)\n- [Commits](https://github.com/astral-sh/ruff-pre-commit/compare/v0.15.22...v0.16.0)\n\n---\nupdated-dependencies:\n- dependency-name: https://github.com/astral-sh/ruff-pre-commit\n  dependency-version: 0.16.0\n  dependency-type: direct:production\n  dependency-group: pre-commit\n...\n\nSigned-off-by: dependabot[bot] <redacted@example.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+      "author": "dependabot[bot]",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-08-03T17:52:44Z",
+      "updated_at": "2026-08-03T17:52:44Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/1f6589ec3a1ee910f9a65cc3ceac60b26677bc0e",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "commit",
+      "id": "414f051",
+      "number": null,
+      "title": "Bump the actions group with 2 updates (#7596)",
+      "body": "Bumps the actions group with 2 updates: [actions/setup-python](https://github.com/actions/setup-python) and [zizmorcore/zizmor-action](https://github.com/zizmorcore/zizmor-action).\n\n\nUpdates `actions/setup-python` from 6.3.0 to 7.0.0\n- [Release notes](https://github.com/actions/setup-python/releases)\n- [Commits](https://github.com/actions/setup-python/compare/ece7cb06caefa5fff74198d8649806c4678c61a1...5fda3b95a4ea91299a34e894583c3862153e4b97)\n\nUpdates `zizmorcore/zizmor-action` from 0.5.2 to 0.6.0\n- [Release notes](https://github.com/zizmorcore/zizmor-action/releases)\n- [Commits](https://github.com/zizmorcore/zizmor-action/compare/71321a20a9ded102f6e9ce5718a2fcec2c4f70d8...6599ee8b7a49aef6a770f63d261d214911a7ce02)\n\n---\nupdated-dependencies:\n- dependency-name: actions/setup-python\n  dependency-version: 7.0.0\n  dependency-type: direct:production\n  update-type: version-update:semver-major\n  dependency-group: actions\n- dependency-name: zizmorcore/zizmor-action\n  dependency-version: 0.6.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: actions\n...\n\nSigned-off-by: dependabot[bot] <redacted@example.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+      "author": "dependabot[bot]",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-07-27T17:25:09Z",
+      "updated_at": "2026-07-27T17:25:09Z",
+      "closed_at": "",
+      "url": "https://github.com/psf/requests/commit/414f0513c33883adf6f2b46901d4f0b38a455851",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    }
+  ]
+}

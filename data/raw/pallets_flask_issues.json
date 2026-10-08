@@ -1,0 +1,460 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "pallets",
+    "repo": "flask",
+    "label": "",
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T00:31:05+00:00",
+    "comments_complete": true,
+    "warning": ""
+  },
+  "issues": [
+    {
+      "number": 6165,
+      "title": "update docs for `MAX_CONTENT_LENGTH`",
+      "body": "Clarify [MAX_CONTENT_LENGTH](https://flask.palletsprojects.com/en/stable/config/#MAX_CONTENT_LENGTH) should be avoided in the docs in favor of setting the limit on the server just like [its written in the Werkzeug docs](https://werkzeug.palletsprojects.com/en/stable/request_data/#limiting-request-data).\n\nI have this Flask app with Waitress as the production server and MAX_CONTENT_LENGTH set to 10 bytes\n```python\nfrom flask import Flask,request\nfrom waitress import serve\n\napp=Flask(__name__)\napp.config[\"MAX_CONTENT_LENGTH\"]=10\n\n@app.post(\"/\")\ndef index():\n    print(request.get_data())\n    return \"OK\"\n\nserve(app,listen=\"localhost:8000\")\n```\nand this client to send data to it until the connection is closed\n```python\nfrom urllib.request import urlopen\nfrom random import randbytes\n\nbytes_sent=0\nchunk_size=10_000_000\ndef stream():\n    global bytes_sent\n\n    while True:\n        yield randbytes(chunk_size)\n        bytes_sent+=chunk_size\n\ntry:\n    urlopen(\"http://localhost:8000/\",stream())\nexcept Exception as e:\n    print(e)\nprint(f\"sent around {bytes_sent} bytes\")\n```\nand the app kept receiving and writing the request to disk way over 10 bytes until it hit Waitress's max_request_body_size limit that defaults to 1Gib, with the client printing\n```\n<urlopen error [WinError 10054] ...>\nsent around 1080000000 bytes\n```\n\nEnvironment:\n\n- Python version: 3.13.7\n- Flask version: 3.1.3",
+      "author": "Meterel",
+      "state": "closed",
+      "labels": [
+        "docs"
+      ],
+      "created_at": "2026-09-24T22:41:33Z",
+      "updated_at": "2026-09-25T21:19:03Z",
+      "closed_at": "2026-09-24T22:56:18Z",
+      "url": "https://github.com/pallets/flask/issues/6165",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "davidism",
+          "body": "That has nothing to do with Flask, you need to configure Waitress, or the HTTP server in front of Waitress.",
+          "created_at": "2026-09-24T22:56:18Z",
+          "url": "https://github.com/pallets/flask/issues/6165#issuecomment-5823580011"
+        },
+        {
+          "author": "Meterel",
+          "body": "Yes, that's why it's already written in the Werkzeug docs to configure it on the server instead. You need to add that to the Flask docs as well.",
+          "created_at": "2026-09-24T22:59:56Z",
+          "url": "https://github.com/pallets/flask/issues/6165#issuecomment-5823621050"
+        },
+        {
+          "author": "davidism",
+          "body": "The Werkzeug docs were updated to say what they say now [approximately a month ago](https://github.com/pallets/werkzeug/pull/3251). I don't constantly go back and forth keeping the two in sync.\n\n`MAX_CONTENT_LENGTH` should not be _avoided_. In fact, the docs as written in Werkzeug wouldn't help you either. They say that `max_content_length` must be set _somewhere_. The problem you're reporting is that Waitress buffers the response before it gets to the application. Because of that Waitress behavior, the max length can only be configured there, not further down the stack.\n\nSo I suppose what the docs need to say is \"be aware of the stack you're using, how each tool interacts with requests and responses, and how to configure each one appropriately.\" That seems like such general advice, and applies to everything not just `max_content_length`, so I don't think it's worth saying specifically there.",
+          "created_at": "2026-09-25T20:02:27Z",
+          "url": "https://github.com/pallets/flask/issues/6165#issuecomment-5838756975"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6163,
+      "title": "spam",
+      "body": "spam",
+      "author": "CSOAI-ORG",
+      "state": "closed",
+      "labels": [
+        "rejected AI"
+      ],
+      "created_at": "2026-09-15T03:47:22Z",
+      "updated_at": "2026-10-03T00:13:28Z",
+      "closed_at": "2026-09-15T04:06:57Z",
+      "url": "https://github.com/pallets/flask/issues/6163",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "davidism",
+          "body": "https://palletsprojects.com/contributing/llm-ai",
+          "created_at": "2026-09-15T04:06:57Z",
+          "url": "https://github.com/pallets/flask/issues/6163#issuecomment-5674575225"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6161,
+      "title": "spam",
+      "body": "Fix branch: https://github.com/project-afterlife/vuln-bot-reports/tree/fixes/fix-test-1789221309\n\n```diff\n# ReportBot auto-fix\nprint('fix')\n\n```\n\n> More information can be required if needed.\n\n> More information can be required if needed.\n\n*ReportBot autonomous - redacted@example.com*",
+      "author": "project-afterlife",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-12T13:55:12Z",
+      "updated_at": "2026-09-27T00:15:37Z",
+      "closed_at": "2026-09-12T13:57:22Z",
+      "url": "https://github.com/pallets/flask/issues/6161",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 6160,
+      "title": "spam",
+      "body": "x",
+      "author": "project-afterlife",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-12T13:52:04Z",
+      "updated_at": "2026-09-27T00:15:38Z",
+      "closed_at": "2026-09-12T13:56:52Z",
+      "url": "https://github.com/pallets/flask/issues/6160",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 6146,
+      "title": "Add Cloudflare to Flask Hosting Platforms docs?",
+      "body": "Cloudflare workers supports deploying Flask applications. We have the following short guide for deploying Flask workers:\nhttps://developers.cloudflare.com/workers/languages/python/packages/flask/\n\nCould we add a link to this page to the \"Hosting Platforms\" section of the docs?",
+      "author": "hoodmane",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-08-31T19:17:12Z",
+      "updated_at": "2026-09-26T12:56:43Z",
+      "closed_at": "",
+      "url": "https://github.com/pallets/flask/issues/6146",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "davidism",
+          "body": "It looks like the examples repo listed at the bottom of that page doesn't actually include the referenced example.",
+          "created_at": "2026-08-31T19:20:33Z",
+          "url": "https://github.com/pallets/flask/issues/6146#issuecomment-5483308783"
+        },
+        {
+          "author": "hoodmane",
+          "body": "Oops, forgot to merge it. It is there now, thanks!",
+          "created_at": "2026-09-01T16:32:15Z",
+          "url": "https://github.com/pallets/flask/issues/6146#issuecomment-5497155135"
+        },
+        {
+          "author": "hoodmane",
+          "body": "@davidism any update on this? Would appreciate a yes/no/(yes conditioned on some improvement) response when you have time.",
+          "created_at": "2026-09-09T23:45:47Z",
+          "url": "https://github.com/pallets/flask/issues/6146#issuecomment-5610351292"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6143,
+      "title": "`add_url_rule` leaves a route registered even after an endpoint conflict",
+      "body": "## Description\n‘add_url_rule’ correctly raises an error when an endpoint already exists and you try to register a different view function with the same endpoint.\n\nHowever, after you catch the error and continue running the code, the URL you tried to add (/b, for example) still exists. When a user requests /b, it is routed to the view function that was already registered for that endpoint, rather than the new view function whose registration failed.\n\n## Example\n\n```python\nfrom flask import Flask\n\napp = Flask(__name__)\n\ndef first():\n    return \"first\"\n\ndef second():\n    return \"second\"\n\napp.add_url_rule(\"/a\", endpoint=\"same\", view_func=first)\n\ntry:\n    app.add_url_rule(\"/b\", endpoint=\"same\", view_func=second)\nexcept AssertionError as e:\n    print(e)\n\nclient = app.test_client()\n\nprint(client.get(\"/a\").status_code, client.get(\"/a\").data)\nprint(client.get(\"/b\").status_code, client.get(\"/b\").data)\n```\n\n### Expected Result\n\n```text\nView function mapping is overwriting an existing endpoint function: same\n200 b'first'\n404 ...\n```\n\n### Actual Result\n\n```text\nView function mapping is overwriting an existing endpoint function: same\n200 b'first'\n200 b'first'\n```\n\nI think Flask correctly rejects the view-function overwrite, but the failed registration has already added the URL rule.\n\nEnvironment:\n\n- Python version: 3.11.2\n- Flask version: 3.1.3\n",
+      "author": "anonymous756fsd",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-28T15:24:13Z",
+      "updated_at": "2026-09-12T00:12:37Z",
+      "closed_at": "2026-08-28T17:13:03Z",
+      "url": "https://github.com/pallets/flask/issues/6143",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "anonymous756fsd",
+          "body": "After searching, I didn't find any discussion about this behavior's semantic(or i just ignored :>). If this is an intentional implementation, I think it would at least be worth documenting or commenting explicitly.",
+          "created_at": "2026-08-28T15:35:40Z",
+          "url": "https://github.com/pallets/flask/issues/6143#issuecomment-5454498844"
+        },
+        {
+          "author": "davidism",
+          "body": "If you throw away the error saying you did something wrong, then yes you might end up with incorrect setup. ",
+          "created_at": "2026-08-28T17:12:59Z",
+          "url": "https://github.com/pallets/flask/issues/6143#issuecomment-5455494361"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6139,
+      "title": "AI junk",
+      "body": "## Summary\n\nMultiple security vulnerabilities in Flask: CRITICAL code execution via exec() in config.py, HIGH path traversal in 5 locations.\n\n## Vulnerabilities Found\n\n1. **CRITICAL** `config.py:209` - Code Execution via exec() in from_pyfile\n   exec(compile(config_file.read(), filename, \"exec\"), d.__dict__) executes arbitrary Python code from a file.\n\n2. **HIGH** `config.py:204` - Path Traversal in from_pyfile\n   filename = os.path.join(self.root_path, filename) without sanitization. Absolute paths bypass root_path.\n\n3. **HIGH** `config.py:290` - Path Traversal in from_file\n   Same os.path.join pattern without validation.\n\n4. **HIGH** `app.py:441` - Path Traversal in open_resource\n   path = os.path.join(self.root_path, resource) without path validation.\n\n5. **HIGH** `app.py:463` - Path Traversal in open_instance_resource\n   Same pattern.\n\n6. **HIGH** `blueprints.py:123` - Path Traversal in open_resource\n   os.path.join without traversal protection.\n\n7. **MEDIUM** `cli.py:1023` - Code Execution via eval() in shell_command\n   eval(compile(f.read(), startup, \"exec\")) on PYTHONSTARTUP env var.\n\n## Recommended Fix\n\n1. Use werkzeug.utils.safe_join for all path operations\n2. Validate that resolved paths stay within intended directories\n3. Document/document-warn on exec/eval usage in config loading\n\n## Note\nSeveral of these are documented Flask features (loading config from Python files is designed to exec code). However, the path traversal combined with env-var-configurable filenames may not be intended.\n",
+      "author": "truongsontung",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-24T13:33:18Z",
+      "updated_at": "2026-09-08T00:13:34Z",
+      "closed_at": "2026-08-24T13:37:22Z",
+      "url": "https://github.com/pallets/flask/issues/6139",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "ThiefMaster",
+          "body": "Someone sent us this EXACT SAME slop before.\n\nRoot path etc are not relevant to any of those things. The config file can be anywhere.",
+          "created_at": "2026-08-24T13:37:22Z",
+          "url": "https://github.com/pallets/flask/issues/6139#issuecomment-5396007249"
+        },
+        {
+          "author": "davidism",
+          "body": "https://palletsprojects.com/contributing/llm-ai",
+          "created_at": "2026-08-24T14:03:16Z",
+          "url": "https://github.com/pallets/flask/issues/6139#issuecomment-5396319088"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6126,
+      "title": "AI junk",
+      "body": "## Executive summary\n\n- **[critical]** Exposed GitHub token in app/config.py — A hard-coded personal access token was found in the repository.\n- **[medium]** Duplicate issues across languages — Issues #12 and #19 describe the same bug in English and Arabic.\n- **[low]** README missing usage and license sections — The README covers the project and installation only.",
+      "author": "sl-rwl",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-09T09:52:22Z",
+      "updated_at": "2026-08-24T00:06:19Z",
+      "closed_at": "2026-08-09T09:53:43Z",
+      "url": "https://github.com/pallets/flask/issues/6126",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "ThiefMaster",
+          "body": "Do not dump this AI slop on us. The first point doesn't even make sense since such a file does not exist.",
+          "created_at": "2026-08-09T09:53:43Z",
+          "url": "https://github.com/pallets/flask/issues/6126#issuecomment-5230899429"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6123,
+      "title": "`stream_with_context`: abandoned generator leaves the app context current on the worker thread; later requests skip `teardown_appcontext`",
+      "body": "`stream_with_context` pushes the request's contexts onto whichever thread iterates the response body, and pops them only if the generator completes or is closed on that same thread. When a client disconnects mid-stream, the server abandons the body iterator and GC finalizes it later — often on a different thread. That cross-context pop fails (`LookupError`/`ValueError` from `ContextVar.reset`, swallowed as \"Exception ignored in ...\"), and the app context stays current on the worker thread.\n\nBecause `RequestContext.push` reuses an ambient app context of the same app, every later request on that pooled thread runs under the stuck context and `teardown_appcontext` never fires for it. Anything keyed to the app context then leaks once per thread for the life of the process — with Flask-SQLAlchemy that is one connection held idle-in-transaction per poisoned thread, with nothing in the logs.\n\nRelated: #5774 fixed the same cross-context token failure for async views; #5804 covers teardown ordering in the 3.1.2 rewrite. Neither covers the abandonment case. The docs mention that headers/session need care with `stream_with_context`, but not that a disconnect can leave the context stuck on the thread — a warning there would be helpful even if the behavior itself is hard to change.\n\n## Reproduction\n\nOne long-lived \"worker\" thread serves two requests; the abandoned body iterator is GC-finalized on the main thread in between (in real deployments the reference is dropped by server machinery outside the worker — servers may never call `close()` on the iterator after a disconnect):\n\n```python\nimport gc\nimport queue\nimport threading\n\nfrom flask import Flask, Response, stream_with_context\nfrom flask.globals import _cv_app\n\napp = Flask(__name__)\nteardowns = []\n\n@app.teardown_appcontext\ndef note_teardown(exc):\n    teardowns.append(threading.current_thread().name)\n\n@app.route(\"/stream\")\ndef stream():\n    def gen():\n        for i in range(100):\n            yield f\"chunk{i}\\n\"\n    return Response(stream_with_context(gen()))\n\n@app.route(\"/plain\")\ndef plain():\n    return \"ok\"\n\nabandoned = queue.Queue()   # holds the dropped iterator, like server machinery\nstep2 = threading.Event()\n\ndef worker():\n    # --- request A: streaming response, client disconnects after one chunk ---\n    with app.test_request_context(\"/stream\"):\n        rv = app.full_dispatch_request()\n    body = iter(rv.response)\n    next(body)   # first chunk: stream_with_context pushes app+request ctx HERE\n    abandoned.put((body, rv))   # server-side reference outlives the request\n    del body, rv\n    print(\"A: ambient ctx after abandonment:\", _cv_app.get(None))\n\n    step2.wait()  # main thread GC-finalizes the generator meanwhile\n\n    # --- request B: any later request on this pooled worker thread ---\n    print(\"B: ambient ctx at request start:\", _cv_app.get(None))\n    teardowns.clear()\n    with app.test_request_context(\"/plain\"):    # reuses the ambient ctx of the\n        app.full_dispatch_request()             # same app -> no fresh app ctx\n    print(\"B: teardown_appcontext ran for B:\", bool(teardowns))\n    print(\"B: ambient ctx after B finished:\", _cv_app.get(None))\n\nt = threading.Thread(target=worker, name=\"wsgi-worker-0\")\nt.start()\n\nabandoned.get()          # take the reference, then drop it on the MAIN thread\ngc.collect()             # generator finalized here -> cross-context pop fails\nstep2.set()\nt.join()\n```\n\nOutput (Flask 3.1.3, Python 3.13):\n\n```\nException ignored in: <generator object stream_with_context.<locals>.generator at 0x...>\nTraceback (most recent call last):\n  File \".../flask/helpers.py\", line 130, in generator\n    with app_ctx, req_ctx:\n  File \".../flask/ctx.py\", line 284, in __exit__\n    self.pop(exc_value)\n  File \".../flask/ctx.py\", line 264, in pop\n    ctx = _cv_app.get()\nLookupError: <ContextVar name='flask.app_ctx' at 0x...>\nA: ambient ctx after abandonment: <flask.ctx.AppContext object at 0x10b49c830>\nB: ambient ctx at request start: <flask.ctx.AppContext object at 0x10b49c830>\nB: teardown_appcontext ran for B: False\nB: ambient ctx after B finished: <flask.ctx.AppContext object at 0x10b49c830>\n```\n\n## Expected behavior\n\nRequest B runs under its own app context and `teardown_appcontext` fires when it finishes. Instead it silently runs under request A's leaked context, teardown never runs, and the thread stays poisoned indefinitely.\n\nEnvironment:\n\n- Python version: 3.13 (also reproduced on 3.11)\n- Flask version: 3.1.3. The `main` branch (3.2-dev, post-#5639 merged context) looks affected as well: `stream_with_context` there enters the single context via `with ctx:` around the priming `yield None`, so the context is pushed at creation and only exited when the generator completes or is closed.",
+      "author": "robkooper",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-08T15:15:19Z",
+      "updated_at": "2026-08-26T00:07:12Z",
+      "closed_at": "2026-08-11T15:44:33Z",
+      "url": "https://github.com/pallets/flask/issues/6123",
+      "comments_count": 10,
+      "comments": [
+        {
+          "author": "DaviAlcanfor",
+          "body": "Sup! \nI'm sort of new to this open source contribution stuff and been looking for a contribution in a big project like this. \nCould I try on this one? ",
+          "created_at": "2026-08-10T23:17:26Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5247106493"
+        },
+        {
+          "author": "davidism",
+          "body": "I don't think this is something for a new contributor. But you're welcome to read our contributing guide https://palletsprojects.com/contributing/ and AI policy https://palletsprojects.com/contributing/llm-ai and decide for yourself.",
+          "created_at": "2026-08-10T23:30:08Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5247193529"
+        },
+        {
+          "author": "davidism",
+          "body": "\nThe example seems to require \"server-side reference outlives the request\", which seems extremely unusual. You're deliberately moving a reference from one thread to another, then reporting that the references act weird.\n\nI would really prefer an example that uses a plain flask app and actual requests, rather than trying to simulate a bunch of stuff. There's so much complexity in the example right now that I'm having a hard time following it.",
+          "created_at": "2026-08-10T23:38:16Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5247260448"
+        },
+        {
+          "author": "davidism",
+          "body": "> the server abandons the body iterator and GC finalizes it later\n\nThis seems like something to report to the server doing this? They should be calling `close` on the iterator if it has that method. Otherwise they're creating an unclosed resource, something Python has been getting noisier and noisier about with warnings. If you look at Werkzeug's dev server and various app running functions, they all do this.",
+          "created_at": "2026-08-11T00:10:54Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5247491749"
+        },
+        {
+          "author": "robkooper",
+          "body": "The app where I ran into this issue is an LLM gateway streaming chat responses from a generator that uses flask + SQLAlchemy/Postgres behind uvicorn (via a2wsgi). Under load I was slowly leaking 20–100 Postgres connections a day until I had to restart. \n\n The trap: the streaming generator held a Flask app/request context across its yields, and a2wsgi iterates the response body on a reused thread-pool thread. When a client disconnected mid-stream the generator was abandoned, the context was never popped, and SQLAlchemy's per-context session teardown never ran. The database connection was stuck in \"idle in transaction\" (which I reaped before I found the issue by setting the postgresql idle_in_transaction_session_timeout = 10min). Every later request that landed on that same thread reused the still-current context, so its session teardown never ran either. Each one quietly leaked another connection, which resulting the app loosing connections in the pool slowely and eventually crash, not immediatly.",
+          "created_at": "2026-08-11T00:16:25Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5247528837"
+        },
+        {
+          "author": "davidism",
+          "body": "> The trap:\n\nCan you please re-post the issue in your own words without using an LLM to generate anything? See our LLM policy https://palletsprojects.com/contributing/llm-ai",
+          "created_at": "2026-08-11T00:17:23Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5247535120"
+        },
+        {
+          "author": "davidism",
+          "body": "Also, that response doesn't really answer my questions. It really seems like this needs to be reported to the server that's doing this, it's not behaving correctly.",
+          "created_at": "2026-08-11T00:19:07Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5247546440"
+        },
+        {
+          "author": "robkooper",
+          "body": "Here is an example that is maybe better, flask, uvcorn, sqlalchemy and a2wsgi\n\n```python\nimport os\nimport socket\nimport threading\nimport time\n\nfrom flask import Flask, Response, stream_with_context\nfrom flask.globals import _cv_app\nfrom sqlalchemy import create_engine, text\nfrom sqlalchemy.orm import scoped_session, sessionmaker\nfrom sqlalchemy.pool import QueuePool\nfrom a2wsgi import WSGIMiddleware\nimport uvicorn\n\nPORT = 8765\nPOOL_SIZE = 30\n\n# sqlite database with connection pool\nengine = create_engine(\n    \"sqlite:///./mydb.db\",\n    poolclass=QueuePool,\n    pool_size=POOL_SIZE,\n    max_overflow=0,\n    connect_args={\"check_same_thread\": False},\n)\n\n# my flask app\napp = Flask(__name__)\nasgi_app = WSGIMiddleware(app, workers=16)\n\n# code to keep track of connections\ndef _scope():\n    ctx = _cv_app.get(None)\n    return id(ctx) if ctx is not None else None\n\nSession = scoped_session(sessionmaker(bind=engine), scopefunc=_scope)\n\n@app.teardown_appcontext\ndef _cleanup(exc):\n    # Flask runs this when the app context is popped. If the context is stranded\n    # on a stuck worker thread, this never fires for it -> connection leaks.\n    Session.remove()\n\n# my generator to stream the answer back\ndef _tokens():\n    # Open a session thens tream the result\n    Session().execute(text(\"select 1\")).all()\n    for i in range(50):\n        yield f\"data: token {i}\\n\\n\"\n        time.sleep(0.05)\n\n# endpoint that streams the result\n@app.route(\"/stream\")\ndef stream():\n    return Response(stream_with_context(_tokens()), mimetype=\"text/event-stream\")\n\n# start serving the data\ndef _serve():\n    uvicorn.run(asgi_app, host=\"127.0.0.1\", port=PORT, log_level=\"critical\")\n\n# request data, wait a bit, break connection\ndef _abort_request():\n    s = socket.create_connection((\"127.0.0.1\", PORT), timeout=5)\n    s.sendall(\n        b\"GET /stream HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\"\n    )\n    # set this to 1 == leak, 5 == no leak\n    time.sleep(1)             # let the stream start and a few tokens flow\n    s.recv(256)               # read a little\n    s.close()                 # disconnect mid-stream -> abandons the generator\n\ndef main():\n    # start the flask app\n    threading.Thread(target=_serve, daemon=True).start()\n    time.sleep(2)\n\n    # start the clients\n    print(f\"{'batch':>6} {'checked_out':>12} {'live sessions':>14}\")\n    for batch in range(1, 6):\n        threads = [threading.Thread(target=_abort_request) for _ in range(20)]\n        for t in threads:\n            t.start()\n        for t in threads:\n            t.join()\n        time.sleep(1)\n        checked_out = engine.pool.checkedout()\n        live_sessions = len(Session.registry.registry)\n        print(f\"{batch:>6} {checked_out:>12} {live_sessions:>14}\")\n\n    print(\n        \"\\nLEAK\" if engine.pool.checkedout() > 0\n        else \"\\nno leak — connections all returned\"\n    )\n    checked_out = engine.pool.checkedout()\n    live_sessions = len(Session.registry.registry)\n    print(f\"{batch:>6} {checked_out:>12} {live_sessions:>14}\")\n\n\nif __name__ == \"__main__\":\n    main()\n```",
+          "created_at": "2026-08-11T02:10:28Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5248222849"
+        },
+        {
+          "author": "davidism",
+          "body": "Sorry, that's still way too much. I can't debug a2wsgi, I'm not familiar with it at all, if you think it's causing issues then report that to them. Use Flask's dev server, it's threaded. It doesn't seem like sqlalchemy is necessary at all to demonstrate that contexts aren't cleaned up.",
+          "created_at": "2026-08-11T02:35:31Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5248361331"
+        },
+        {
+          "author": "davidism",
+          "body": "I've been looking into this for hours now, and as far as I can tell the problem is that something is not closing the response. Flask _can't_ do that, it's in the server's control at that point.\n\nIn your first example, you're never calling `body.close()` when the \"connection\" is disconnected, and you're deliberately moving it somewhere with a different `contextvar`. If you call `body.close()` in the worker (not in some other thread) it works fine.\n\nIn your second example, presumably a2wsgi isn't handling client disconnects correctly, it needs to detect them and close the response.\n\nIt seems like Flask is managing the context correctly but your server is not handling disconnects correctly. How should a2wsgi do that? I don't know, but I'd suggest you report it to them.",
+          "created_at": "2026-08-11T03:31:58Z",
+          "url": "https://github.com/pallets/flask/issues/6123#issuecomment-5248665763"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6122,
+      "title": "Add async view pattern guide with Quart migration",
+      "body": "Document async view patterns in Flask and migration path to Quart for native async support.",
+      "author": "rexblade58",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-08T14:46:13Z",
+      "updated_at": "2026-08-23T00:06:14Z",
+      "closed_at": "2026-08-08T15:36:50Z",
+      "url": "https://github.com/pallets/flask/issues/6122",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "rexblade58",
+          "body": "Thanks for the feedback! I found the answer I was looking for. Closing this to keep the issue tracker clean.",
+          "created_at": "2026-08-08T15:36:50Z",
+          "url": "https://github.com/pallets/flask/issues/6122#issuecomment-5226803074"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6120,
+      "title": "Update tests for Werkzeug deprecated header parsing helpers",
+      "body": "## Description\n\nFlask tests currently use deprecated Werkzeug header parsing helpers:\n\n- `parse_cache_control_header`\n- `parse_set_header`\n\nWhen running tests against Werkzeug main, these functions emit `DeprecationWarning`, which causes test collection to fail because warnings are treated as errors.\n\n## Expected behavior\n\nTests should use the new Werkzeug APIs:\n\n- `RequestCacheControl.from_header`\n- `HeaderSet.from_header`\n\n## Environment\n\n- Flask main branch\n- Werkzeug main branch\n- Python 3.10+\n\n## Reproduction\n\nRun:\n\n- `uv run --locked --no-default-groups --group dev tox run`\n\n\nThe test suite fails during collection because deprecated Werkzeug functions raise `DeprecationWarning`.",
+      "author": "ciclos5258",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-05T20:18:08Z",
+      "updated_at": "2026-08-20T00:06:44Z",
+      "closed_at": "2026-08-05T20:19:35Z",
+      "url": "https://github.com/pallets/flask/issues/6120",
+      "comments_count": 4,
+      "comments": [
+        {
+          "author": "ciclos5258",
+          "body": "i am fix it, creating PR right now",
+          "created_at": "2026-08-05T20:19:27Z",
+          "url": "https://github.com/pallets/flask/issues/6120#issuecomment-5196889450"
+        },
+        {
+          "author": "davidism",
+          "body": "No need to open an issue for this. This is part of the normal release/deprecation schedule.",
+          "created_at": "2026-08-05T20:19:35Z",
+          "url": "https://github.com/pallets/flask/issues/6120#issuecomment-5196890647"
+        },
+        {
+          "author": "davidism",
+          "body": "Do not submit a fix. The fix is to wait for the next Werkzeug and Flask versions to be released.",
+          "created_at": "2026-08-05T20:20:09Z",
+          "url": "https://github.com/pallets/flask/issues/6120#issuecomment-5196895811"
+        },
+        {
+          "author": "ciclos5258",
+          "body": "ok, my bad",
+          "created_at": "2026-08-05T20:21:04Z",
+          "url": "https://github.com/pallets/flask/issues/6120#issuecomment-5196904508"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6119,
+      "title": "AI junk",
+      "body": "## Summary\n\n`Config.from_prefixed_env` can raise an uncaught `TypeError` when an environment\nvariable creates a scalar configuration value and another variable later tries\nto use that same value as a nested mapping.\n\n### Reproduction\n\nWith Flask's development source at commit\n`6a2f545bfd8ed31e19066a299296917e034aca58`:\n\n```bash\nFLASK_FOO=bar FLASK_FOO__BAR=baz python - <<'PY'\nfrom flask import Flask\n\napp = Flask(__name__)\napp.config.from_prefixed_env()\nPY\n```\n\nThe call raises:\n\n```text\nTypeError: 'str' object does not support item assignment\n```\n\n### What happens\n\n`from_prefixed_env` processes matching environment variables in sorted order.\nThe first variable sets `config[\"FOO\"]` to the string `\"bar\"`. When processing\n`FLASK_FOO__BAR`, the nested traversal reaches this value and then attempts to\nassign through it:\n\n```python\ncurrent = current[part]\n...\ncurrent[tail] = value\n```\n\nThe intermediate value is a string rather than a mapping, so configuration\nloading fails with a low-level `TypeError`.\n\nRelevant source at the reproduction commit:\n<https://github.com/pallets/flask/blob/6a2f545bfd8ed31e19066a299296917e034aca58/src/flask/config.py#L172-L183>\n\n### Expected behavior\n\nConfiguration loading should not fail with an implementation-level\n`TypeError` for a prefix collision. The behavior should be defined and\ndeterministic, for example by rejecting the conflicting configuration with a\nclear error, or by documenting and implementing precedence/merge semantics.\n\n### Impact\n\nAn application can fail during startup or configuration initialization when\nenvironment variables are assembled from multiple sources and a scalar key\nand nested key happen to share a prefix. This can be difficult to diagnose\nbecause the error does not identify the conflicting environment variables.\n\n### Suggested regression test\n\nAdd a test covering both `FLASK_FOO=bar` and `FLASK_FOO__BAR=baz`, and assert the\nchosen behavior for the scalar/nested conflict. If the intended behavior is to\nreject the configuration, the error should identify the conflicting path.\n\n### Environment\n\n- Flask source commit: `6a2f545bfd8ed31e19066a299296917e034aca58`\n- Flask version: `3.2.0.dev`\n- Python: `3.13.13`\n- Reproduction is independent of operating system semantics because it only\n  relies on the environment-variable traversal logic.\n\nI have not assigned a CWE classification. This is reported as a configuration\nrobustness and error-handling issue rather than a nullability finding.\n",
+      "author": "MicroMilo",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-04T10:04:59Z",
+      "updated_at": "2026-08-19T00:06:15Z",
+      "closed_at": "2026-08-04T14:00:09Z",
+      "url": "https://github.com/pallets/flask/issues/6119",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "davidism",
+          "body": "https://palletsprojects.com/contributing/llm-ai",
+          "created_at": "2026-08-04T14:00:09Z",
+          "url": "https://github.com/pallets/flask/issues/6119#issuecomment-5180120476"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6114,
+      "title": "jsonify emits NaN and Infinity, which are not valid JSON",
+      "body": "`jsonify` serialises `float(\"nan\")` and `float(\"inf\")` as the bare literals `NaN` and `Infinity`. Those are not valid JSON (RFC 8259 allows only decimal numbers), so the response is served as `application/json` but cannot be parsed by a strict parser, including the browser's `JSON.parse`.\n\nThis inherits from `json.dumps`, whose `allow_nan` defaults to `True`. `DefaultJSONProvider` sets `default`, `ensure_ascii` and `sort_keys`, but never touches `allow_nan`, so the permissive default applies.\n\nThe path to it is ordinary: any average, ratio or division that can meet an empty input produces `nan` without anything looking wrong on the server.\n\nReplication:\n\n```python\nfrom flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.route(\"/stats\")\ndef stats():\n    values = []\n    mean = sum(values) / len(values) if values else float(\"nan\")\n    return jsonify({\"count\": len(values), \"mean\": mean})\n\nwith app.test_client() as c:\n    r = c.get(\"/stats\")\n    print(r.headers[\"Content-Type\"])      # application/json\n    print(r.get_data(as_text=True))       # {\"count\":0,\"mean\":NaN}\n```\n\nThe response advertises `application/json` with a 200, but the body is not JSON:\n\n```python\nimport json\njson.loads('{\"count\":0,\"mean\":NaN}')      # accepted, Python is permissive by default\njson.loads('{\"count\":0,\"mean\":NaN}',\n           parse_constant=lambda x: (_ for _ in ()).throw(ValueError(x)))\n# ValueError: NaN     <- what a strict parser, and JSON.parse in a browser, does\n```\n\nSo the failure surfaces in the client rather than the server, which makes it awkward to trace back.\n\nExpected: either the same behaviour with it documented, or serialisation raises so the problem shows up server-side, where `ValueError: Out of range float values are not JSON compliant: nan` names the cause immediately.\n\nThere is currently no class attribute for this, although the plumbing already works, since `dumps` forwards `**kwargs` to `json.dumps`:\n\n```python\napp.json.dumps({\"a\": float(\"nan\")}, allow_nan=False)\n# ValueError: Out of range float values are not JSON compliant: nan\n```\n\n`DefaultJSONProvider` exposes `sort_keys`, `ensure_ascii` and `compact` as class attributes, so an `allow_nan` attribute alongside them would fit the existing pattern and let applications choose, without changing the default for anyone. I could not find `NaN` mentioned in the `DefaultJSONProvider` or `flask.json.dumps` docstrings, so at minimum a documentation note seems worthwhile.\n\nHappy to send a PR for whichever you prefer, an `allow_nan` provider attribute or just the docs.\n\nEnvironment:\n\n- Python 3.14\n- Flask 3.1.3\n- Werkzeug 3.1.8\n",
+      "author": "PranavAchar01",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-01T05:42:39Z",
+      "updated_at": "2026-08-16T00:06:13Z",
+      "closed_at": "2026-08-01T13:44:56Z",
+      "url": "https://github.com/pallets/flask/issues/6114",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "Omacrow",
+          "body": "Opened a PR implementing the allow_nan attribute option as suggested #6116",
+          "created_at": "2026-08-01T12:04:21Z",
+          "url": "https://github.com/pallets/flask/issues/6114#issuecomment-5151339312"
+        },
+        {
+          "author": "davidism",
+          "body": "Duplicate of https://github.com/pallets/flask/pull/2832 and others. Be sure to search first.",
+          "created_at": "2026-08-01T13:44:56Z",
+          "url": "https://github.com/pallets/flask/issues/6114#issuecomment-5151687262"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 6107,
+      "title": "Confusing docstring in Flask.get_send_file_max_age and Flask.send_static_file",
+      "body": "This is a documentation issue rather than a functional bug.\n\nThe docstrings for the following methods:\n\n- `Flask.get_send_file_max_age`\n- `Flask.send_static_file`\n\ncontain the sentence:\n\n> \"Note this is a duplicate of the same method in the Flask class.\"\n\nHowever, both methods are already defined within the `Flask` class itself. As written, the statement is confusing because it suggests the methods duplicate another implementation in the `Flask` class, even though they are the implementations in that class.\n\nUpdating or removing this sentence would improve the clarity and accuracy of the source code documentation.\n\n## Steps to reproduce\n\n1. Open `src/flask/app.py`.\n2. Locate the `get_send_file_max_age` and `send_static_file` methods.\n3. Read the docstrings for both methods.\n\n## Expected behavior\n\nThe docstrings should accurately describe the methods without stating that they are duplicates of the same methods in the `Flask` class. The wording should be updated or removed to avoid confusion.\n\n\nEnvironment:\n\n- Python version: N/A (documentation issue)\n- Flask version: main branch\n",
+      "author": "JeremyTan0",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-07-27T02:03:06Z",
+      "updated_at": "2026-08-11T00:11:27Z",
+      "closed_at": "2026-07-27T03:07:11Z",
+      "url": "https://github.com/pallets/flask/issues/6107",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 6093,
+      "title": "IPv6 addresses parsed incorrectly because of `.partition(\":\")`?",
+      "body": "Hi, I checked the code and saw that two places use `.partition(\":\")` on addresses, and IPv6 addresses contain \":\".\n\nThis breaks 1. `session_transaction` value setting, and 2. `Flask.run()` if `SERVER_NAME` is set. I've already prepared two tests that fail, you can use them to reproduce:\n\n1. In `test_testing.py`\n```\ndef test_session_transaction_ipv6(app):\n    base_url = \"http://[::1]:8000/\"\n    client = app.test_client()\n\n    @app.get(\"/\")\n    def index():\n        return str(flask.session.get(\"value\"))\n\n    with client.session_transaction(base_url=base_url) as sess:\n        sess[\"value\"] = 42\n\n    assert client.get(\"/\", base_url=base_url).text == \"42\"\n```\n\n2. Add one case to `test_run_from_config`\n```\n(None, None, \"[::1]:8080\", \"::1\", 8080),\n```\n\nIs this known and intended? I could send the patches for these two places.",
+      "author": "lkk7",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-07-13T22:07:38Z",
+      "updated_at": "2026-08-26T00:07:11Z",
+      "closed_at": "2026-08-11T19:48:42Z",
+      "url": "https://github.com/pallets/flask/issues/6093",
+      "comments_count": 4,
+      "comments": [
+        {
+          "author": "davidism",
+          "body": "Happy to review a human-written PR! We recently fixed some occurrences of this in Werkzeug as well.",
+          "created_at": "2026-07-13T23:44:26Z",
+          "url": "https://github.com/pallets/flask/issues/6093#issuecomment-4963920514"
+        },
+        {
+          "author": "lkk7",
+          "body": "Those guys are quick... They already generated one. It's bad anyway. Can I submit my own? :)\nBTW, those are two a bit separate problems, would you prefer two PRs or one? ",
+          "created_at": "2026-07-14T06:42:36Z",
+          "url": "https://github.com/pallets/flask/issues/6093#issuecomment-4966145221"
+        },
+        {
+          "author": "davidism",
+          "body": "You can ignore the junk. One PR is fine, one commit or two is fine.",
+          "created_at": "2026-07-14T12:47:19Z",
+          "url": "https://github.com/pallets/flask/issues/6093#issuecomment-4969305439"
+        },
+        {
+          "author": "lkk7",
+          "body": "@davidism added https://github.com/pallets/flask/pull/6096",
+          "created_at": "2026-07-14T15:40:32Z",
+          "url": "https://github.com/pallets/flask/issues/6093#issuecomment-4971065036"
+        }
+      ],
+      "comments_collected": true
+    }
+  ]
+}

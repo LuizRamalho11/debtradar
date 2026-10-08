@@ -1,0 +1,1673 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "psf",
+    "repo": "requests",
+    "label": "",
+    "sources": [
+      "issues",
+      "prs",
+      "commits"
+    ],
+    "requested": 8,
+    "collected": 24,
+    "collected_at": "2026-10-08T11:00:35+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 14,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:12+00:00"
+  },
+  "documents": [
+    {
+      "type": "issue",
+      "id": "#7633",
+      "number": 7633,
+      "title": "2.34.0+: merge_cookies raises \"You can only merge into CookieJar\" when http.cookiejar is loaded twice",
+      "url": "https://github.com/psf/requests/issues/7633",
+      "author": "Ur5u5",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-10-08T09:54:09Z",
+      "updated_at": "2026-10-08T10:00:27Z",
+      "closed_at": "2026-10-08T10:00:27Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "2.34.0+: merge_cookies raises \"You can only merge into CookieJar\" when http.cookiejar is loaded twice\n\nIn 2.34.0 RequestsCookieJar inherits from http.cookiejar.CookieJar (imported directly in cookies.py), while merge_cookies and other checks use compat.cookielib.CookieJar.\nIn 2.33.1 both used compat.cookielib. If http.cookiejar ends up loaded twice.\n\nThis is only reproducable under PyCharms Behave runner.\nWorks with 2.34.0 with plain behave in a terminal.\nWorks also with 2.33.1 with PyCharms Behave runner.\n\nExpected Result\n\nNo \"ValueError: You can only merge into CookieJar\" using Pycharms behave runner with 2.34.0 or later.\n\nActual Result\n\nRunning request in combination of Pycharms behave runner following error appears:\n\nIt seems that the behave runner is loading the package twice.\nRan following code at the failining line inside prepare_request:\n\nOutput:\n\nReproduction Steps\n\nUse requests inside a behave project.\nStart a test, which uses the problematic code via the pycharm runner.\n\n##Suggested fix:\nUse the same CookieJar reference for the base class and the isinstance checks (e.g. use CookieJar in merge_cookies, cookiejar_from_dict callers and RequestsCookieJar.update, or inherit from cookielib.CookieJar again)\n\nSystem Information\n\nCan be closed.\nIt is already under scope of Pycharm",
+      "code": "File \"<project>/adapters/api/rest_client/requests_rest_client.py\", line 101, in _request\n    prepared: PreparedRequest = self._session.prepare_request(request)\n                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"<project>/.venv/lib/python3.13/site-packages/requests/sessions.py\", line 532, in prepare_request\n    merge_cookies(RequestsCookieJar(), self.cookies), cookies\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<project>/.venv/lib/python3.13/site-packages/requests/cookies.py\", line 614, in merge_cookies\n    raise ValueError(\"You can only merge into CookieJar\")\nValueError: You can only merge into CookieJar\nimport http.cookiejar, requests.cookies as rc, requests.sessions as rs\n\njar = RequestsCookieJar()\nbase = type(jar).__mro__[1]\nchecked = rc.cookielib.CookieJar\n\nprint(\"RequestsCookieJar same in both modules:\", rs.RequestsCookieJar is rc.RequestsCookieJar)\nprint(\"base:   \", base, base.__module__, id(base))\nprint(\"checked:\", checked, checked.__module__, id(checked))\nprint(\"stdlib: \", http.cookiejar.CookieJar, id(http.cookiejar.CookieJar))\nprint(\"cookielib module:\", rc.cookielib, getattr(rc.cookielib, \"__file__\", None))\n('RequestsCookieJar same in both modules:', True)\n('base:   ', <class 'http.cookiejar.CookieJar'>, 'http.cookiejar', 50096408592)\n('checked:', <class 'http.cookiejar.CookieJar'>, 'http.cookiejar', 50100923408)\n('stdlib: ', <class 'http.cookiejar.CookieJar'>, 50096408592)\n('cookielib module:', <module 'http.cookiejar' from '~/.local/share/uv/python/cpython-3.13.1-macos-aarch64-none/lib/python3.13/http/cookiejar.py'>, '~/.local/share/uv/python/cpython-3.13.1-macos-aarch64-none/lib/python3.13/http/cookiejar.py')\nPython 3.13.1 (main, Jan 14 2025, 23:31:50) [Clang 19.1.6 ]\nmacOS-26.6.2-arm64-arm-64bit-Mach-O\nrequests 2.34.0\nbehave 1.3.3\n\n\nPyCharm 2026.1.5\nRuntime version: 25.0.4+1-b329.128 aarch64137.0.17-261-b89\nVM: OpenJDK 64-Bit Server VM by JetBrains s.r.o.\nToolkit: sun.lwawt.macosx.LWCToolkit\nmacOS 26.6.2\nException reporter ID: 2410252600a21f4-742c-4ac8-8e11-3dc948c99881\nGC: G1 Young Generation, G1 Concurrent GC, G1 Old Generation\nMemory: 2048M\nCores: 14\nMetal Rendering is ON\nRegistry:\n  ide.experimental.ui=true\n  trace.state.event.service.url=https://api.jetbrains.cloud/trace-status\n  editor.ux.survey.enabled=false\nNon-Bundled Plugins:\n  ru.adelf.idea.dotenv (261.27258.78)\n  Subversion (261.27258.78)\n  com.intellij.plugins.riderkeymap (201.6251.22)\n  com.intellij.plugins.visualstudiokeymap (261.22158.195)\n  com.intellij.plugins.resharperkeymap (261.22158.185)\n  indent-rainbow.indent-rainbow (2.2.0)\n  gherkin (261.22158.182)\n  io.nimbly.tzatziki (25.0.1)\n  works.szabope.mypy (2.2.2)",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 218,
+        "sentences": 23,
+        "pos": {
+          "NOUN": 44,
+          "PUNCT": 32,
+          "PROPN": 27,
+          "VERB": 26,
+          "ADP": 25,
+          "ADV": 12,
+          "DET": 12,
+          "AUX": 8,
+          "NUM": 7,
+          "PRON": 7,
+          "ADJ": 7,
+          "CCONJ": 5,
+          "SCONJ": 4,
+          "SYM": 2
+        },
+        "lemmas": {
+          "noun": {
+            "runner": 5,
+            "inherit": 2,
+            "check": 2,
+            "request": 2,
+            "code": 2,
+            "behave": 1,
+            "terminal": 1,
+            "work": 1,
+            "result": 1,
+            "running": 1,
+            "combination": 1,
+            "pycharm": 1,
+            "error": 1,
+            "package": 1,
+            "line": 1,
+            "output": 1,
+            "step": 1,
+            "project": 1,
+            "test": 1,
+            "fix": 1,
+            "reference": 1,
+            "base": 1,
+            "class": 1,
+            "isinstance": 1,
+            "caller": 1,
+            "information": 1,
+            "scope": 1
+          },
+          "adjective": {
+            "reproducable": 1,
+            "plain": 1,
+            "actual": 1,
+            "problematic": 1,
+            "pycharm": 1
+          },
+          "verb": {
+            "use": 4,
+            "load": 3,
+            "merge": 2,
+            "behave": 2,
+            "follow": 2,
+            "raise": 1,
+            "import": 1,
+            "end": 1,
+            "work": 1,
+            "expect": 1,
+            "appear": 1,
+            "failine": 1,
+            "start": 1,
+            "suggest": 1,
+            "close": 1
+          }
+        },
+        "noun_phrases": {
+          "behave runner": 3,
+          "plain behave": 1,
+          "expected result": 1,
+          "actual result": 1,
+          "running request": 1,
+          "failining line": 1,
+          "reproduction step": 1,
+          "use request": 1,
+          "behave project": 1,
+          "problematic code": 1,
+          "pycharm runner": 1,
+          "base class": 1,
+          "isinstance check": 1,
+          "system information": 1
+        },
+        "entities": [
+          {
+            "text": "CookieJar",
+            "label": "ORG",
+            "count": 7
+          },
+          {
+            "text": "Pycharms",
+            "label": "PRODUCT",
+            "count": 2
+          },
+          {
+            "text": "PyCharms Behave",
+            "label": "LAW",
+            "count": 1
+          },
+          {
+            "text": "PyCharms Behave",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Pycharm",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 1
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0191,
+        "sentences": 23,
+        "positive_sentences": 0,
+        "negative_sentences": 1,
+        "neutral_sentences": 22
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#7632",
+      "number": 7632,
+      "title": "Lingering docstring references to python2.7 cookielib",
+      "url": "https://github.com/psf/requests/issues/7632",
+      "author": "hemberger",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-10-06T11:40:32Z",
+      "updated_at": "2026-10-06T11:40:32Z",
+      "closed_at": "",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Lingering docstring references to python2.7 cookielib\n\nIn #6214, most docstring references to the python2.7 cookielib were updated to the python3 http.cookiejar. Two references appear to have been overlooked, however. I've created a trivial commit to fix the issue, but cannot create a PR since I'm not a collaborator:\n\nHopefully someone with permission can get this submitted. Thanks!",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 69,
+        "sentences": 7,
+        "pos": {
+          "VERB": 11,
+          "NOUN": 11,
+          "PUNCT": 8,
+          "AUX": 7,
+          "DET": 6,
+          "ADP": 5,
+          "PROPN": 4,
+          "PART": 4,
+          "PRON": 4,
+          "ADV": 3,
+          "NUM": 2,
+          "SYM": 1,
+          "ADJ": 1,
+          "CCONJ": 1,
+          "SCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "reference": 3,
+            "cookielib": 1,
+            "commit": 1,
+            "issue": 1,
+            "collaborator": 1,
+            "permission": 1,
+            "thank": 1
+          },
+          "adjective": {
+            "trivial": 1
+          },
+          "verb": {
+            "docstre": 2,
+            "create": 2,
+            "linger": 1,
+            "update": 1,
+            "appear": 1,
+            "overlook": 1,
+            "fix": 1,
+            "submit": 1
+          }
+        },
+        "noun_phrases": {
+          "docstring reference": 1,
+          "trivial commit": 1
+        },
+        "entities": []
+      },
+      "technologies": [
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1123,
+        "sentences": 6,
+        "positive_sentences": 2,
+        "negative_sentences": 1,
+        "neutral_sentences": 3
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#7631",
+      "number": 7631,
+      "title": "TestTimeout abandons three delay/10 requests and later tests wait out the server",
+      "url": "https://github.com/psf/requests/issues/7631",
+      "author": "quotentiroler",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-30T13:54:45Z",
+      "updated_at": "2026-10-03T14:31:31Z",
+      "closed_at": "",
+      "comments_count": 3,
+      "bot_comments_ignored": 0,
+      "text": "TestTimeout abandons three delay/10 requests and later tests wait out the server\n\nTestTimeout makes three requests to httpbin(\"delay/10\") and abandons all of them:\n\ntests/test_requests.py:2539, test_stream_timeout, timeout=2.0\ntests/test_requests.py:2573, test_read_timeout, parametrized, timeout=0.1 (two params)\n\nThe client raises at 2.0s and 0.1s, but the pytest-httpbin server keeps sleeping the full 10 seconds and serves requests serially. The next test that needs the server blocks until those sleeps finish.\n\ntest_encoded_methods is one line (requests.request(b\"GET\", httpbin(\"get\"))). The 19.79s is 2 x 10s of server sleep minus the 0.2s the two clients used. In a full run the cost lands on whichever tests happen to follow:\n\nBoth call sites need the server to outlast the client timeout, not to sleep for 10 seconds. Lowering the delays leaves the assertions unchanged:\n\nline 2539, delay/10 to delay/3 (client timeout 2.0)\nline 2573, delay/10 to delay/1 (client timeout 0.1)\n\nWith that change, TestTimeout goes from 30.56s to 5.70s and the full suite from 167.44s to 142.04s, with the same results either way: 630 passed, 3 skipped, 1 xpassed. The single failure in both runs is TestPreparingURLs::test_different_connection_pool_for_tls_settings_verify_bundle_unexpired_cert, which is unrelated and fails before the change as well.\n\nMeasured at 611c616 on Windows 11, Python 3.14.2, pytest 9.1.1.\n\nHi, I'd like to work on this. I'll submit a PR shortly.\n\nI'm unable to open a pull request in this repository because GitHub rejects both the GraphQL and REST PR-creation endpoints for my account. I'm unclaiming this so someone else can pick it up.\n\nI can take this one. I'll keep the delays just long enough to exercise the client timeouts, then run the timeout tests and the tests that currently get stuck behind them.",
+      "code": "$ pytest \"tests/test_requests.py::TestTimeout::test_encoded_methods\" -p no:randomly\n1 passed in 0.56s\n\n$ pytest \"tests/test_requests.py::TestTimeout::test_read_timeout\" \\\n         \"tests/test_requests.py::TestTimeout::test_encoded_methods\" \\\n         -p no:randomly --durations=5\n19.79s call     tests/test_requests.py::TestTimeout::test_encoded_methods\n 0.11s call     tests/test_requests.py::TestTimeout::test_read_timeout[timeout1]\n 0.10s call     tests/test_requests.py::TestTimeout::test_read_timeout[timeout0]\n3 passed in 20.55s\n19.35s call     TestTimeout::test_encoded_methods\n 8.00s call     TestTimeout::test_none_timeout[None]",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 337,
+        "sentences": 20,
+        "pos": {
+          "NOUN": 62,
+          "PUNCT": 53,
+          "VERB": 42,
+          "DET": 34,
+          "ADP": 26,
+          "NUM": 23,
+          "PROPN": 21,
+          "PRON": 17,
+          "ADJ": 13,
+          "AUX": 12,
+          "ADV": 11,
+          "CCONJ": 10,
+          "PART": 7,
+          "SYM": 3,
+          "SCONJ": 2,
+          "INTJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "test": 6,
+            "client": 6,
+            "server": 5,
+            "timeout": 5,
+            "request": 4,
+            "line": 3,
+            "second": 2,
+            "sleep": 2,
+            "run": 2,
+            "delay": 2,
+            "change": 2,
+            "param": 1,
+            "block": 1,
+            "cost": 1,
+            "land": 1,
+            "site": 1,
+            "assertion": 1,
+            "suite": 1,
+            "result": 1,
+            "way": 1,
+            "failure": 1,
+            "repository": 1,
+            "rest": 1,
+            "creation": 1,
+            "endpoint": 1,
+            "account": 1
+          },
+          "adjective": {
+            "pyt": 2,
+            "late": 1,
+            "unchanged": 1,
+            "single": 1,
+            "unrelated": 1,
+            "unable": 1,
+            "pull": 1
+          },
+          "verb": {
+            "abandon": 2,
+            "sleep": 2,
+            "need": 2,
+            "wait": 1,
+            "make": 1,
+            "test": 1,
+            "parametrize": 1,
+            "raise": 1,
+            "keep": 1,
+            "serve": 1,
+            "finish": 1,
+            "happen": 1,
+            "follow": 1,
+            "outlast": 1,
+            "lower": 1,
+            "leave": 1,
+            "go": 1,
+            "pass": 1,
+            "skip": 1,
+            "xpasse": 1,
+            "fail": 1,
+            "measure": 1,
+            "like": 1,
+            "work": 1,
+            "submit": 1,
+            "open": 1,
+            "reject": 1,
+            "unclaime": 1,
+            "pick": 1,
+            "exercise": 1,
+            "run": 1,
+            "stick": 1
+          }
+        },
+        "noun_phrases": {
+          "client timeout": 4,
+          "later test": 1,
+          "pytest httpbin server": 1,
+          "server block": 1,
+          "server sleep": 1,
+          "whichever test": 1,
+          "single failure": 1,
+          "pull request": 1,
+          "rest creation endpoint": 1,
+          "timeout test": 1
+        },
+        "entities": [
+          {
+            "text": "TestTimeout",
+            "label": "ORG",
+            "count": 2
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Windows",
+          "category": "platform",
+          "count": 1
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        },
+        {
+          "name": "GitHub",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "yes",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 7
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.0855,
+        "sentences": 22,
+        "positive_sentences": 1,
+        "negative_sentences": 6,
+        "neutral_sentences": 15
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#7630",
+      "number": 7630,
+      "title": "Incorrect type annotation for iter_lines",
+      "url": "https://github.com/psf/requests/issues/7630",
+      "author": "grantisu",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-24T17:18:05Z",
+      "updated_at": "2026-10-07T11:49:04Z",
+      "closed_at": "",
+      "comments_count": 5,
+      "bot_comments_ignored": 0,
+      "text": "Incorrect type annotation for iter_lines\n\nThe type annotation for Response.iter_lines misses that chunk_size can be None, causing valid code to fail type checks.\n\nThis seems pretty trivial to fix (e.g. ), but I'm not able to open a PR since I'm not a collaborator on the repo.\n\nHi, I'd like to work on this. I'll submit a focused typing fix with regression coverage shortly.\n\nI see the reporter already has the fix prepared on a comparison branch, so I'm stepping back to avoid duplicating that work.\n\nI see the reporter already has the fix prepared on a comparison branch, so I'm stepping back to avoid duplicating that work.\n\nThe work was pretty minor; feel free to duplicate/copy/steal/expand/etc if it leads to a better/quicker outcome.\n\nHi ,\n\nFollowing up on this, I've prepared and verified the fix along with parameterized tests and static typing validation.\n\nSince PR creation is restricted to collaborators on this repository, the tested changes are available on my fork here:\nBranch: agustin18:requests:fix/iter-lines-chunk-size-type-7630\nCompare Diff: psf/requests/compare/main...agustin18:requests:fix/iter-lines-chunk-size-type-7630\n\nChanges\nUpdated chunk_size: int | None = ITER_CHUNK_SIZE in both signatures and the iter_lines method definition in src/requests/models.py.\nAdded parameterized regression tests in tests/test_requests.py covering chunk_size=None and chunk_size=512 with both decode_unicode=False and True.\nVerified locally:\npyright src/requests/: 0 errors.\nAll 6 iter_lines overload variants pass Pyright strict type check.\nAll 343 pytest tests pass.\nAll pre-commit hooks (ruff check, ruff format, whitespace) pass cleanly.\n\nMaintainers can pull directly from this branch or grant access to open the PR.\n\nPut together the typing fix along with unit test coverage on a branch here if a collaborator wants to pull or cherry-pick it: (diff: )",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "test_coverage": 1
+        },
+        "categories": {
+          "tests": 1
+        },
+        "matches": [
+          {
+            "pattern": "test_coverage",
+            "category": "tests",
+            "explicit": false,
+            "text": "test coverage",
+            "source": "text",
+            "start": 1778,
+            "end": 1791,
+            "context": "PR. Put together the typing fix along with unit test coverage on a branch here if a collaborator wants to pull"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 377,
+        "sentences": 19,
+        "pos": {
+          "NOUN": 98,
+          "PUNCT": 54,
+          "VERB": 49,
+          "DET": 29,
+          "ADP": 23,
+          "ADJ": 20,
+          "ADV": 17,
+          "PRON": 16,
+          "SYM": 15,
+          "AUX": 13,
+          "PROPN": 12,
+          "PART": 11,
+          "CCONJ": 8,
+          "NUM": 5,
+          "SCONJ": 4,
+          "INTJ": 2,
+          "X": 1
+        },
+        "lemmas": {
+          "noun": {
+            "fix": 7,
+            "test": 5,
+            "type": 4,
+            "branch": 4,
+            "request": 4,
+            "check": 3,
+            "collaborator": 3,
+            "work": 3,
+            "annotation": 2,
+            "regression": 2,
+            "coverage": 2,
+            "reporter": 2,
+            "comparison": 2,
+            "iter": 2,
+            "line": 2,
+            "chunk": 2,
+            "size": 2,
+            "src": 2,
+            "ruff": 2,
+            "miss": 1,
+            "code": 1,
+            "repo": 1,
+            "copy": 1,
+            "steal": 1,
+            "expand": 1,
+            "outcome": 1,
+            "validation": 1,
+            "creation": 1,
+            "repository": 1,
+            "change": 1,
+            "fork": 1,
+            "compare": 1,
+            "int": 1,
+            "signature": 1,
+            "method": 1,
+            "definition": 1,
+            "error": 1,
+            "overload": 1,
+            "variant": 1,
+            "hook": 1,
+            "format": 1,
+            "whitespace": 1,
+            "maintainer": 1,
+            "access": 1,
+            "unit": 1,
+            "cherry": 1,
+            "diff": 1
+          },
+          "adjective": {
+            "parameterized": 2,
+            "incorrect": 1,
+            "valid": 1,
+            "trivial": 1,
+            "able": 1,
+            "focused": 1,
+            "minor": 1,
+            "free": 1,
+            "well": 1,
+            "quick": 1,
+            "static": 1,
+            "available": 1,
+            "main": 1,
+            "true": 1,
+            "strict": 1,
+            "pyt": 1,
+            "pre": 1
+          },
+          "verb": {
+            "type": 3,
+            "prepare": 3,
+            "duplicate": 3,
+            "pass": 3,
+            "open": 2,
+            "step": 2,
+            "avoid": 2,
+            "verify": 2,
+            "pull": 2,
+            "cause": 1,
+            "fail": 1,
+            "fix": 1,
+            "like": 1,
+            "work": 1,
+            "submit": 1,
+            "feel": 1,
+            "lead": 1,
+            "follow": 1,
+            "restrict": 1,
+            "test": 1,
+            "update": 1,
+            "add": 1,
+            "cover": 1,
+            "pyright": 1,
+            "commit": 1,
+            "grant": 1,
+            "want": 1,
+            "pick": 1
+          }
+        },
+        "noun_phrases": {
+          "comparison branch": 2,
+          "iter line": 2,
+          "incorrect type annotation": 1,
+          "type annotation": 1,
+          "valid code": 1,
+          "type check": 1,
+          "focused typing fix": 1,
+          "regression coverage": 1,
+          "better quicker outcome": 1,
+          "parameterized test": 1,
+          "tested change": 1,
+          "psf requests compare main": 1,
+          "chunk size": 1,
+          "method definition": 1,
+          "src request": 1,
+          "added parameterized regression test": 1,
+          "overload variant": 1,
+          "pyright strict type check": 1,
+          "pytest test": 1,
+          "pre commit hook": 1,
+          "ruff check": 1,
+          "ruff format": 1,
+          "typing fix": 1,
+          "unit test coverage": 1
+        },
+        "entities": [
+          {
+            "text": "False and True",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "Pyright",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "no",
+          "tests": "yes",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {
+              "duplicate": 3
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "coverage": 2,
+              "test": 6
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.0591,
+        "sentences": 24,
+        "positive_sentences": 7,
+        "negative_sentences": 5,
+        "neutral_sentences": 12
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#7629",
+      "number": 7629,
+      "title": "proxy_bypass_registry uses unanchored re.match (Windows proxy bypass)",
+      "url": "https://github.com/psf/requests/issues/7629",
+      "author": "frenzymadness",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-23T11:31:17Z",
+      "updated_at": "2026-09-30T20:37:16Z",
+      "closed_at": "",
+      "comments_count": 4,
+      "bot_comments_ignored": 0,
+      "text": "proxy_bypass_registry uses unanchored re.match (Windows proxy bypass)\n\nThis was discussed here multiple times in the past so I'm opening it as a public bug report.\n\nsrc/requests/utils.py, proxy_bypass_registry (main, 2.34.2):\n\nre.match anchors only the start, so ProxyOverride=google.com matches google.com.evil.com and bypasses the proxy for it — an attacker-influenced hostname can escape a proxy meant to inspect traffic.\n\nDiverges from CPython: this is a copy of CPython's old code. CPython now matches with fnmatch (anchored both ends, wildcards preserved). Verified on 3.14:\nfnmatch(\"google.com.evil.com\", \"google.com\") → False (requests returns True)\nfnmatch(\"a.example.net\", \"*.example.net\") → True\n\nFix: use fnmatch(host, test) to match CPython, or minimally anchor: re.match(test + r\"\\Z\", host, re.I).\n\nThanks for the issue, . We're already tracking this work for our next release.\n\nNot blocking — I know this is already tracked for the next release, just leaving a tested reference fix in case it's useful.\n\nOne-line change in proxy_bypass_registry: anchor the converted pattern so a suffix can't escape it:\n\nBehaviour I verified locally (Windows registry path monkeypatched, Python 3.13):\n\noverride host before after\ngoogle.com google.com.evil.com bypassed ❌ proxied ✅\ninternal internal bypassed bypassed ✅\n*.corp a.corp.evil.com bypassed ❌ proxied ✅\n*.corp a.corp bypassed bypassed ✅\n10.0.0.1 10.0.0.1x bypassed ❌ proxied ✅\n\nExisting exact and wildcard entries keep working because fnmatch.translate already emits \\Z for them; only the plain-entry branch needs the extra anchor.\n\nBranch: (e825f8e7 fix + eb5f5e45 regression tests added to the test_should_bypass_proxies_win_registry parametrize block, 5 cases). Happy to close this if the internal patch differs.\n\nI prepared a focused fix for the unanchored Windows ProxyOverride match. Exact entries still match and wildcard entries remain supported, while suffix hosts such as google.com.evil.com no longer bypass the proxy for google.com. Added exact-host and wildcard regression cases; the Windows registry-path tests pass locally (16 passed).\\n\\nBranch: 6bfa9105\\n\\nI understand this is already tracked for a future release. GitHub does not allow me to open an upstream PR, so I'm sharing the tested branch in case it is useful to review or pull in.\n\nI have a tested fix for this ready, but GitHub is currently refusing to let this account open a pull request against psf/requests (CreatePullRequest permission denied), so posting the patch here for a maintainer to apply or to let me open.\n\nbranch: januththedev/requests:fix/proxy-override-anchor\ncommit: 7b68766\n\nThe change\n\nsrc/requests/utils.py:\n\nre.fullmatch is the smallest change that makes the intent explicit, and it matches what the no_proxy path already does — test_should_bypass_proxies in tests/test_utils.py already covers \"does not greedily match domains that merely endswith the no_proxy entry. See CPython bpo-39057\", so the registry path was the one left on the old behaviour.\n\nThe <local> branch above returns before reaching the pattern match, so it is unaffected.\n\nTests\n\nFour cases added to the existing test_should_bypass_proxies_win_registry table — two that fail before the change, and two controls that already passed:\n\nURL ProxyOverride Expected\nexample.com False (was True)\nexample.com False (control, unchanged)\n*.example.com True (control: globs still work)\n*.example.com False (was True)\n\nBefore: 2 failed, 14 passed.\nAfter: 16 passed.\npytest tests/test_utils.py → 232 passed, 1 skipped.\nruff check clean on both files.\n\nThe new cases inherit the existing skipif(os.name != \"nt\") guard, since proxy_bypass_registry only exists on win32.",
+      "code": "if re.match(test, host, re.I):   # start-anchored only\n    return True\n- if re.match(test, host, re.I):\n+ if re.match(test + r\"\\Z\", host, re.I):\ntest = test.replace(\".\", r\"\\.\")  # mask dots\n             test = test.replace(\"*\", r\".*\")  # change glob sequence\n             test = test.replace(\"?\", r\".\")  # change glob char\n-            if re.match(test, host, re.I):\n+            # The whole host must match. re.match only anchors the start, so\n+            # \"example.com\" would also bypass the proxy for \"example.com.evil.net\".\n+            if re.fullmatch(test, host, re.I):\n                 return True\n         return False",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 678,
+        "sentences": 42,
+        "pos": {
+          "NOUN": 137,
+          "PUNCT": 123,
+          "VERB": 95,
+          "ADJ": 51,
+          "DET": 45,
+          "PROPN": 41,
+          "ADP": 33,
+          "ADV": 30,
+          "PRON": 29,
+          "AUX": 20,
+          "NUM": 18,
+          "CCONJ": 15,
+          "PART": 14,
+          "SYM": 11,
+          "X": 10,
+          "SCONJ": 6
+        },
+        "lemmas": {
+          "noun": {
+            "request": 6,
+            "test": 6,
+            "case": 6,
+            "proxy": 5,
+            "anchor": 5,
+            "entry": 5,
+            "host": 4,
+            "fix": 4,
+            "change": 4,
+            "path": 4,
+            "branch": 4,
+            "release": 3,
+            "registry": 3,
+            "control": 3,
+            "bypass": 2,
+            "wildcard": 2,
+            "pattern": 2,
+            "behaviour": 2,
+            "regression": 2,
+            "patch": 2,
+            "match": 2,
+            "time": 1,
+            "past": 1,
+            "bug": 1,
+            "report": 1,
+            "start": 1,
+            "attacker": 1,
+            "hostname": 1,
+            "traffic": 1,
+            "diverge": 1,
+            "copy": 1,
+            "code": 1,
+            "fnmatch": 1,
+            "end": 1,
+            "thank": 1,
+            "issue": 1,
+            "work": 1,
+            "reference": 1,
+            "line": 1,
+            "suffix": 1,
+            "override": 1,
+            "parametrize": 1,
+            "block": 1,
+            "account": 1,
+            "psf": 1,
+            "permission": 1,
+            "maintainer": 1,
+            "januththedev": 1,
+            "src": 1,
+            "domain": 1,
+            "return": 1,
+            "table": 1,
+            "glob": 1,
+            "check": 1,
+            "file": 1,
+            "guard": 1
+          },
+          "adjective": {
+            "true": 5,
+            "internal": 3,
+            "exact": 3,
+            "old": 2,
+            "false": 2,
+            "useful": 2,
+            "wildcard": 2,
+            "tested": 2,
+            "multiple": 1,
+            "public": 1,
+            "main": 1,
+            "converted": 1,
+            "plain": 1,
+            "extra": 1,
+            "happy": 1,
+            "focused": 1,
+            "suffix": 1,
+            "future": 1,
+            "upstream": 1,
+            "ready": 1,
+            "pull": 1,
+            "override": 1,
+            "small": 1,
+            "intent": 1,
+            "explicit": 1,
+            "local": 1,
+            "unaffected": 1,
+            "unchanged": 1,
+            "pyt": 1,
+            "clean": 1,
+            "new": 1
+          },
+          "verb": {
+            "bypass": 8,
+            "match": 6,
+            "pass": 5,
+            "open": 4,
+            "exist": 4,
+            "track": 3,
+            "proxie": 3,
+            "add": 3,
+            "use": 2,
+            "unanchore": 2,
+            "escape": 2,
+            "verify": 2,
+            "leave": 2,
+            "work": 2,
+            "let": 2,
+            "fail": 2,
+            "discuss": 1,
+            "influence": 1,
+            "mean": 1,
+            "inspect": 1,
+            "anchor": 1,
+            "preserve": 1,
+            "return": 1,
+            "block": 1,
+            "know": 1,
+            "test": 1,
+            "monkeypatche": 1,
+            "emit": 1,
+            "need": 1,
+            "fix": 1,
+            "close": 1,
+            "differ": 1,
+            "prepare": 1,
+            "remain": 1,
+            "support": 1,
+            "understand": 1,
+            "allow": 1,
+            "share": 1,
+            "review": 1,
+            "pull": 1,
+            "refuse": 1,
+            "deny": 1,
+            "post": 1,
+            "apply": 1,
+            "commit": 1,
+            "make": 1,
+            "cover": 1,
+            "endswith": 1,
+            "reach": 1,
+            "expect": 1,
+            "skip": 1,
+            "inherit": 1
+          }
+        },
+        "noun_phrases": {
+          "src request": 2,
+          "windows proxy bypass": 1,
+          "public bug report": 1,
+          "attacker influenced hostname": 1,
+          "old code": 1,
+          "minimally anchor": 1,
+          "tested reference fix": 1,
+          "line change": 1,
+          "converted pattern": 1,
+          "windows registry path": 1,
+          "override host": 1,
+          "proxied internal internal bypassed bypass": 1,
+          "existing exact wildcard entry": 1,
+          "plain entry branch": 1,
+          "extra anchor": 1,
+          "parametrize block": 1,
+          "internal patch": 1,
+          "focused fix": 1,
+          "unanchored windows match": 1,
+          "exact entry": 1,
+          "wildcard entry": 1,
+          "suffix host": 1,
+          "added exact host wildcard regression case": 1,
+          "windows registry path test": 1,
+          "future release": 1,
+          "tested branch": 1,
+          "tested fix": 1,
+          "pull request": 1,
+          "psf request": 1,
+          "smallest change": 1,
+          "registry path": 1,
+          "old behaviour": 1,
+          "pattern match": 1,
+          "existing table": 1,
+          "false control": 1,
+          "pytest test": 1,
+          "ruff check": 1,
+          "new case": 1
+        },
+        "entities": [
+          {
+            "text": "Windows",
+            "label": "NORP",
+            "count": 3
+          },
+          {
+            "text": "CPython",
+            "label": "ORG",
+            "count": 3
+          },
+          {
+            "text": "False",
+            "label": "PERSON",
+            "count": 3
+          },
+          {
+            "text": "GitHub",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "Windows ProxyOverride",
+            "label": "NORP",
+            "count": 1
+          },
+          {
+            "text": "ProxyOverride",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Windows",
+          "category": "platform",
+          "count": 4
+        },
+        {
+          "name": "GitHub",
+          "category": "tool",
+          "count": 2
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "yes",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 7
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.0786,
+        "sentences": 48,
+        "positive_sentences": 14,
+        "negative_sentences": 4,
+        "neutral_sentences": 30
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#7627",
+      "number": 7627,
+      "title": "Docstring examples in `from_key_val_list` show the pre-3.12 OrderedDict repr",
+      "url": "https://github.com/psf/requests/issues/7627",
+      "author": "pactender",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-09-17T17:40:45Z",
+      "updated_at": "2026-09-26T11:08:37Z",
+      "closed_at": "",
+      "comments_count": 5,
+      "bot_comments_ignored": 0,
+      "text": "Docstring examples in from_key_val_list show the pre-3.12 OrderedDict repr\n\nsrc/requests/utils.py's from_key_val_list docstring shows:\n\nfrom_key_val_list([('key', 'val')])\nOrderedDict([('key', 'val')])\n\nSince Python 3.12, collections.OrderedDict.__repr__ uses the regular dict form (cpython gh-101446), so on any currently supported Python this actually prints:\n\nOrderedDict({'key': 'val'})\n\nReproducer (Python 3.13.5, requests 2.34.2):\n\nThe ValueError example in the same docstring is still accurate. Both stale occurrences are on lines 351 and 357, and a grep of the rest of the package found no others.\n\nI have a two-line fix ready on a fork and would be glad to open a pull request if that's welcome. (The compare page says PRs are limited to collaborators, hence this issue.)\n\nHi! I'd like to work on this issue and submit a PR for the docstring update. Is it okay if I take this up?\n\nOpened a PR that updates those two doctest lines to the 3.12+ OrderedDict repr.\n\nGot a two-line docstring fix up for this — PR incoming.\n\nCorrection: I pushed a two-line fix on my fork (TastyHeadphones:fix/from-key-val-list-ordereddict-repr) but this repo does not allow me to open the PR. Happy for a maintainer or collaborator to pull that branch, or for anyone with access to open it.\n\nBranch is ready but this repo blocks CreatePullRequest for non-collaborators:\n\nHappy for a maintainer to open it from that, or grant access and I'll file the PR.",
+      "code": ">>> from requests.utils import from_key_val_list\n>>> from_key_val_list([('key', 'val')])\nOrderedDict({'key': 'val'})\n>>> from_key_val_list({'key': 'val'})\nOrderedDict({'key': 'val'})",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 309,
+        "sentences": 21,
+        "pos": {
+          "PUNCT": 63,
+          "NOUN": 61,
+          "DET": 30,
+          "VERB": 27,
+          "ADP": 22,
+          "ADJ": 22,
+          "PRON": 18,
+          "PROPN": 12,
+          "NUM": 12,
+          "AUX": 11,
+          "CCONJ": 10,
+          "PART": 8,
+          "SCONJ": 4,
+          "ADV": 4,
+          "SYM": 3,
+          "INTJ": 2
+        },
+        "lemmas": {
+          "noun": {
+            "line": 5,
+            "fix": 4,
+            "docstring": 3,
+            "collaborator": 3,
+            "example": 2,
+            "request": 2,
+            "fork": 2,
+            "issue": 2,
+            "repo": 2,
+            "maintainer": 2,
+            "access": 2,
+            "src": 1,
+            "show": 1,
+            "collection": 1,
+            "form": 1,
+            "cpython": 1,
+            "occurrence": 1,
+            "grep": 1,
+            "rest": 1,
+            "package": 1,
+            "compare": 1,
+            "page": 1,
+            "update": 1,
+            "repr": 1,
+            "incoming": 1,
+            "key": 1,
+            "list": 1,
+            "branch": 1,
+            "non": 1
+          },
+          "adjective": {
+            "val": 3,
+            "repr": 2,
+            "ready": 2,
+            "happy": 2,
+            "regular": 1,
+            "dict": 1,
+            "accurate": 1,
+            "stale": 1,
+            "glad": 1,
+            "pull": 1,
+            "welcome": 1,
+            "doctest": 1,
+            "ordereddict": 1
+          },
+          "verb": {
+            "open": 5,
+            "docstre": 2,
+            "use": 1,
+            "support": 1,
+            "print": 1,
+            "request": 1,
+            "find": 1,
+            "say": 1,
+            "limit": 1,
+            "like": 1,
+            "work": 1,
+            "submit": 1,
+            "update": 1,
+            "get": 1,
+            "push": 1,
+            "allow": 1,
+            "pull": 1,
+            "block": 1,
+            "grant": 1,
+            "file": 1
+          }
+        },
+        "noun_phrases": {
+          "line fix": 2,
+          "src request": 1,
+          "docstring show": 1,
+          "regular dict form": 1,
+          "currently supported python": 1,
+          "stale occurrence": 1,
+          "pull request": 1,
+          "compare page": 1,
+          "docstring update": 1,
+          "doctest line": 1,
+          "line docstring fix": 1
+        },
+        "entities": [
+          {
+            "text": "ValueError",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "TastyHeadphones",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 3
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "yes",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "docstring": 3
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1213,
+        "sentences": 20,
+        "positive_sentences": 6,
+        "negative_sentences": 2,
+        "neutral_sentences": 12
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#7624",
+      "number": 7624,
+      "title": "CSOAI — Requests AI governance HTTP",
+      "url": "https://github.com/psf/requests/issues/7624",
+      "author": "CSOAI-ORG",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-15T03:47:20Z",
+      "updated_at": "2026-10-03T14:31:00Z",
+      "closed_at": "2026-09-15T04:21:54Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "CSOAI — Requests AI governance HTTP\n\n22 axes pip: gspc-harness redacted@example.com",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 14,
+        "sentences": 3,
+        "pos": {
+          "PROPN": 5,
+          "NOUN": 4,
+          "PUNCT": 3,
+          "NUM": 1,
+          "X": 1
+        },
+        "lemmas": {
+          "noun": {
+            "governance": 1,
+            "axis": 1,
+            "gspc": 1,
+            "harness": 1
+          },
+          "adjective": {},
+          "verb": {}
+        },
+        "noun_phrases": {
+          "requests governance": 1
+        },
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 2
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#7623",
+      "number": 7623,
+      "title": "tok perm test - close",
+      "url": "https://github.com/psf/requests/issues/7623",
+      "author": "project-afterlife",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-12T14:58:18Z",
+      "updated_at": "2026-09-12T14:58:24Z",
+      "closed_at": "2026-09-12T14:58:24Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "tok perm test - close\n\nx",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 6,
+        "sentences": 2,
+        "pos": {
+          "NOUN": 3,
+          "ADJ": 2,
+          "PUNCT": 1
+        },
+        "lemmas": {
+          "noun": {
+            "tok": 1,
+            "test": 1
+          },
+          "adjective": {
+            "perm": 1,
+            "close": 1
+          },
+          "verb": {}
+        },
+        "noun_phrases": {},
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 1
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 2
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#7609",
+      "number": 7609,
+      "title": "Update lock-issues.yml to latest dependencies",
+      "url": "https://github.com/psf/requests/pull/7609",
+      "author": "nateprewitt",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-25T00:34:49Z",
+      "updated_at": "2026-08-25T00:45:59Z",
+      "closed_at": "2026-08-25T00:45:57Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Update lock-issues.yml to latest dependencies\n\nGitHub has been rolling out longer tokens and it seems like we finally got them recently. The lock issues action is failing because it has unnecessary validation on the token length that's been removed in 6.0.2 (see dessant/lock-threads#55).",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 52,
+        "sentences": 3,
+        "pos": {
+          "NOUN": 10,
+          "VERB": 8,
+          "AUX": 5,
+          "PRON": 5,
+          "PUNCT": 5,
+          "ADP": 4,
+          "ADJ": 4,
+          "PROPN": 3,
+          "SCONJ": 2,
+          "ADV": 2,
+          "DET": 2,
+          "CCONJ": 1,
+          "SYM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "lock": 2,
+            "dependency": 1,
+            "token": 1,
+            "issue": 1,
+            "action": 1,
+            "validation": 1,
+            "length": 1,
+            "dessant": 1
+          },
+          "adjective": {
+            "late": 1,
+            "long": 1,
+            "unnecessary": 1,
+            "token": 1
+          },
+          "verb": {
+            "update": 1,
+            "roll": 1,
+            "get": 1,
+            "fail": 1,
+            "remove": 1
+          }
+        },
+        "noun_phrases": {
+          "latest dependency": 1,
+          "longer token": 1,
+          "lock issues action": 1,
+          "unnecessary validation": 1,
+          "token length": 1,
+          "dessant lock": 1
+        },
+        "entities": [
+          {
+            "text": "GitHub",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "GitHub",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "possible"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {
+              "dependency": 1
+            }
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0498,
+        "sentences": 3,
+        "positive_sentences": 1,
+        "negative_sentences": 1,
+        "neutral_sentences": 1
+      }
+    },
+    {
+      "type": "commit",
+      "id": "5460f46",
+      "number": null,
+      "title": "Update lock-issues.yml to latest dependencies (#7609)",
+      "url": "https://github.com/psf/requests/commit/5460f467b02e49471c0fd6cfc9ca0adab6351f98",
+      "author": "nateprewitt",
+      "state": "",
+      "labels": [],
+      "created_at": "2026-08-25T00:45:57Z",
+      "updated_at": "2026-08-25T00:45:57Z",
+      "closed_at": "",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Update lock-issues.yml to latest dependencies (#7609)",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 9,
+        "sentences": 1,
+        "pos": {
+          "PUNCT": 2,
+          "VERB": 1,
+          "PROPN": 1,
+          "ADP": 1,
+          "ADJ": 1,
+          "NOUN": 1,
+          "SYM": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "dependency": 1
+          },
+          "adjective": {
+            "late": 1
+          },
+          "verb": {
+            "update": 1
+          }
+        },
+        "noun_phrases": {
+          "latest dependency": 1
+        },
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "possible"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {
+              "dependency": 1
+            }
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 1,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 1
+      }
+    }
+  ]
+}

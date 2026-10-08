@@ -1,0 +1,777 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "bug",
+    "requested": 20,
+    "collected": 20,
+    "collected_at": "2026-10-07T23:46:16+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 11,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:06+00:00"
+  },
+  "totals": {
+    "documents": 9,
+    "debt_documents": 1,
+    "tokens": 4123,
+    "sentences": 269,
+    "explicit_debt_documents": 1,
+    "classified_documents": 1,
+    "first_date": "2026-10-06",
+    "last_date": "2026-10-07"
+  },
+  "by_type": {
+    "issue": {
+      "documents": 9,
+      "debt_documents": 1
+    }
+  },
+  "classification": {
+    "code": {
+      "yes": 1,
+      "possible": 1,
+      "no": 7
+    },
+    "architecture": {
+      "yes": 0,
+      "possible": 0,
+      "no": 9
+    },
+    "tests": {
+      "yes": 0,
+      "possible": 0,
+      "no": 9
+    },
+    "documentation": {
+      "yes": 0,
+      "possible": 0,
+      "no": 9
+    },
+    "dependencies": {
+      "yes": 0,
+      "possible": 0,
+      "no": 9
+    }
+  },
+  "resolution": {
+    "with_debt": {
+      "documents": 1,
+      "closed": 1,
+      "median_days_to_close": 1.0
+    },
+    "without_debt": {
+      "documents": 8,
+      "closed": 3,
+      "median_days_to_close": 0.4
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "documents": 9,
+      "positive": 1,
+      "neutral": 8,
+      "negative": 0,
+      "mean_compound": 0.0067
+    },
+    "by_category": {
+      "code": {
+        "documents": 1,
+        "positive": 0,
+        "neutral": 1,
+        "negative": 0,
+        "mean_compound": 0.0396
+      },
+      "architecture": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "tests": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "documentation": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "dependencies": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      }
+    }
+  },
+  "frequencies": {
+    "terms": {
+      "noun": [
+        {
+          "name": "session",
+          "count": 30,
+          "documents": 5
+        },
+        {
+          "name": "model",
+          "count": 25,
+          "documents": 4
+        },
+        {
+          "name": "provider",
+          "count": 20,
+          "documents": 3
+        },
+        {
+          "name": "tool",
+          "count": 20,
+          "documents": 4
+        },
+        {
+          "name": "entry",
+          "count": 17,
+          "documents": 3
+        },
+        {
+          "name": "picker",
+          "count": 17,
+          "documents": 2
+        },
+        {
+          "name": "host",
+          "count": 15,
+          "documents": 4
+        },
+        {
+          "name": "chat",
+          "count": 14,
+          "documents": 5
+        },
+        {
+          "name": "log",
+          "count": 14,
+          "documents": 5
+        },
+        {
+          "name": "widget",
+          "count": 14,
+          "documents": 1
+        },
+        {
+          "name": "folder",
+          "count": 13,
+          "documents": 4
+        },
+        {
+          "name": "output",
+          "count": 13,
+          "documents": 3
+        },
+        {
+          "name": "preview",
+          "count": 12,
+          "documents": 2
+        },
+        {
+          "name": "result",
+          "count": 12,
+          "documents": 2
+        },
+        {
+          "name": "line",
+          "count": 10,
+          "documents": 2
+        },
+        {
+          "name": "request",
+          "count": 10,
+          "documents": 4
+        },
+        {
+          "name": "shell",
+          "count": 10,
+          "documents": 2
+        },
+        {
+          "name": "window",
+          "count": 10,
+          "documents": 4
+        },
+        {
+          "name": "agent",
+          "count": 9,
+          "documents": 4
+        },
+        {
+          "name": "completion",
+          "count": 9,
+          "documents": 3
+        }
+      ],
+      "adjective": [
+        {
+          "name": "local",
+          "count": 8,
+          "documents": 3
+        },
+        {
+          "name": "new",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "actual",
+          "count": 6,
+          "documents": 6
+        },
+        {
+          "name": "affected",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "final",
+          "count": 6,
+          "documents": 2
+        },
+        {
+          "name": "undefined",
+          "count": 6,
+          "documents": 2
+        },
+        {
+          "name": "exact",
+          "count": 5,
+          "documents": 3
+        },
+        {
+          "name": "structured",
+          "count": 5,
+          "documents": 1
+        },
+        {
+          "name": "open",
+          "count": 4,
+          "documents": 3
+        },
+        {
+          "name": "successful",
+          "count": 4,
+          "documents": 2
+        },
+        {
+          "name": "late",
+          "count": 3,
+          "documents": 3
+        },
+        {
+          "name": "non",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "normal",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "original",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "provisional",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "raw",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "recent",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "separate",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "specific",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "true",
+          "count": 3,
+          "documents": 1
+        }
+      ],
+      "verb": [
+        {
+          "name": "open",
+          "count": 12,
+          "documents": 6
+        },
+        {
+          "name": "capture",
+          "count": 9,
+          "documents": 4
+        },
+        {
+          "name": "expect",
+          "count": 8,
+          "documents": 7
+        },
+        {
+          "name": "return",
+          "count": 8,
+          "documents": 3
+        },
+        {
+          "name": "select",
+          "count": 8,
+          "documents": 4
+        },
+        {
+          "name": "stop",
+          "count": 8,
+          "documents": 2
+        },
+        {
+          "name": "contain",
+          "count": 7,
+          "documents": 5
+        },
+        {
+          "name": "pass",
+          "count": 7,
+          "documents": 5
+        },
+        {
+          "name": "reproduce",
+          "count": 7,
+          "documents": 5
+        },
+        {
+          "name": "run",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "build",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "confirm",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "create",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "fail",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "keep",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "miss",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "show",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "start",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "add",
+          "count": 5,
+          "documents": 2
+        },
+        {
+          "name": "choose",
+          "count": 5,
+          "documents": 1
+        }
+      ]
+    },
+    "noun_phrases": [
+      {
+        "name": "agent host",
+        "count": 6,
+        "documents": 5
+      },
+      {
+        "name": "agents window",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "background shells preview",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "inline terminal",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "model picker",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "agent edit ask mode",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "byok model",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "claude sonnet",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "code version",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "copilot agent host",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "copilot chat extension version",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "final response",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "provider dispatch",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "tooltip detail",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "agent host byok bridge",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "agent host copilot chat",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "agent host copilotcli",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "character fragment",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "chosen folder",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "copilot chat",
+        "count": 2,
+        "documents": 2
+      }
+    ],
+    "technologies": [
+      {
+        "name": "Copilot",
+        "category": "tool",
+        "count": 25,
+        "documents": 7
+      },
+      {
+        "name": "Git",
+        "category": "tool",
+        "count": 12,
+        "documents": 1
+      },
+      {
+        "name": "VS Code",
+        "category": "tool",
+        "count": 10,
+        "documents": 5
+      },
+      {
+        "name": "Windows",
+        "category": "platform",
+        "count": 6,
+        "documents": 3
+      },
+      {
+        "name": "Claude",
+        "category": "tool",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "GitHub",
+        "category": "tool",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "Python",
+        "category": "language",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "macOS",
+        "category": "platform",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "entities": [
+      {
+        "name": "SDK [ORG]",
+        "text": "SDK",
+        "label": "ORG",
+        "count": 10,
+        "documents": 2
+      },
+      {
+        "name": "Git [PERSON]",
+        "text": "Git",
+        "label": "PERSON",
+        "count": 9,
+        "documents": 1
+      },
+      {
+        "name": "Copilot [ORG]",
+        "text": "Copilot",
+        "label": "ORG",
+        "count": 7,
+        "documents": 5
+      },
+      {
+        "name": "UTC [ORG]",
+        "text": "UTC",
+        "label": "ORG",
+        "count": 6,
+        "documents": 2
+      },
+      {
+        "name": "UI [ORG]",
+        "text": "UI",
+        "label": "ORG",
+        "count": 5,
+        "documents": 2
+      },
+      {
+        "name": "Background Shells [FAC]",
+        "text": "Background Shells",
+        "label": "FAC",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "metadata [PERSON]",
+        "text": "metadata",
+        "label": "PERSON",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "Copilot Chat Extension Version [ORG]",
+        "text": "Copilot Chat Extension Version",
+        "label": "ORG",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "DevTools [ORG]",
+        "text": "DevTools",
+        "label": "ORG",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Harald [PERSON]",
+        "text": "Harald",
+        "label": "PERSON",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "JSON [PERSON]",
+        "text": "JSON",
+        "label": "PERSON",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Local [ORG]",
+        "text": "Local",
+        "label": "ORG",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "MCP Apps [PERSON]",
+        "text": "MCP Apps",
+        "label": "PERSON",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Metadata [PERSON]",
+        "text": "Metadata",
+        "label": "PERSON",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "VS Code [PRODUCT]",
+        "text": "VS Code",
+        "label": "PRODUCT",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "AHP [ORG]",
+        "text": "AHP",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "AI Assisted Bug Report [ORG]",
+        "text": "AI Assisted Bug Report",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Background Shells [GPE]",
+        "text": "Background Shells",
+        "label": "GPE",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Background Shells [PERSON]",
+        "text": "Background Shells",
+        "label": "PERSON",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Bug] Copilot BYOK: user-configured [WORK_OF_ART]",
+        "text": "Bug] Copilot BYOK: user-configured",
+        "label": "WORK_OF_ART",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "regex_patterns": [
+      {
+        "name": "workaround",
+        "category": "general",
+        "count": 2,
+        "documents": 1
+      }
+    ],
+    "debt_categories": [
+      {
+        "name": "code",
+        "yes": 1,
+        "possible": 1,
+        "no": 7
+      },
+      {
+        "name": "architecture",
+        "yes": 0,
+        "possible": 0,
+        "no": 9
+      },
+      {
+        "name": "tests",
+        "yes": 0,
+        "possible": 0,
+        "no": 9
+      },
+      {
+        "name": "documentation",
+        "yes": 0,
+        "possible": 0,
+        "no": 9
+      },
+      {
+        "name": "dependencies",
+        "yes": 0,
+        "possible": 0,
+        "no": 9
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "month": "2026-10",
+      "documents": 9,
+      "debt_documents": 1,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0067
+    }
+  ]
+}

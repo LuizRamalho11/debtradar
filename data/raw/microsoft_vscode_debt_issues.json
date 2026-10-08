@@ -1,0 +1,668 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "debt",
+    "requested": 30,
+    "collected": 30,
+    "collected_at": "2026-10-07T23:36:02+00:00",
+    "comments_complete": true,
+    "warning": ""
+  },
+  "issues": [
+    {
+      "number": 340001,
+      "title": "Remove the AI Usage Statistics widget",
+      "body": "<!-- ⚠️⚠️ Do Not Delete This! feature_request_template ⚠️⚠️ -->\n\n## Proposal\n\nRemove the **AI Usage Statistics** status bar widget and its associated hover UI.\n\n## Rationale\n\nThe widget presents an “AI vs Typing Average” intended to distinguish AI-generated code from user-written code. With current models, the metrics it tracks are no longer meaningfull. Also, the Copilot harness modifies files directly, so the widget cannot reliably attribute those changes to the user or AI. As a result, the displayed ratio cannot provide a meaningful picture of how much code each contributes.\n\nRather than keeping a potentially misleading metric longer term, we should remove this widget.\n",
+      "author": "hediet",
+      "state": "open",
+      "labels": [
+        "feature-request",
+        "debt"
+      ],
+      "created_at": "2026-10-06T08:31:18Z",
+      "updated_at": "2026-10-06T08:32:54Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/340001",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 337178,
+      "title": "Remove automation client-side support",
+      "body": "There's no need to run automations on vscode itself anymore now that AHP support is implemented.\n\nAHP is the default as well and has been for some time, so users client-side automations should have been migrated by now.",
+      "author": "benvillalobos",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "automations"
+      ],
+      "created_at": "2026-09-21T22:48:29Z",
+      "updated_at": "2026-09-25T23:45:09Z",
+      "closed_at": "2026-09-25T23:45:09Z",
+      "url": "https://github.com/microsoft/vscode/issues/337178",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "ulugbekna",
+          "body": "I'm working on this and plan to send a PR today ",
+          "created_at": "2026-09-22T13:17:37Z",
+          "url": "https://github.com/microsoft/vscode/issues/337178#issuecomment-5777236721"
+        },
+        {
+          "author": "dmitrivMS",
+          "body": "Fixed by https://github.com/microsoft/vscode/pull/337334",
+          "created_at": "2026-09-23T02:23:36Z",
+          "url": "https://github.com/microsoft/vscode/issues/337178#issuecomment-5787857974"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 335603,
+      "title": "Add consistency-by-default guidance for UI pattern decisions",
+      "body": "> [!NOTE]\n> Planning follow-up. This proposes a lightweight authoring and review principle, not a requirement to copy existing UI, a broad migration, or an automatic lint rule.\n\n## Problem\n\nVS Code is built by many teams across old and new UI generations. When adding or changing a visual or interaction pattern, two opposite failure modes are possible:\n\n1. **Unnecessary invention:** a new local treatment is slightly different from an equivalent existing experience. Each difference adds customer learning load and creates another implementation to maintain.\n2. **Blind reuse:** an existing implementation is treated as authoritative even when it is legacy, accidental, inaccessible, inconsistent with current design direction, or simply wrong for the new user need.\n\nCurrent guidance says to reuse components and follow shared design ramps, but it does not provide a repeatable way to evaluate prior art, distinguish stable conventions from historical accidents, or explain when divergence is justified.\n\nRecent work on #335583 illustrates both sides. Reusing the existing GitHub hover components avoided a new card language, but a broader comparison still found inherited choices that should not be propagated unchanged: an outdated title hierarchy, duplicate boundary padding, an unnecessary divider, and submenu chrome that differed from the standard popup containing it.\n\n## Proposed principle\n\n> **Consistency by default, intentional divergence.** Before introducing or changing a visual or interaction pattern, identify the closest analogous experiences and canonical guidance. Reuse shared semantics, behavior, and component contracts when their roles match, because unnecessary variation increases customer learning load. Treat existing implementations as evidence, not authority: do not preserve known debt, deprecated patterns, accessibility problems, or accidental styling. Diverge when a clear user need, accessibility requirement, simplification, or current design direction calls for it; make the reason explicit and decide whether the shared owner should evolve.\n\nThe goal is familiarity without stagnation: like things should behave alike unless a difference does useful work.\n\n## Suggested lightweight workflow\n\nFor UI work, proportionate to the size and risk of the change:\n\n1. **Name the role and user task.** Compare surfaces that serve the same purpose, not merely elements that look similar.\n2. **Inspect representative prior art and canonical guidance.** Prefer shared primitives, current design guidance, and actively maintained/recently accepted surfaces over an isolated historical example.\n3. **Separate invariants from accidents.** Identify which semantics, interactions, accessibility behavior, ownership boundaries, and visual roles should stay consistent; do not copy incidental DOM or CSS.\n4. **Classify the decision.** State what is reused, adapted, or new. For a small change this can be implicit in the diff or review description; larger explorations may benefit from a short provenance table.\n5. **Justify divergence.** A new treatment should answer an unmet user need, remove complexity, improve accessibility, or advance an accepted design direction—not exist only because it was easy to implement locally.\n6. **Choose the right owner.** If the improved behavior should apply to equivalent surfaces, evolve the shared component or contract when there is demonstrated production need. Otherwise keep a clearly scoped local exception.\n7. **Validate equivalent scenarios.** Use production components and focused fixtures where useful; check the relevant density, theme, keyboard, and accessibility states rather than validating only the new happy path.\n\n## Resolving conflicting prior art\n\nExisting code will often disagree. Use this evidence order as a review heuristic, not a mechanical ranking:\n\n1. Accepted canonical design/accessibility guidance and explicit component contracts.\n2. Shared primitives and actively maintained, recently reviewed comparable surfaces.\n3. Local conventions in the feature area, when they do not conflict with the above.\n4. Isolated legacy implementations, which are useful evidence but not precedent by default.\n\nWhen no direction is clearly established, preserve behavior for narrow maintenance work and surface the uncertainty. For a genuinely new pattern, seek product/design input rather than selecting whichever old example is easiest to copy.\n\n## Guardrails\n\n- Do not require exhaustive repository archaeology or a fixed number of examples.\n- Do not make “most common” or “oldest” synonymous with correct.\n- Do not force reuse, inheritance, or a shared abstraction when roles differ.\n- Finding a related component does not imply it must be extended; a documented no-reuse conclusion is valid.\n- Do not block experiments. Treat them as explicit experiments, keep them scoped, and use what is learned to decide whether a pattern should become shared.\n- Do not require competitor research for routine UI changes.\n- Do not duplicate mutable component inventories or token tables across instructions and skills.\n- Keep automatic enforcement out of scope until repeated accepted work reveals a precise mechanically checkable rule.\n\n## Guidance placement\n\nCoordinate with #335370's source-of-truth model:\n\n- Add a short stable principle/router to the auto-applied design instruction.\n- Keep the detailed workflow, examples, and feedback language in the canonical design-philosophy skill.\n- Let layout, theming, accessibility, and component-fixture skills retain their domain-specific techniques rather than repeating this full checklist.\n\nThis is broader than #335346's candidate **one relationship, one owner** composition heuristic. That guidance is one example of applying the principle; this issue covers visual and interaction pattern decisions generally.\n\n## Acceptance criteria\n\n- Canonical UI guidance states **consistency by default, intentional divergence** or an equivalent high-level principle.\n- Guidance explicitly says existing code is evidence, not authority, and warns against copying legacy or accidental patterns.\n- A lightweight, proportional prior-art workflow covers reuse, adaptation, new work, and justified exceptions.\n- Guidance protects accessibility improvements, modernization, simplification, necessary product differences, and experimentation.\n- The workflow discourages unnecessary local variants and customer learning load without requiring forced abstraction.\n- The detailed workflow has one canonical owner and auto-applied instructions remain concise, consistent with #335370.\n\n## Related\n\n- #335354 — predictable UI composition umbrella and guardrails against over-engineering\n- #335346 — candidate UI relationship-ownership guidance and prior-art audit example\n- #335345 — shared composition-token foundation\n- #335370 — instruction/skill source-of-truth and drift reduction\n- #335583 — GitHub reference-hover exploration that motivated the broader guidance\n",
+      "author": "chryw",
+      "state": "open",
+      "labels": [
+        "debt",
+        "modernization"
+      ],
+      "created_at": "2026-09-11T00:27:30Z",
+      "updated_at": "2026-09-11T00:29:22Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/335603",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "chryw",
+          "body": "## Learning context from the #335583 exploration\n\nAdding this note as a handoff for a future session. The GitHub reference-hover exploration provided a useful concrete test of the proposed principle.\n\n### Finding prior art was necessary, but not sufficient\n\nThe exploration started by reusing the existing production issue/PR hover components rather than inventing a new card. That was the right first move, but the reused components still carried historical choices that did not hold up in the new composition:\n\n- The standalone hover retained an 18px heading while the nested version used the calmer 13px utility-title role. Equivalent content changed hierarchy depending on whether one reference or a collection happened to exist.\n- A divider inherited from the old card separated title and excerpt even though they formed one summary; removing it reduced chrome without losing meaning.\n- Generic managed-hover padding combined with card-owned section padding, producing a double inset and preventing section boundaries from reaching the popup edge.\n- The nested panel was already an `ActionWidget`, but an older submenu rule overrode the standard popup radius and shadow, making parent and child popup chrome subtly different.\n- A 12px title-to-description gap remained after the divider was removed. Comparing with the current `SessionSummaryHover` pattern showed that the tighter 8px relationship was the established role.\n\nThe lesson is: **do not stop after finding and reusing an existing component.** Check how that component behaves in each host and distinguish its stable contract from inherited or accidental presentation.\n\n### Reuse that did hold up\n\nThe same exercise identified conventions worth reusing directly:\n\n- `fromNow(...)` and the Sessions PR picker's `updated {relative time}` wording for glanceable recency.\n- The standard ActionWidget popup border, outer-radius tier, menu background, and shadow.\n- The 13px semibold utility-title role used by comparable Sessions metadata hovers.\n- Existing ActionList listbox/dialog semantics and ActionBar focus behavior.\n- Existing issue/PR state models, icons, link behavior, and PR branch-pill styling.\n- Existing two-line clamp behavior for bounded workbench summaries.\n\nThis is why “existing code is evidence, not authority” is important: the result reused more of VS Code's shared language after selectively correcting the old component.\n\n### Customer-learning-load example\n\nA single reference chip and an item inside a collection initially risked becoming two different experiences. The final direction used:\n\n- the same identity, lifecycle, time, title, description, links, and branch information;\n- the same title hierarchy and interaction semantics;\n- different density only where the hosting composition required it.\n\nA useful review question is:\n\n> If the same user concept appears through two paths, what difference does the user need to learn, and what useful job does that difference perform?\n\nIf the answer is “none,” the difference is probably drift.\n\n### Practical workflow that exposed the issues\n\nA proportional pattern check can be concrete and lightweight:\n\n1. Search for the existing component and all meaningful call sites, not just one screenshot.\n2. Inspect one or more current analogous surfaces serving the same user task.\n3. Compare semantic content, hierarchy, interaction, accessibility, density, boundary ownership, and popup chrome separately.\n4. Render the actual production component in fixtures; do not copy or recompose it for the fixture.\n5. Exercise real product paths where host composition matters. In this case, both a single chip and a collection were necessary.\n6. Include stress states that reveal hidden assumptions: open/draft/closed/merged/not-planned, very long titles, long Markdown, light/dark, keyboard, and screen reader.\n7. When something looks wrong, inspect computed ownership before applying CSS. The double padding and popup-chrome mismatch were caused by parent/child composition, not by the GitHub content itself.\n\nThis should remain proportional. Routine changes should not require a report, competitor survey, or exhaustive repository search.\n\n### Candidate concise auto-applied instruction\n\nThe detailed workflow belongs in the canonical design-philosophy skill, but the auto-applied instruction could stay close to one stable paragraph:\n\n> **Consistency by default, intentional divergence.** Before introducing or changing a visual or interaction pattern, inspect the closest analogous experiences and canonical guidance. Reuse shared semantics, behavior, and component contracts when their roles match; unnecessary variation increases customer learning load. Treat existing code as evidence, not authority: do not preserve known debt, deprecated patterns, accessibility problems, or accidental styling. Diverge when a clear user need, accessibility requirement, simplification, or current design direction calls for it, and make that reason explicit.\n\nPossible shorter review prompt:\n\n> What is reused, what intentionally differs, and what user need earns the difference?\n\n### Suggested implementation boundaries\n\nTo stay aligned with #335370:\n\n- Put the concise invariant/router in the auto-applied design instruction.\n- Put the workflow, evidence hierarchy, examples, and feedback language in the design-philosophy skill.\n- Let `ux-css-layout`, `ux-theming`, `accessibility`, and `component-fixtures` own their specialized techniques and link back rather than restating the complete workflow.\n- Avoid mutable inventories of “approved components” or “good examples”; those would age quickly and recreate the drift problem.\n\n### Open decisions for the future work\n\n- Should provenance be expected in PR descriptions only when a new pattern or intentional divergence is introduced, rather than for every UI edit?\n- Should code-review guidance include the short prompt above, or would that create another duplicated owner?\n- How should guidance describe “current” prior art without maintaining a brittle allowlist? A likely answer is to prefer canonical guidance, shared primitives, and recently reviewed analogous surfaces while treating isolated legacy examples cautiously.\n- Should experiments use an explicit label or documentation convention, or is a clearly scoped PR description sufficient?\n\nRelated evidence and visuals remain in draft PR #335583 and its linked design report.\n",
+          "created_at": "2026-09-11T00:29:22Z",
+          "url": "https://github.com/microsoft/vscode/issues/335603#issuecomment-5627484428"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 335370,
+      "title": "Reduce drift across Copilot instructions, skills, and design-token sources",
+      "body": "> [!NOTE]\n> Planning follow-up. This issue tracks documentation architecture and generated-reference work; it does not propose changing the current design-token values.\n\n## Problem\n\nVS Code's `.github` instructions and skills intentionally provide different levels of context, but mutable facts are currently copied across several artifacts. Token values, allowed scales, role counts, snap rules, and examples can drift when one copy changes without all of the others.\n\nRecent work in #335346 exposed the maintenance cost: changing the proposed icon-size vocabulary required updates in several documents and still left the auto-applied design-philosophy instruction describing the previous two-size model.\n\nExisting examples show that this is broader than one PR:\n\n- `.github/skills/ux-css-layout/SKILL.md` duplicates most of the detailed design-token tables while calling another file canonical and asking maintainers to keep the copy in sync.\n- `.github/skills/ux-theming/SKILL.md` describes `padding: 8px 12px` as off-scale while the design-token instruction uses it as an on-scale example.\n- The design-token instruction contains both \"use the token variable wherever one exists\" and \"on-scale raw pixels are fine,\" leaving the intended review policy ambiguous.\n- Runtime registrations, stylelint scales, known-variable lists, tests, instructions, and skills each contain overlapping representations of the same token families.\n\n## Desired ownership\n\nUse one source of truth for each kind of information:\n\n| Information | Owner |\n|---|---|\n| Current token IDs, values, families, and concise descriptions | Machine-readable runtime data |\n| Registration, emitted CSS names, validation, and generated references | Derived from the machine-readable data where layering permits |\n| Design values and role-selection rationale | Design-philosophy guidance |\n| Layout and composition techniques | CSS-layout guidance |\n| Color, high-contrast, and focus behavior | Theming guidance |\n| Always-loaded reminders | Short path-scoped instructions that route to the relevant source or skill |\n\nInstructions and skills may repeat stable principles for routing and independent context, but should not manually enumerate mutable token tables or counts. If a complete human-readable token reference is useful, generate it from the machine-readable source and verify it in CI.\n\n## Proposed investigation\n\n1. Inventory duplicated mutable facts across `.github/instructions`, `.github/skills`, runtime registries, validators, tests, and known-variable data.\n2. Decide whether `baseSizes.ts` can be the shared machine-readable source or whether a lower-level manifest is needed for build/runtime layering.\n3. Derive registration, validation scales, known CSS variable names, and generated reference material where practical.\n4. Reduce auto-applied instructions to stable guardrails and routing.\n5. Remove detailed token-table mirrors from skills; retain decision logic and representative examples.\n6. Add focused drift checks for any projections that must remain duplicated.\n7. Clarify whether raw on-scale values are allowed or whether token variables are required.\n\n## Non-goals\n\n- Changing token values as part of the documentation cleanup.\n- Requiring every skill to load every other skill.\n- Eliminating all repetition; compact stable invariants can remain where independent context is important.\n- Adding brittle full-prose snapshot tests.\n\n## Acceptance criteria\n\n- A documented ownership map exists for the affected instructions, skills, and runtime data.\n- Current token IDs and values have one machine-readable source of truth.\n- Exhaustive Markdown tables are removed or generated rather than manually synchronized.\n- Auto-applied instructions do not snapshot mutable counts such as the number of icon-size roles.\n- Known contradictions are resolved.\n- CI detects drift for any generated or intentionally mirrored token data.\n\n## Related\n\n- #335354 - Predictable UI composition umbrella proposal\n- #335346 - Candidate authoring-guidance PR that exposed the drift\n",
+      "author": "chryw",
+      "state": "open",
+      "labels": [
+        "plan-item",
+        "debt"
+      ],
+      "created_at": "2026-09-09T22:56:59Z",
+      "updated_at": "2026-09-09T22:56:59Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/335370",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 335354,
+      "title": "Predictable UI composition: relationship ownership",
+      "body": "> [!NOTE]\n> This issue tracks a shared UI composition and maintainability problem discovered while investigating #331234. It relates to the design-system direction in #334285; the active implementation is limited to the linked PR stack.\n\n## Summary\n\nWhile investigating the tab-spacing report in #331234, we found a more general source of UI drift: one visual relationship can be assembled from several feature-local declarations with no single owner.\n\nFor example, an icon can add its own horizontal margin while its containing button or row also applies a gap or padding. The final distance is produced by multiple rules and is not clear from either declaration by itself. Changing one layer can then silently double or shrink the visible relationship, shift an icon and its replacement spinner differently, or require consumer-specific compensation.\n\nIcon sizing and spacing provide a concrete pilot for clearer layout ownership in shared UI code.\n\nIn #331234, the Search tab feels visually imbalanced, but it is not obvious whether the icon box, tab padding, or surrounding composition should change.\n\n<img width=\"357\" height=\"56\" alt=\"A Search tab whose icon and label appear offset within the available horizontal space\" src=\"https://github.com/user-attachments/assets/d2998de6-2a6d-46d3-8845-d66b70ac7b30\" />\n\nThat ambiguity is the maintenance problem: a visual relationship should have one discoverable owner.\n\n## Visual analysis\n\nThe annotations use blue for control padding or bounds, amber for spacing currently owned by an icon or child, and green for the proposed control or parent-owned relationship.\n\n### 1. Same geometry, clearer owner: editor tabs\n\n#### Current: distributed ownership\n\n![Current editor tab with tab padding plus icon-owned padding producing the label position](https://github.com/user-attachments/assets/f917cc5a-92b8-4aae-ada6-b92c269139a9)\n\nTab padding (6px) + icon pseudo-element (3px + 16px + 3px) = 28px before the label. The icon partly controls where the label begins.\n\n#### Explicit ownership\n\n![Editor tab with the rendered icon owning its box and the tab owning the icon-to-label gap](https://github.com/user-attachments/assets/ed0fe1b6-86de-4212-bdcf-76df17ccc2a0)\n\nTab padding (6px) + rendered-icon box (16px) + control-owned relationship (6px) = the same 28px footprint. The icon owns only its size and fitting.\n\n> **What changes is the ownership, not the rendered geometry.** This is an illustration of the model, not an additional editor-tab migration in the active PR stack.\n\n### 2. Internal composition: shared button\n\n#### Current: icon and control both contribute\n\n<img width=\"320\" alt=\"Current Add workspace button with control padding plus icon-owned leading and trailing margins\" src=\"https://github.com/user-attachments/assets/ead6ca35-1f35-440d-a622-d82090deb057\" />\n\nThe icon's leading margin stacks with button padding, making the left inset larger than the right. Its trailing margin also participates in label spacing.\n\n#### Explicit ownership\n\n<img width=\"320\" alt=\"Add workspace button with unchanged control padding and a control-owned icon-to-label relationship\" src=\"https://github.com/user-attachments/assets/d21f137a-c343-4381-9bd3-008e7255d913\" />\n\nThe icon has no external margin. The control owns its inset and the icon-to-label relationship separately.\n\nThe active `WorkbenchButtonBar` pilot applies this responsibility to a leading slot: an action icon and its replacement spinner use one stable control-owned box and relationship.\n\n### 3. One control across conditional states\n\nA shared contract must remain coherent when the label, leading icon, inline label icons, busy spinner, emphasis, or disabled state changes.\n\n![Button composition states in dark theme](https://github.com/user-attachments/assets/e8838a03-2cab-4d4e-a65a-cd8e09d98669)\n\n<details>\n<summary><strong>Same state matrix in the light theme</strong></summary>\n\n![Button composition states in light theme](https://github.com/user-attachments/assets/4b357b13-36b4-4994-a855-bf495ac87a28)\n\n</details>\n\n### 4. Child margin versus parent relationship\n\nThe Agents Window prompt combines prominent selectors, compact pickers, repository controls, and icon-only actions, making the child/parent boundary visible.\n\n#### Current: child-owned margin\n\n![Current Agents Window prompt with child labels owning six-pixel left margins](https://github.com/user-attachments/assets/05757233-fb8a-4f8b-8ff9-90fe009544e3)\n\nEach highlighted child label supplies its own 6px left margin. The containing control has no explicit icon-to-label relationship.\n\n#### Explicit ownership\n\n![Agents Window prompt with parent controls owning six-pixel gaps and unchanged bounds](https://github.com/user-attachments/assets/aed0bb6a-6df1-4620-805d-0e1306fd84bd)\n\nThe parent control supplies the same 6px separation through `column-gap`; the child margin is zero and the measured control bounds remain unchanged.\n\n> This is a composition validation from the proposal, not an additional Agents Window migration in the active PR stack.\n\n## Proposal: one relationship, one owner\n\n> **Express a visual relationship once, in the lowest component contract that understands all participating elements.**\n\n| Layer | Owns | Does not own |\n|---|---|---|\n| Icon source | Glyph path, SVG, raster pixels, or product-icon-theme lookup | Surrounding layout |\n| Rendered icon | Semantic box, contain-fit, centering, and approved optical correction | Hit target or label separation |\n| Control composition | Internal padding and relationships among icon, label, spinner, and actions | Spacing to neighboring controls |\n| Parent composition | Spacing between controls and neighboring content | A child control's internal relationships |\n\nOwnership is responsibility, not a required CSS mechanism. Depending on the composition, the owner may use `gap`, padding, or a targeted child margin.\n\n> [!IMPORTANT]\n> Optical correction stays inside the rendered icon's fixed geometry. It must not move the label, alter the control's external footprint, or resize the hit target.\n\nThe contract applies consistently to Codicons, product and file icons, SVGs, raster images, and themed icons.\n\n### Signals to re-check the owner\n\nCommon signs that one relationship is distributed across layers include:\n\n- horizontal padding or margin on an icon-generating pseudo-element;\n- a child label margin combined with parent padding or `gap`;\n- negative icon offsets compensating for surrounding geometry;\n- different spacing rules for glyph and image render paths that produce the same control;\n- conditional icon and spinner states that do not reserve the same alignment area.\n\nThese patterns are not automatically wrong, but they should prompt the reviewer to identify the intended relationship and its lowest knowledgeable owner.\n\n<details>\n<summary><strong>Detailed geometry examples from the proposal</strong></summary>\n\nComparable icon-label relationships currently emerge from different combinations of padding, margin, and alignment slots:\n\n| Composition | Current geometry | Explicit ownership model |\n|---|---|---|\n| File or product icon | 3px + 16px icon + 3px on the icon pseudo-element | 16px rendered-icon box + 6px control-owned relationship |\n| Text button | Icon with roughly 3.2px margin on each side | 16px rendered-icon box + 6px control-owned relationship |\n| Subordinate status | 12px icon + 4px icon margin | 12px rendered-icon box + 4px control-owned relationship |\n| Compact picker | 12px icon in a 16px alignment area + 6px icon margin | 12px icon in a 16px control-owned area + 6px control-owned relationship |\n\nOther recurring signals from the original analysis:\n\n| Pattern | Ownership concern |\n|---|---|\n| Dropdown indicator with `margin-left: -3px` | The icon compensates for surrounding geometry rather than fitting within an explicit control contract |\n| `IconLabel` pseudo-element | Width, height, and right padding combine icon fitting with label separation |\n| `IconLabel` image element | The same label relationship is expressed through an image margin instead |\n\nThe `IconLabel` comparison is useful evidence that representation-specific render paths can encode the same relationship differently. It does not imply that the full resource/list-label widget should be embedded in or extended for `Button`; both already share lower-level icon-label rendering helpers.\n\n</details>\n\n<details>\n<summary><strong>Shared size vocabulary and supporting icon-role evidence</strong></summary>\n\nIcon geometry and spacing describe different things and should use distinct token families.\n\n![Five representation-neutral icon-box tiers from 12px through 32px, shown with representative VS Code roles](https://github.com/user-attachments/assets/fca3104d-f585-4970-a107-3595422907ad)\n\nThe same tiers and representative uses are provided as text in the table below.\n\n### Representation-neutral icon boxes\n\n| Tier | Size | Representative current use |\n|---|---:|---|\n| Extra small | 12px | Subordinate inline status and dense secondary chrome |\n| Small | 16px | Default Codicons, editor tabs, and ordinary controls |\n| Medium | 20px | Icon selectors and emphasized cards |\n| Large | 24px | Activity Bar and prominent navigation |\n| Extra large | 32px | Welcome-state and orientation cues |\n\nThese boxes apply across icon representations. Existing Codicon font-size tokens remain available for font-specific rendering and compact-glyph selection.\n\n### Spacing\n\nThe shared spacing ramp is:\n\n`0, 1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24, 28, 32, 36, 40px`\n\nThe 1px and 3px additions cover fine composition already used throughout the workbench:\n\n| Step | Representative use |\n|---:|---|\n| 1px | Tight inset or separation where 2px is visibly too large |\n| 3px | Compact control padding and tightly composed internal relationships |\n\nSpacing tokens describe layout relationships. A 1px border still uses the stroke-thickness token, while an optical transform remains part of icon fitting.\n\n<details>\n<summary><strong>Additional icon-role evidence</strong></summary>\n\nA subordinate warning row demonstrates a legitimate compact icon role within a larger control:\n\n![A command confirmation card with a subordinate warning row beneath the command](https://github.com/user-attachments/assets/044c341c-2e8a-4714-87fe-f696fbb89cd2)\n\nNotification rows show a different problem: an 18px severity glyph constrained by a 16px alignment area. The representation-neutral size describes the intended box independently from the severity artwork.\n\n#### Current: glyph and alignment area disagree\n\n![Notification rows with 18px severity glyphs constrained by a 16px icon area](https://github.com/user-attachments/assets/5ca48502-9218-427e-b02a-2830a9841309)\n\nAn 18px severity glyph is constrained by a 16px alignment area.\n\n#### Explicit size role\n\n![Notification rows with 16px severity glyphs aligned to the 16px icon area](https://github.com/user-attachments/assets/7e3bc816-79bf-4776-8556-4cc098838209)\n\nThe rendered-icon box and alignment area both use the 16px role.\n\nThese examples distinguish icon geometry from control density, padding, and hit-target size. They are supporting analysis, not additional product changes in the active PR stack.\n\n</details>\n\n</details>\n\n## Evidence that this is a recurring pattern\n\nAn initial source audit found:\n\n| Signal | Result | Why it matters |\n|---|---:|---|\n| Near-miss Codicon sizes | 25 declarations using 13-15px across 18 CSS files | Named 12px and 16px tiers make density choices reviewable |\n| Fine icon-adjacent spacing | 44 occurrences across 31 CSS files: 14 at 1px and 30 at 3px | The spacing ramp can represent recurring fine relationships |\n| Off-ramp icon-adjacent spacing | 9 occurrences at 5px across 8 CSS files | Value validation can identify candidates for ownership review |\n| Existing shared render paths | 156 `renderIcon()` and 71 `renderLabelWithIcons()` references | Shared paths can reduce repeated feature-specific CSS |\n\nThese are review signals, not automatic defects. A value can be on the ramp but owned by the wrong layer, and a static match does not prove that a migration is needed.\n\n<details>\n<summary><strong>Related product evidence</strong></summary>\n\n- #333053 — workspace-picker feedback provides direct icon/name gap evidence for control-owned spacing.\n- #330786 — extension-contributed Panel icons show the need for consistent sizing across icon representations.\n- #324632 — Chat panel icon positioning supports stable geometry with internal fitting and alignment.\n- #324633 — Chat send-button alignment supports optical correction as an internal transform that does not affect layout.\n- #324217 — Activity Bar compact mode shows why icon size, control padding, and hit target must remain separate.\n- #325571 — compact sidebar feedback explicitly asks to reduce padding rather than shrink icons.\n- #325070 — Agents Window feedback asks for consistent spacing between neighboring icon controls.\n- #331483 — multi-row tabs need control-owned space for transient modification icons so content does not reflow.\n- #332001 — compact-density work benefits from separating icon size, relationship, and hit target.\n\n</details>\n\n## Expected impact\n\n- Shared UI controls have fewer independent values and compensating rules to maintain.\n- Equivalent controls inherit the same geometry, so visual differences are more likely to represent an intentional role or hierarchy.\n- Icon and spinner substitutions keep stable control geometry.\n- Existing debt can be migrated incrementally by recurring pattern instead of through a broad rewrite.\n- Shared contracts give both hand-authored and generated UI fewer raw sizes and feature-local rules to invent.\n\n<details>\n<summary><strong>Codification and incremental adoption</strong></summary>\n\nThe ownership model spans several authoring surfaces, each with a different responsibility:\n\n| Surface | Responsibility |\n|---|---|\n| Size registry | Provide the neutral spacing and icon-box vocabulary |\n| Token instructions | Distinguish spacing, stroke thickness, icon geometry, and optical correction |\n| Design and layout guidance | Teach the icon source → rendered icon → control → parent decision model |\n| Shared controls | Implement common internal relationships with behavior-safe defaults |\n| Production-derived fixtures | Cover complete compositions, conditional states, themes, geometry, and accessible names |\n| Advisory validation | Identify precise recurring candidates only after pilots demonstrate a low-noise rule |\n\nIncremental sequence:\n\n1. Land the shared size vocabulary and keep the validator aligned.\n2. Publish the ownership model as review guidance.\n3. Prove the model in representative shared controls with existing behavior preserved by default.\n4. Migrate feature UI as recurring patterns are touched, starting with high-leverage shared paths.\n5. Consider warning-only ownership checks or generated-UI guidance only where accepted pilots provide measurable, precise evidence.\n\nThe current active stack covers the first shared vocabulary, guidance, and `WorkbenchButtonBar` pilot. It does not propose blanket migration or automatic enforcement.\n\n</details>\n\n## Active implementation\n\n1. #335345 — Add the recurring spacing steps and representation-neutral icon-size scale.\n2. #335346 — Document the composition ownership heuristic and token usage.\n3. #335350 — Let `WorkbenchButtonBar` own one leading icon/spinner slot and its label relationship; the Changes action row selects its existing wider spacing without adding a second container contribution.\n\nThis work is intentionally incremental. Existing UI geometry should remain unchanged unless a product change is explicitly proposed and reviewed.\n",
+      "author": "chryw",
+      "state": "open",
+      "labels": [
+        "debt",
+        "modernization"
+      ],
+      "created_at": "2026-09-09T21:09:30Z",
+      "updated_at": "2026-09-18T13:26:27Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/335354",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "chryw",
+          "body": "Follow-up work to reduce drift across Copilot instructions, skills, and design-token sources is tracked in #335370. That source-of-truth cleanup is intentionally separate from this UI composition proposal.",
+          "created_at": "2026-09-09T22:57:24Z",
+          "url": "https://github.com/microsoft/vscode/issues/335354#issuecomment-5609878327"
+        },
+        {
+          "author": "rdamico",
+          "body": "Two small thoughts on the feedback questions:\n\nOn spacing, I’d be cautious about treating gap, margin and padding as interchangeable. They solve different layout problems and express different relationships. The ownership model makes sense, but I think those distinctions are worth preserving rather than reducing everything to a generic spacing mechanism.\n\nOn 1px/3px values, I’d lean towards providing the tools/tokens and letting component or theme authors decide where they are appropriate. Even if some existing uses turn out to be compensating for other layout issues, that does not necessarily mean the values themselves should not be available.\n\nMore generally, I think the framework should provide a coherent layout/tooling model and let component and theme authors use it, rather than trying to encode too much visual preference into the framework itself.",
+          "created_at": "2026-09-18T13:26:27Z",
+          "url": "https://github.com/microsoft/vscode/issues/335354#issuecomment-5730659779"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 334760,
+      "title": "Remove bracket-notation ESLint allowlist entries",
+      "body": "## Summary\n\n#334756 enables `local/code-no-bracket-notation-for-identifiers` for new JavaScript and TypeScript code while preserving the 509 files with existing violations in `.eslint-allowed-bracket-notation-files`.\n\nThis issue tracks removing that baseline by feature area. The suggested owners below are recommendations only and are intentionally written without mentions.\n\n## Cleanup groups\n\n- [ ] **Agent Host platform** — 89 files — suggested owner: @roblourens\n- [ ] **Copilot extension** — 90 files — suggested owner: @lramos15\n- [ ] **Workbench chat and agents** — 40 files — suggested owner: @connor4312\n- [ ] **Agents Window** — 11 files — suggested owner: @ulugbekna\n- [ ] **Build, CI, and scripts** — 48 files — suggested owner: @dmitrivMS \n- [ ] **Application bootstrap, server, and environment** — 41 files — suggested owner: @dmitrivMS\n- [ ] **Base and editor** — 27 files — suggested owner: @alexdima\n- [ ] **Terminal and tasks** — 22 files — suggested owner: @meganrogge\n- [ ] **Debug** — 7 files — suggested owner: @connor4312\n- [ ] **Notebooks** — 6 files — suggested owner: @aamunger\n- [ ] **Extension host, API, and extension management** — 20 files — suggested owner: @sandy081\n- [ ] **Configuration, profiles, and sync** — 14 files — suggested owner: @sandy081\n- [ ] **Telemetry, OTel, and performance** — 14 files — suggested owner: @zhichli\n- [ ] **Remote, tunnels, networking, and authentication** — 10 files — suggested owner: @dmitrivMS\n- [ ] **GitHub authentication service and tests** — 1 allowlisted test file plus 1 supporting production file — suggested owner: @TylerLeonhardt\n- [ ] **Language feature extensions** — 22 files — suggested owner: @dmitrivMS \n- [ ] **Git extension** — 6 files — suggested owner: @lszomoru\n- [ ] **Test infrastructure** — 18 files — suggested owner: @dmitrivMS \n- [ ] **Workbench UI and remaining services** — 22 files — suggested owner: @dmitrivMS\n- [ ] **Default account service and tests** — 1 allowlisted test file plus 1 supporting production file — suggested owner: @TylerLeonhardt\n\nTotal: **509 allowlisted files**.\n\n## Completion criteria\n\nFor each group:\n\n1. Convert applicable bracket notation such as `value['property']` to property access such as `value.property`.\n2. Keep bracket notation where it is required, including computed keys and property names that are not valid identifiers.\n3. Address type errors exposed by the conversion rather than weakening type safety. Test-only access to private members may require a deliberate test seam or other component-appropriate solution.\n4. Remove every cleaned path in the group from `.eslint-allowed-bracket-notation-files`.\n5. Run targeted ESLint plus the relevant type checks and tests for the affected area.\n\nA group can be checked off when all of its applicable violations are resolved and all of its paths have been removed from the allowlist.",
+      "author": "dmitrivMS",
+      "state": "open",
+      "labels": [
+        "debt",
+        "engineering"
+      ],
+      "created_at": "2026-09-06T05:45:29Z",
+      "updated_at": "2026-09-06T21:54:51Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/334760",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 334560,
+      "title": "Managed Settings: add smoketest coverage",
+      "body": "> Establish a migration safety net proving standard VS Code policy, the legacy\n> Copilot-policy bridge, and direct managed settings produce the expected\n> behavior and compose restrictively.\n\n## Problem\n\nVS Code has focused tests for policy and managed-settings components, but no\nproduct smoke test proving that standard VS Code policy, legacy Copilot policy,\nand Enterprise Managed Settings reach the expected client/runtime behavior.\n\n## Proposed coverage\n\n| Case | Path | Expected result |\n|---|---|---|\n| Standard non-chat policy | VS Code policy service | A conflicting user setting is overridden, locked, and visible in Policy Diagnostics |\n| Legacy Copilot policy | VS Code policy → compatibility bridge → SDK/runtime | Shell approval and domain restrictions are enforced |\n| Managed settings | Managed-settings resolution → SDK/runtime | Equivalent shell and domain restrictions are enforced |\n| Mixed migration case | Legacy policy + managed settings | Sources compose toward the more restrictive result |\n\n## Checklist\n\n- [ ] Add an isolated `Policy Plumbing` suite under `test/smoke`.\n- [ ] Cover one safe non-chat policy such as `ExtensionsAutoUpdate=\"off\"`.\n- [ ] Run one deterministic shell/domain scenario through the legacy policy path.\n- [ ] Run the same scenario through equivalent managed settings.\n- [ ] Assert Policy Diagnostics reports the expected source in each case.\n- [ ] Assert denied operations never execute and the agent session remains usable.\n- [ ] Add the mixed-source composition case after the parity cases are stable.\n- [ ] Isolate policy state and `COPILOT_CACHE_HOME` between variants.\n\n<details>\n<summary>Implementation pointers</summary>\n\n- Existing full-product agent flows:\n  `test/smoke/src/areas/agentsWindow/agentsWindow.test.ts`\n- Smoke environment and runtime-state isolation: `test/smoke/src/utils.ts`\n- Legacy policy translation:\n  `src/vs/platform/agentHost/common/agentHostManagedSettings.ts`\n- Managed-settings test setup:\n  `.github/skills/policy-and-managed-settings/local-testing.md`\n- Policy Diagnostics:\n  `src/vs/workbench/browser/actions/developerActions.ts`\n\n</details>\n\n---\n\n🤖 Posted via Copilot.\n",
+      "author": "rwoll",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "unified-managed-settings"
+      ],
+      "created_at": "2026-09-04T17:22:13Z",
+      "updated_at": "2026-09-16T22:35:50Z",
+      "closed_at": "2026-09-16T22:35:50Z",
+      "url": "https://github.com/microsoft/vscode/issues/334560",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330918,
+      "title": "agent host: assert minimum test counts in a validation script",
+      "body": "Follow-up from the scoped-enablement work (#330566, #330715).\n\n## Problem\n\nThree separate times during that work, a validation run **looked green while having verified nothing**:\n\n1. **Stale `out/`** — the Electron unit runner exited `0` having run no tests, because a merge left a stale compiled module and the runner died on an unrelated dynamic-import error. Fixed by `npm run transpile-client`.\n2. **Zero-match grep selector** — `./scripts/test.sh --grep \"customizationEnablement\"` matched **no tests** and reported success-shaped output. The suites are capitalized (`CustomizationEnablement`), and the real selector runs 35 tests. Three separate agents reported `0 passing` before anyone noticed the selector was wrong.\n3. **Policy checks reading as build failures** — `VS Code Merge Check` / `⭐️ VS Code` reported `fail`, but the check-run output title was `Skipped due to merge conflicts`: the build never ran. Easy to misread as a real regression and go hunting for a nonexistent bug.\n\nIn each case the tell was the same: a summary line that was empty or suspiciously small.\n\n## Suggestion\n\nA small `scripts/validate-agent-host.sh` (or npm script) that runs the standard agent-host validation set and **asserts a minimum test count** for each command, failing loudly when a run reports fewer tests than expected. That turns \"suspiciously small summary\" from something a human has to notice into a hard failure.\n\nCurrent baselines on `main` at time of writing:\n\n```sh\nnpm run typecheck-client\n# 2 pre-existing errors in src/vs/workbench/services/assignment/common/assignmentService.ts are expected\n\n./scripts/test.sh --grep \"CustomizationEnablement|McpCustomizationController|Codex\"   # 225 passing\n./scripts/test.sh --runGlob \"**/agentHost/**/*.test.js\"                               # 5453 passing, 72 pending\n./scripts/test-integration.sh --runGlob \"**/agentHost/**/{sessionConfig,toolApproval,codexCustomizations}.integrationTest.js\"   # 15 passing\n./scripts/test-integration.sh --run src/vs/platform/agentHost/test/node/claudeAgent.integrationTest.ts                          # 5 passing\n```\n\nRelated gotchas worth encoding in the same place (currently documented in the [`customizations-in-the-agent-host` skill](https://github.com/microsoft/vscode/blob/main/.github/skills/customizations-in-the-agent-host/SKILL.md)):\n\n- The unit runner uses pre-compiled output and does **not** fail on type errors — `npm run typecheck-client` must be run separately.\n- Electron runner setup aborts (`EEXIST`/`EPERM`/`ENOENT`) are environmental; recover with `rm -rf .build/electron && npm run electron` rather than reading them as test failures.\n",
+      "author": "connor4312",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "agent-host"
+      ],
+      "created_at": "2026-08-14T18:15:10Z",
+      "updated_at": "2026-10-01T23:28:48Z",
+      "closed_at": "2026-08-17T22:58:32Z",
+      "url": "https://github.com/microsoft/vscode/issues/330918",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330917,
+      "title": "agent host: stop deleting enablement decisions against a mutable client base",
+      "body": "Follow-up cleanup from the scoped-enablement work (#330566, #330715).\n\n## Problem\n\nThe overlay model in `AgentHostCustomizationEnablementService` is correct but is the subtlest thing in the subsystem, and its failure mode was a **write that silently erased itself**.\n\nThe model: the client's global value is the *base*, host decisions layer on top, and \"store only what differs\" compares against that base rather than a hardcoded default. `_setPersistentDecision` deletes a decision that matches its inherited value, so the UI can restore inheritance without a third \"Inherit\" action.\n\nThe bug it produced: `replaceEnablement` wrote a decision, which synchronously triggered a republish, which fed the client's *stale* global back in, which made the just-written decision look redundant, which deleted it. The user's disable silently did nothing. Diagnosing it required a call stack showing the loop.\n\nThe residual hazard is that the comparison base is **mutable and asynchronous**. `_clientGlobalEnablement` can change after a host decision is stored, at which point a previously-stored decision may become \"redundant\" — or, worse, a decision that should exist was never stored because it matched a base that has since changed.\n\n## Suggestion\n\nStop using the client global as a *deletion trigger*. Always persist explicit host decisions, and use the client global purely as the inheritance root when resolving. Deletion then happens only on an explicit user action (clear/reset), never as a side effect of a base value moving.\n\nCost is a few more stored entries. Storage was never the constraint — there is already a 512-entry LRU with eviction — and the reduction in reasoning burden is significant: the invariant becomes \"we store what the user told us\" rather than \"we store what differs from a value that can change underneath us.\"\n\n## Guard\n\nKeep the regression coverage around `replaceEnablement` → republish → `applyClientGlobalEnablement`, which is where the self-defeating write happened.\n",
+      "author": "connor4312",
+      "state": "open",
+      "labels": [
+        "debt",
+        "agent-host"
+      ],
+      "created_at": "2026-08-14T18:15:02Z",
+      "updated_at": "2026-08-14T18:15:04Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330917",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330916,
+      "title": "agent host: one representation and one cascade rule for customization enablement",
+      "body": "Follow-up cleanup from the scoped-enablement work (#330566, #330715).\n\n## Problem\n\nThere are three representations of \"is this on?\" in session state:\n\n- `DirectoryCustomization.enabled: boolean` (`state.ts:861`)\n- `ChildCustomizationBase.enabled?: boolean` (`state.ts:894`)\n- `enablement?: CustomizationEnablement[]` on `PluginCustomization` and `McpServerCustomization` (`state.ts:804`, `1057`)\n\nThe tell that this is one representation too many is that the protocol doc comment has to *teach a rule you must memorize*:\n\n> the **effective** enabled state of a plugin child is the plugin's derived enabled value and `(child.enabled ?? true)`, so a disabled plugin disables every child regardless of each child's own flag. A directory child instead uses the directory's `enabled` value and its own flag.\n\nTwo different cascade rules depending on container type, neither enforced anywhere.\n\nPredictably, consumers hand-roll the cascade. The same expression appears in at least three places across two files:\n\n```ts\nenabled: isCustomizationEnabled(server) && (!plugin || isCustomizationEnabled(plugin))\n```\n\n- `src/vs/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostCustomizationService.ts:191`\n- `src/vs/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostCustomizationService.ts:218`\n- `src/vs/sessions/contrib/providers/agentHost/browser/baseAgentHostSessionsProvider.ts:3691`\n\nThere are ~32 enablement-derivation sites in total across the agent host and its consumers. Any one of them getting the cascade subtly wrong is a silently-wrong enabled state in the UI or, worse, at the SDK boundary.\n\n## Suggestions\n\n**Minimum viable:** export a single `isEffectivelyEnabled(child, container)` in `common/customizationEnablement.ts` and use it everywhere the cascade is currently re-derived. Cheap, no protocol change, removes the duplication.\n\n**Better, if a protocol change is acceptable:** collapse to one representation so directories and plugins cascade identically and the doc comment no longer needs to describe two rules. Note the protocol lives in [microsoft/agent-host-protocol](https://github.com/microsoft/agent-host-protocol) (`types/` is canonical; vscode's `common/state/protocol/` mirrors it), so this needs a change there first.\n",
+      "author": "connor4312",
+      "state": "open",
+      "labels": [
+        "debt",
+        "agent-host"
+      ],
+      "created_at": "2026-08-14T18:14:19Z",
+      "updated_at": "2026-08-14T18:14:19Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330916",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330915,
+      "title": "agent host: derive MCP customization id from ownership instead of publication position",
+      "body": "Follow-up cleanup from the scoped-enablement work (#330566, #330715).\n\n## Problem\n\nAn MCP server currently carries three identifiers, and most of the hard bugs in this area were *mapping errors between them*:\n\n| Identifier | Value | Depends on |\n| --- | --- | --- |\n| `id` | `mcp-top-level:<provider>:<session>:<name>` **or** the plugin child id | publication position |\n| `name` | server name | SDK operations |\n| durable enablement key | `<owningPluginSource>#mcp=<name>` or `mcpServers#<name>` | ownership |\n\nPublication position is decided by a startup race in `McpCustomizationController._applyOne`: if a plugin's children are already published the server is nested, otherwise it is **promoted** to a bare top-level customization, and promotion is deliberately sticky because re-parenting mid-session would orphan an id the client has already rendered.\n\nBecause position leaked into identity, the same server keyed differently depending on whether it happened to be promoted that session — so \"disable azure globally\" written in one session was invisible in the next. That was the original reported bug.\n\nIt is currently fixed by threading an ownership map (`mcpServerOwners` / `pluginMcpServerSources`) so the durable key is position-independent. That works, but it means correctness now *depends on every provider remembering to supply the map* — and Codex did not, which is #330715.\n\n## Suggestion\n\nMint the top-level customization id **from the durable key** rather than from provider/session/name. Then:\n\n- nested and promoted publications are the same identity **by construction**;\n- the ownership map stops being load-bearing for correctness and is only needed for display grouping;\n- sticky promotion stops being an invariant contributors must preserve;\n- the whole \"should we gate publication on plugin parsing?\" question becomes a pure UX decision rather than a correctness one.\n\nHigher risk than the other follow-ups because it touches id minting, which clients render — worth checking whether any client persists these ids. But it deletes the bug class rather than guarding it.\n\n## Constraint\n\n`getCustomizationEnablementKey` output must not change for existing keys, or users' stored decisions silently orphan and disabled servers come back enabled.\n",
+      "author": "connor4312",
+      "state": "open",
+      "labels": [
+        "debt",
+        "agent-host"
+      ],
+      "created_at": "2026-08-14T18:14:13Z",
+      "updated_at": "2026-08-14T18:14:14Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330915",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330914,
+      "title": "agent host: collapse the client-state parameters of resolveCustomizationEnablement",
+      "body": "Follow-up cleanup from the scoped-enablement work (#330566, #330715).\n\n## Problem\n\n`resolveCustomizationEnablement` in `src/vs/platform/agentHost/node/shared/customizationEnablementGate.ts` now takes six parameters, the last three of which are all optional and all different views of the same client state:\n\n```ts\nexport function resolveCustomizationEnablement(\n\tservice: IAgentHostCustomizationEnablementService,\n\tsession: URI,\n\tcustomizations: readonly Customization[],\n\tclientChildEnablement?: ReadonlyMap<string, Readonly<Record<string, readonly CustomizationEnablement[]>>>,\n\tclientPlugins?: ReadonlyMap<string, ClientPluginCustomization>,\n\tmcpServerOwners?: ReadonlyMap<string, string>,\n): IResolvedCustomizationEnablement\n```\n\nThere are 14 call sites across 5 files, and because every extra argument is optional, **omitting one is silent**. That is not hypothetical:\n\n- Codex never supplied the ownership map to its `McpCustomizationController`, so a promoted plugin-owned MCP server keyed as `mcpServers#<name>` instead of `<plugin>#mcp=<name>` and forgot its global/workspace decision across sessions. Fixed in #330715, but only after it was found by hand.\n- Auditing whether a given omission is a bug is genuinely hard. Codex's two `resolveCustomizationEnablement` call sites still omit `mcpServerOwners`, and that is *fine* — they only pass plugin candidates, so the nested branch derives ownership from the plugin in hand. But establishing that took several minutes of tracing. A reviewer cannot tell by looking.\n\n## Suggestion\n\nCollapse the three client-state parameters into a single explicit context object, e.g.\n\n```ts\ninterface ICustomizationResolutionContext {\n\treadonly clientChildEnablement?: ...;\n\treadonly clientPlugins?: ...;\n\treadonly mcpServerOwners?: ...;\n}\n```\n\nEven keeping the members optional, a named object gives one documented place describing what a caller is expected to provide and why, and makes \"which views of client state does this call site have?\" reviewable at a glance. Better still if the shape can be made required-with-explicit-empty, so forgetting one is a type error.\n\nLow risk, mechanical, and it would have made the Codex gap impossible to introduce.\n",
+      "author": "connor4312",
+      "state": "open",
+      "labels": [
+        "debt",
+        "agent-host"
+      ],
+      "created_at": "2026-08-14T18:13:33Z",
+      "updated_at": "2026-08-14T18:13:34Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330914",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330913,
+      "title": "agent host: make customization resolution unskippable at publication",
+      "body": "Follow-up cleanup from the scoped-enablement work (#330566, #330715).\n\n## Problem\n\nThree of the six production bugs found while building scoped enablement had the same shape: a code path emitted a customization **without resolving its enablement first**. The offending sites were four in `copilotAgent`, one in `mcpCustomizationController`, and the post-startup MCP reconcile.\n\nEach was fixed individually, and the invariant was written down — *every publication path must go through `resolveCustomizationEnablement`* — including in the [`customizations-in-the-agent-host` skill](https://github.com/microsoft/vscode/blob/main/.github/skills/customizations-in-the-agent-host/SKILL.md). But an invariant enforced by discipline is one the next contributor can violate silently, and the failure mode is bad: a customization published with stale or absent enablement means a server the user disabled still reaches the model.\n\n## Suggestion\n\nMake it structurally impossible rather than a documented rule. Have the emit/publish helper accept *unresolved* customizations and resolve internally, so there is no way to call it with unresolved state. Callers stop choosing whether to resolve.\n\nThis converts a recurring bug class into a compile-time impossibility. Of the simplifications spun out of this work, it has the best value-to-risk ratio.\n\n## Notes\n\n- Watch the pending path: resolution can legitimately return a `pending` result, and SDK-boundary consumers must keep failing closed via `isCustomizationSdkEligible`. Pending must stay *transient* — a cached pending verdict silently drops a customization forever (a separate bug fixed in #330566).\n- The regression guard to keep meaningful is the gate test asserting that a server published top-level and the same server published nested resolve to the same durable decision (`customizationEnablementGate.test.ts`).\n",
+      "author": "connor4312",
+      "state": "open",
+      "labels": [
+        "debt",
+        "agent-host"
+      ],
+      "created_at": "2026-08-14T18:13:27Z",
+      "updated_at": "2026-08-14T18:13:28Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330913",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330885,
+      "title": "Debt: two implementations of chat model selection should be one",
+      "body": "There are two separate pieces of code that both do \"pick and remember the chat model\". They should become one.\n\n## Why this matters\n\nThey drift. A bug was fixed in one and left broken in the other for three weeks:\n\n- In August, the workbench version lost its per-conversation scoping in #326965. The result was that picking a model in one chat could silently apply it to a different chat, and the wrong model would then be used for real requests. Fixed in #330884.\n- The Agents Window version never had that bug, because it kept a scoping check the workbench version deleted.\n\nNothing links the two, so neither fix nor regression travels between them.\n\n## The two pieces\n\n| | File | How it works |\n|---|---|---|\n| Workbench chat | `src/vs/workbench/contrib/chat/browser/widget/input/chatInputModelSelectionController.ts` | Stores the model a conversation is *meant* to use, then re-applies it whenever the model list changes |\n| Agents Window | `src/vs/sessions/contrib/chat/browser/sessionModelSelectionModel.ts` | A state machine (`transitionModelSelection`) that recomputes the selection on each refresh |\n\n## What to do\n\nMake the Agents Window use the workbench controller, and delete its own copy.\n\n1. Write an adapter in `vs/sessions` that implements `IChatInputModelSelectionRuntime` (exported from the workbench controller) on top of `ISessionsProvider` / `IActiveSession`. This interface is the seam — it already abstracts \"where do models come from\", \"which session is this\", and \"apply this model\".\n2. Point `src/vs/sessions/contrib/chat/browser/newChatInput.ts` at `ChatInputModelSelectionController` instead of `SessionModelSelectionModel`. This is the only production consumer.\n3. Delete `SessionModelSelectionModel`, and delete `transitionModelSelection` from `src/vs/workbench/contrib/chat/common/modelSelection.ts` once nothing uses it. That should also make the `RemovedModelFallback` and `NewChatRepush` values in `ModelSelectionReason` unused — remove them too.\n4. Port the tests in `src/vs/sessions/contrib/chat/test/browser/sessionModelSelectionModel.test.ts` so the same behavior is still covered.\n5. Update `src/vs/sessions/SESSIONS.md`, since this changes durable architecture.\n\n## Things that are already done (don't redo them)\n\n- **Storage keys are already shared.** Both sides use `chat.currentLanguageModel.*` via `getStoredSelectedModel` / `storeSelectedModel`. The `sessions.modelPicker.*` key is legacy only — `_getRememberedModel` already reads it once and migrates it forward. No user data migration is needed.\n- Both sides already share `ChatModelSelectionDiagnostics` and the `ModelSelectionReason` enum.\n\n## Useful context\n\n- Layering allows this: `vs/sessions` may import from `vs/workbench`, but not the reverse.\n- Converge **onto the workbench (intent-based) version**, not the state machine. The August bug happened because the state machine's memory got flattened during a refactor and the scoping check was silently dropped. In the intent-based version, the model lives on the conversation itself, so applying one chat's model to another isn't possible by construction rather than being prevented by a check someone can delete.\n- `.github/instructions/sessions.instructions.md` requires invoking the `sessions` skill before doing work under `src/vs/sessions/**`.\n\n## Optional follow-up\n\n`src/vs/workbench/contrib/chat/common/modelSelection.ts` is named as if it were shared code, but most of it is used by only one side. Once the above is done it will be genuinely shared and much smaller, so this may resolve itself.\n",
+      "author": "lramos15",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "model-picker"
+      ],
+      "created_at": "2026-08-14T16:17:48Z",
+      "updated_at": "2026-10-02T23:29:03Z",
+      "closed_at": "2026-08-18T13:54:35Z",
+      "url": "https://github.com/microsoft/vscode/issues/330885",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "lramos15",
+          "body": "Fix https://github.com/microsoft/vscode/pull/331282",
+          "created_at": "2026-08-18T13:54:34Z",
+          "url": "https://github.com/microsoft/vscode/issues/330885#issuecomment-5329184541"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 330701,
+      "title": "Automations: Migrate to new chat input widget",
+      "body": "The automations dialog uses the workbench chat input part due to the new chat input widget absolutely requiring a session to exist in order to use it. It did not make sense for a form field to have a backing session, but rearchitecting the new chat input widget to not require a backing session is more complex\n\nThe automation dialog should use the new chat input widget so all pickers are as expected.",
+      "author": "benvillalobos",
+      "state": "open",
+      "labels": [
+        "bug",
+        "debt",
+        "automations"
+      ],
+      "created_at": "2026-08-13T17:51:53Z",
+      "updated_at": "2026-08-30T20:30:32Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330701",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "benvillalobos",
+          "body": "Related issues:\n- https://github.com/microsoft/vscode/issues/329083\n- https://github.com/microsoft/vscode/issues/330396\n- https://github.com/microsoft/vscode/issues/329111",
+          "created_at": "2026-08-13T17:55:20Z",
+          "url": "https://github.com/microsoft/vscode/issues/330701#issuecomment-5284423179"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 330483,
+      "title": "Chat input stack: make the notice/input seam structural instead of per-surface offsets",
+      "body": "Follow-up to #330307, which unified how the five notices above a chat input *look* (one base widget, one stylesheet). That change deliberately left one thing alone, and this issue is about fixing it properly: **how far each notice sits from the input below it.**\n\n## Problem\n\nA notice has a square bottom edge; the chat input has rounded top corners. Sat flush, the input's rounding leaves gaps at the corners and the two borders read as a seam. So each surface pulls the input up over the notice's bottom edge to hide the join.\n\nThe number is different everywhere. Measured against `main`:\n\n| offset | surface |\n| --- | --- |\n| −8px | sessions homepage, notification |\n| −6px | workbench panel, notification |\n| −4px | workbench compact, getting-started tip |\n| 0 | workbench panel tip, sessions tip, sub-session tip |\n| +4px | voice and dictation introductions |\n| +16px | inline chat, notification (a deliberate gap) |\n\nThe reason it cannot be one value is structural: **the notices are not adjacent to the input.** The flat layout puts thirteen slots above it, four of which sit *between* the last notice and the input:\n\n```\n… → notification → voice → dictation → goal-banner → todo-list\n  → artifacts → editing-session → getting-started-tip → INPUT\n```\n\nSo which widget actually touches the input depends on which ones are present. The current answer is adjacency arithmetic: **11 negative margins across 7 stylesheets**, each widget squaring its own corners, plus a five-selector `:has()` block in `chat.css` that squares the input's top whenever any of five widgets appears.\n\nThat block also conflicts with our own guidance — `.github/instructions/css-best-practices.instructions.md` says to avoid `:has()` and use an explicit marker class instead.\n\n### Sharing the offset does not work, and has now failed twice\n\nBoth attempts happened during #330307 and were reverted:\n\n1. A shared offset on the notice lane **slipped past existing per-surface overrides**, which only ever set `margin-bottom`, leaving 10px of dead space in two surfaces.\n2. Splitting a hide/show pair across two files produced **equally specific rules**, so whichever stylesheet loaded last won, and the voice card could render `display: none`.\n\nThe lesson is that the offset is not a property of the notice at all. It is a property of the stack it sits in.\n\n## Proposal\n\nOne container holds every above-input widget **and** the input:\n\n- `display: flex; flex-direction: column; gap: 0`\n- the border and the radius live on the **container**, with `overflow: hidden`\n- children draw no radius and no adjoining border of their own\n\nThen the seam disappears structurally. No negative margins, no corner-squaring rules, no presence checks. Adding or removing a widget is automatic, and the eight widget families stop needing to know about each other.\n\n## How this works if notices appear outside the input\n\nWorth stating explicitly, because it shapes the design.\n\nTwo of the three layers already generalise:\n\n- **Arbitration.** `ChatInputNoticeHubService` is already a window-level registry: it holds a set of hosts, tracks recency, and routes focus to whichever is active. Each area gets a host; lanes and claims are per-host. Nothing here assumes an input.\n- **Appearance.** `.chat-input-notice` already describes what a notice looks like independently of where it is docked.\n\nThe part that does **not** generalise today is the seam assumption baked into the shared frame: `border-bottom: none` plus squared bottom corners assume there is an input directly below. A notice rendered anywhere else would have an open bottom edge.\n\nThis proposal fixes that, because it moves the seam decision from the notice to its container:\n\n- a notice **inside a stack** — the container clips and draws the frame, so children join seamlessly with no per-notice rules\n- a notice **anywhere else** — keeps its own complete frame, because nothing told it otherwise\n\nIn other words the notice stops describing its neighbours, and the container describes the join. That is what makes a second location cheap: a new host plus a normal container, with no new offsets to tune.\n\nIf notices do become general, the `chatInput*` naming should follow — `ChatNoticeWidget`, `ChatNoticeHost`, `.chat-notice` — since the input would be one host among several.\n\n## Scope: every participant in the stack\n\nThe seam is currently handled by whichever widgets happen to be present, so the work is spread across the whole stack, not just the notices.\n\n**Already unified by #330307 — no work needed here**\n\n| widget | where |\n| --- | --- |\n| notification | `chatInputNotificationWidget.css`, `chatInput.css` (sessions) |\n| voice introduction | `voiceModeOnboarding.css` |\n| dictation introduction | `dictationOnboarding.css` |\n| getting-started tip | `chatTipContent.css` |\n| sub-session tip | `newChatInSession.css` |\n\n**Not yet touched — this is the actual work**\n\n| widget | seam handling today |\n| --- | --- |\n| goal banner | `margin-bottom: -10px` (`chatGoalBannerWidget.css`) |\n| editing session | `margin-bottom: -4px` + `:has()` corner squaring (`chat.css`) |\n| artifacts | `margin-bottom: -4px` + `:has()` corner squaring (`chat.css`) |\n| todo list | `margin-bottom: -4px` + `:has()` corner squaring, plus an adjacency rule keyed on the notification (`chat.css`) |\n| sessions feedback banner | `margin-bottom: calc(-1 * size80)` (`chatInput.css`) |\n\n**Dead, and should go with it**\n\n`chat-input-widgets-container` and `chat-status-widget` have **zero TypeScript references** anywhere in `src/`, yet still occupy a negative-margin rule and one of the five `:has()` selectors in `chat.css`.\n\n**In the stack but with no seam handling today**\n\nPersistent content, plan review, question carousel, tool confirmation carousel and followups. No rules to delete, but a restructure changes how they lay out, so they need verifying.\n\n## Risk\n\n- Main risk is `overflow: hidden` on the container clipping overflow widgets. Partly precedented: the sessions composer already mounts editor overflow widgets on the workbench container to avoid exactly this.\n- Needs verification per surface. #330307 used a Playwright harness comparing computed offsets across nine notice×surface combinations against `main`; the same approach applies and should be extended to cover the widgets above.\n- Removing the `:has()` block also brings `chat.css` in line with `.github/instructions/css-best-practices.instructions.md`.\n\n## Why this is separate from #330307\n\n#330307 is presentation unification for five producers and is deletion-heavy. This is a structural change to the whole input stack whose main risk is layout regressions in widgets that have nothing to do with notices. Landing #330307 first makes this cheaper: the four notices now share one frame rule, so there are four fewer things to reason about.\n\n",
+      "author": "lramos15",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "ux",
+        "insiders-released",
+        "chat-input"
+      ],
+      "created_at": "2026-08-12T17:03:41Z",
+      "updated_at": "2026-09-27T23:27:07Z",
+      "closed_at": "2026-08-13T19:39:05Z",
+      "url": "https://github.com/microsoft/vscode/issues/330483",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330307,
+      "title": "Chat input notices: unify under one base widget and one stylesheet",
+      "body": "Follow-up to #329284, which unified the *behaviour* of the five notices above a chat input (one arbitration host decides what shows). It deliberately left the *presentation* alone. This issue covers the second half: one base class and one stylesheet.\n\n## Problem\n\nFive producers compete for the space above a chat input. After #329284 they all speak one arbitration protocol, but they are still built and styled five different ways:\n\n| Producer | Rendered by |\n| --- | --- |\n| Notification | `ChatInputNotificationWidget` (own class) |\n| Voice introduction | `VoiceModeOnboardingBanner` → `ChatInputOnboardingCard` |\n| Dictation introduction | `DictationOnboardingBanner` → `ChatInputOnboardingCard` |\n| Getting-started tip | `ChatTipContentPart` (a chat *content part*) |\n| Sub-session tip | raw `dom.$()` calls, no class at all |\n\nThe only thing all five share is `IChatInputNoticeFocusTarget` (`hasFocus`/`focus`/`canFocus`) — a focus contract, not a rendering one.\n\n## This is not just tidying — they visibly disagree\n\nContainer chrome is duplicated across four stylesheets, and the same visual role is expressed at different token tiers:\n\n| | Radius | Background | Border |\n| --- | --- | --- | --- |\n| Voice card | `cornerRadius-large` → `xSmall` | `agentsChatInput-background` | `--vscode-strokeThickness` |\n| Dictation card | `cornerRadius-large` → `xSmall` | `agentsChatInput-background` | `--vscode-strokeThickness` |\n| Chat tip | `cornerRadius-small` → `0` | `editorWidget-background` | hardcoded `1px` |\n| Sub-session tip | `cornerRadius-small` → `0` | `editorWidget-background` | hardcoded `1px` |\n| Notification | `cornerRadius-small` (top only) | `color-mix(severity)` | hardcoded `1px` |\n\nVoice and dictation are byte-identical except one padding token. Chat tip and sub-session tip are near-identical copy-paste. Two of the five use a raw `1px` where the others use the stroke token.\n\nChrome blocks to collapse:\n- `chatInputNotificationWidget.css:16`\n- `voiceModeOnboarding.css:35`\n- `dictationOnboarding.css:37`\n- `chatTipContent.css:58`\n- `newChatInSession.css:125`\n\n## Proposal\n\n1. Generalize the existing `ChatInputOnboardingCard` (`chatInputOnboarding.ts:319`) into a `ChatInputNoticeWidget` base: container chrome, ARIA region + label, `IChatInputNoticeFocusTarget` implementation, standard dismiss action, and the `setVisible` suspend/resume hook added in #329284.\n2. Add one `chatInputNotice.css` with a single chrome rule plus modifiers for the three legitimate variants (onboarding card / tip / notification severity).\n3. Migrate all five producers and delete the duplicated chrome.\n4. Reconcile the token disagreements above — one radius ramp, one background role, `--vscode-strokeThickness` everywhere.\n\n## Estimated size\n\n**~+350 / −200 across ~12 files.**\n\n| Work | Lines |\n| --- | --- |\n| Generalize card → `ChatInputNoticeWidget` | +100 |\n| Single `chatInputNotice.css` | +80 |\n| Delete 5 duplicated chrome blocks | −70 |\n| Sub-session tip: raw DOM → base class (`newChatInSessionWidget.ts:99`) | −25 |\n| Notification migration (`chatInputNotificationWidget.ts:89`) — hand-rolls header/title/actions the card already provides | ~40 changed |\n| Voice + dictation migration (already on the card, mostly renames) | ~20 changed |\n| Chat tip migration (`chatTipContentPart.ts:31`) — a `ChatContentPart`, different lifecycle, the awkward one | ~40 changed |\n| Base class tests | +80 |\n\n## Risks\n\n- **Screenshot baselines.** `src/vs/workbench/test/browser/componentFixtures/agentsVoice/voiceModeOnboarding.fixture.ts` exists and will need regenerating.\n- **Visual review across 5 surfaces × light/dark/HC.** Reconciling radius/background/border is a user-visible change, so this needs manual verification, not just green tests.\n\n## Why separate from #329284\n\nDifferent failure modes. #329284 is re-entrancy-sensitive arbitration logic that needed three review rounds to shake out six bugs; this is a mechanical, deletion-heavy visual reconciliation whose main risk is screenshot review. The reviewer who catches a stranded notice lane is not the reviewer who catches a wrong corner-radius tier.\n\nThis work is also much cheaper *because* #329284 landed first: all five producers already speak one protocol, so this change is mostly deletion.\n",
+      "author": "lramos15",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "ux",
+        "insiders-released",
+        "chat-input"
+      ],
+      "created_at": "2026-08-11T18:04:17Z",
+      "updated_at": "2026-09-26T23:26:06Z",
+      "closed_at": "2026-08-12T23:13:21Z",
+      "url": "https://github.com/microsoft/vscode/issues/330307",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 330061,
+      "title": "Use $XDG_STATE_HOME for `APPLICATION_SHARED` storage (`~/.<app>-shared/sharedStorage/state.vscdb`)",
+      "body": "## Current limitation\n\nPR #311317 introduced `StorageScope.APPLICATION_SHARED`, storing shared state at `~/.<app>-shared/sharedStorage/state.vscdb` (e.g. `~/.vscode-shared/`, `~/.vscode-insiders-shared/`). The path is hardcoded under `$HOME` with no `$XDG_STATE_HOME` resolution. This is configurable via `--shared-data-dir`, but the **default** clutters `$HOME` and violates the [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/).\n\n## Desired improvement\n\nDefault the `appSharedDataHome` path to `${XDG_STATE_HOME:-$HOME/.local/state}/<app>-shared/` instead of `~/<app>-shared/`, with a one-time migration of the existing database and a fallback read of the old path for compatibility.\n\nPer the XDG spec v0.8 (May 2021), `$XDG_STATE_HOME` (default `~/.local/state`) is the correct category for this data:\n\n> The `$XDG_STATE_HOME` contains state data that should persist between (application) restarts, but that is not important or portable enough to the user that it should be stored in `$XDG_DATA_HOME`. It may contain:\n> - actions history (logs, history, recently used files, …)\n> - current state of the application that can be reused on a restart (view, layout, open files, undo history, …)\n\nThe contents of `state.vscdb` (`history.recentlyOpenedPathsList`, workspace trust markers, storage markers) match this definition exactly — it is restart-persisting, non-portable state, not user data or config.\n\n## Workflow example\n\n```bash\n# Before (current):\n#   ~/.vscode-shared/sharedStorage/state.vscdb\n#   ~/.vscode-insiders-shared/sharedStorage/state.vscdb\n\n# After (XDG-compliant default):\n$XDG_STATE_HOME=/home/user/.local/state\n#   ~/.local/state/vscode-shared/sharedStorage/state.vscdb\n#   ~/.local/state/vscode-insiders-shared/sharedStorage/state.vscdb\n\n# --shared-data-dir still overrides for users who need a custom path\n```\n\n## Impact and context\n\nThis is a long-standing XDG compliance gap (see #3884, #162712, #84808, #100988, #126182, #132971). PR #311317 added a **new** hardcoded `~/` path despite community requests in the PR comments to use `~/.local/state/`. Each new `~/.*-shared/` directory perpetuates the problem.\n\nBecause `APPLICATION_SHARED` is a **platform-level** feature in VS Code's storage layer (`IEnvironmentService.appSharedDataHome`), every VS Code-derived Electron app inherits this path. The top 5 clones that would benefit from an upstream fix:\n\n| App | Vendor | Inherited path |\n|-----|--------|---------------|\n| **Cursor** | Anysphere | `~/.cursor-shared/sharedStorage/state.vscdb` |\n| **Windsurf / Devin Desktop** | Cognition | `~/.windsurf-shared/`, `~/.devin-shared/sharedStorage/state.vscdb` |\n| **Antigravity** | Google | `~/.antigravity-shared/sharedStorage/state.vscdb` |\n| **VSCodium** | Community | `~/.vscodium-shared/sharedStorage/state.vscdb` |\n| **Trae** | ByteDance | `~/.trae-shared/sharedStorage/state.vscdb` |\n\nFixing this in VS Code's `appSharedDataLocation` resolution (in `environmentService.ts`) benefits the entire ecosystem without each fork needing to patch the platform independently.\n\n## Related\n\n- #3884 — umbrella issue: \"Revisit VS Code folder structure for app data, settings, extensions\" (open since 2016)\n- #162712 — \"Support `XDG_CONFIG_HOME` for the `argv.json` file\"\n- #311317 — PR that introduced `APPLICATION_SHARED` storage scope (merged, comments request XDG compliance)\n- #311337 — original issue for cross-app state sharing",
+      "author": "levonk",
+      "state": "open",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-08-10T19:36:42Z",
+      "updated_at": "2026-09-11T02:58:00Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330061",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "levonk",
+          "body": "Bumping with a concrete migration suggestion that keeps this low-risk:\n\nSince `state.vscdb` contains only restart-surviving state (recently-opened paths, workspace trust markers, internal storage markers) — not user data or config — the migration story is simple:\n\n1. On first run, resolve the new default path (`$XDG_STATE_HOME/<app>-shared/` on Linux, platform-appropriate elsewhere)\n2. If the new path doesn't exist but `~/.<sharedDataFolderName>/` does, copy `sharedStorage/state.vscdb` to the new location (one-time lazy migration)\n3. If neither exists, create empty — same as a fresh install today\n\nFailure modes are benign:\n- If the copy fails, the app starts with empty state (loses recently-opened history, re-prompts trust) — same as today if the file is deleted\n- If the old directory is left behind, it's just an orphaned ~20KB SQLite file; no ongoing reads or writes to it\n- No config format changes, no `product.json` changes needed (forks keep their `sharedDataFolderName`, it just gets placed under `$XDG_STATE_HOME` instead of `$HOME`)\n\nThis is a convenience/cleanliness fix, not a data-integrity concern. The bar for landing it should be low — the migration is a single file copy with a fallback to empty state.",
+          "created_at": "2026-08-10T19:49:05Z",
+          "url": "https://github.com/microsoft/vscode/issues/330061#issuecomment-5245184932"
+        },
+        {
+          "author": "levonk",
+          "body": "### How this differs from #3884\n\nThis is a focused sub-issue, not a duplicate of #3884:\n\n- **#3884** (opened 2016) covers the original folder structure: extensions dir (`~/.vscode/`), user data dir, cache, settings. It predates `APPLICATION_SHARED` storage by 10 years and does not mention `sharedStorage`, `state.vscdb`, or `$XDG_STATE_HOME` in its body.\n- **This issue** (#330061) covers a **new** path introduced in PR #311317 (merged April 2026): `~/.<app>-shared/sharedStorage/state.vscdb`. This path did not exist when #3884 was scoped.\n\nThey share the same theme (XDG compliance) but address different code paths, different XDG variables (`$XDG_STATE_HOME` vs `$XDG_CONFIG_HOME`/`$XDG_DATA_HOME`), and different migration surfaces. A focused issue is actionable — one getter change in `environmentService.ts` can close it — whereas #3884 has been open for 10 years with 222 comments and no resolution, partly because its scope is too broad.\n\nReference: [XDG Base Directory Specification v0.8](https://specifications.freedesktop.org/basedir-spec/latest/) — `$XDG_STATE_HOME` was added in this version (May 2021).",
+          "created_at": "2026-08-10T20:07:20Z",
+          "url": "https://github.com/microsoft/vscode/issues/330061#issuecomment-5245373495"
+        },
+        {
+          "author": "nilIfNull",
+          "body": "Couldn't agree more! I’ve kept my version at 1.117",
+          "created_at": "2026-09-11T02:56:39Z",
+          "url": "https://github.com/microsoft/vscode/issues/330061#issuecomment-5628764287"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 330006,
+      "title": "Security: vulnerable dependency image-size (CVE-2025-71329/71330) — maintained drop-in available",
+      "body": "## Context\n\nThis package depends on npm **`image-size`**. Upstream is **archived** and the latest release (**2.0.2**) remains affected by:\n\n- **CVE-2025-71329** — DoS via infinite loop (JXL/HEIF/JP2 zero-size boxes)\n- **CVE-2025-71330** — DoS via infinite loop (ICNS zero entry length)\n\n`npm audit fix` will **not** switch package names automatically.\n\n## Maintained drop-in\n\nCommunity MIT fork with the same public API as `image-size@2.0.2`:\n\n- **npm:** https://www.npmjs.com/package/image-size-next (`image-size-next@2.1.0`)\n- **GitHub:** https://github.com/lcf2212dev/image-size-next\n- **Announcement:** https://github.com/lcf2212dev/image-size-next/blob/main/ANNOUNCE.md\n\nNot affiliated with the original `image-size` maintainer — honest community fork only.\n\n## Migration options\n\n**A — Direct dependency**\n\n```bash\nnpm install image-size-next\n```\n\n```diff\n- import { imageSize } from 'image-size'\n+ import { imageSize } from 'image-size-next'\n```\n\n**B — Force transitive resolution (npm 8.3+)**\n\n```json\n{\n  \"overrides\": {\n    \"image-size\": \"npm:image-size-next@2.1.0\"\n  }\n}\n```\n\n## Ask\n\nHappy to open a PR for **`@theia/vscode-builtin-emmet`** if useful. Thanks for maintaining open source.\n",
+      "author": "lcf2212dev",
+      "state": "open",
+      "labels": [
+        "debt",
+        "emmet",
+        "extension"
+      ],
+      "created_at": "2026-08-10T16:48:56Z",
+      "updated_at": "2026-10-05T05:16:22Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/330006",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 329904,
+      "title": "Flaky Tests: imports a prepared model directory and creates scanner metadata",
+      "body": "Run: https://dev.azure.com/monacotools/a6d41577-0fa3-498e-af22-257312ff0545/_build/results?buildId=463073\n\n### Windows Unit Tests (node.js)\n- FoundryLocalModelImport > imports a prepared model directory and creates scanner metadata: 1 failure out of 20\n\n",
+      "author": "alexr00",
+      "state": "closed",
+      "labels": [
+        "bug",
+        "important",
+        "verified",
+        "debt",
+        "unit-test-failure",
+        "insiders-released"
+      ],
+      "created_at": "2026-08-10T08:07:04Z",
+      "updated_at": "2026-09-26T23:26:17Z",
+      "closed_at": "2026-08-11T15:58:14Z",
+      "url": "https://github.com/microsoft/vscode/issues/329904",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "dmitrivMS",
+          "body": "## Validation result\n\n**Pass — 20/20 consecutive runs succeeded** on local `main` at `a85c9b1d558`.\n\n- Test: `foundryLocalModelImport.test.ts`\n- Fix merge commit `cc7b3377965` is present in local `HEAD`.\n- Confirmed compiled output contains the Windows cleanup retry (`maxRetries: 3, retryDelay: 100`), avoiding stale-build validation.\n\n### Command run\n\n```powershell\n$testFile = 'src\\vs\\platform\\localTranscription\\test\\node\\foundryLocalModelImport.test.ts'\n$testName = 'imports a prepared model directory and creates scanner metadata'\n\nfor ($iteration = 1; $iteration -le 20; $iteration++) {\n\tWrite-Output \"=== iteration $iteration/20 ===\"\n\t.\\scripts\\test.bat --run $testFile --grep $testName\n\n\tif ($LASTEXITCODE -ne 0) {\n\t\tWrite-Error \"FAILED on iteration $iteration\"\n\t\texit $LASTEXITCODE\n\t}\n\n\tWrite-Output \"PASS iteration $iteration/20\"\n}\n\nWrite-Output 'RESULT: 20/20 iterations passed'\n```\n\n### Relevant log\n\n```text\n=== iteration 19/20 ===\n\n  FoundryLocalModelImport\n    + imports a prepared model directory and creates scanner metadata\n\n  1 passing (40ms)\n\nerrorlevel: 0\nPASS iteration 19/20\n=== iteration 20/20 ===\n\n  FoundryLocalModelImport\n    + imports a prepared model directory and creates scanner metadata\n\n  1 passing (40ms)\n\nerrorlevel: 0\nPASS iteration 20/20\nRESULT: 20/20 iterations passed\n```\n",
+          "created_at": "2026-08-17T21:54:32Z",
+          "url": "https://github.com/microsoft/vscode/issues/329904#issuecomment-5320710891"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 329528,
+      "title": "Agent Host: capture git baseline checkpoint for Claude and Codex sessions (like Copilot)",
+      "body": "### Problem\n\nPer-turn change lists for **Claude** and **Codex** sessions miss **terminal-tool edits**, but Copilot sessions show them.\n\nThe Agent Host computes per-turn changes two ways:\n1. **Git checkpoint diff** — includes terminal-tool edits (needs a per-session baseline checkpoint, `turn/0`).\n2. **DB `file_edits` fallback** — misses terminal-tool edits.\n\nThe git path only runs if a **baseline checkpoint** was captured. Today `captureBaselineCheckpoint` is called **only from the Copilot harness**, so Claude and Codex never capture a baseline and always fall back to the DB path.\n\n### Fix\n\nDo exactly what Copilot already does — **identical in every way** — for the Claude and Codex harnesses:\n\n- Inject `IAgentHostCheckpointService` into each harness (same as Copilot).\n- On the **fresh** materialize path only, call `captureBaselineCheckpoint(sessionUri, resolvedWorkingDirectories)` with the harness's resolved materialize directory set, **fire-and-forget** (`.catch`, not awaited) — identical to `src/vs/platform/agentHost/node/copilot/copilotAgent.ts` L2511.\n  - **Claude:** in `_materializeProvisional`, before the materialize event fires (`src/vs/platform/agentHost/node/claude/claudeAgent.ts` L1183).\n  - **Codex:** in the first-send path after materialize, before `turn/start`, gated `!firstTurnSent && !needsResume` (`src/vs/platform/agentHost/node/codex/codexAgent.ts` L3569).\n\nCopilot is unchanged. No AHP protocol changes.\n\n### Behavior (inherited from Copilot, no new decisions)\n\nBecause the fix mirrors Copilot exactly, it inherits Copilot's existing behavior:\n- **Fresh-only:** captured on first materialize, never on resume — so restored/pre-existing sessions are not backfilled.\n- **Best-effort:** non-git / workspace-less sessions stay on the DB fallback.\n- **Idempotent + correctly ordered:** guaranteed by the shared checkpoint service.\n- **Multi-root:** unchanged — same primary-folder-only limitation Copilot has today (tracked separately).\n",
+      "author": "DonJayamanne",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "insiders-released",
+        "agent-host"
+      ],
+      "created_at": "2026-08-07T03:52:18Z",
+      "updated_at": "2026-09-21T23:27:46Z",
+      "closed_at": "2026-08-07T06:37:44Z",
+      "url": "https://github.com/microsoft/vscode/issues/329528",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 329218,
+      "title": "Replace sed script-argument deny regexes with a shared script analyzer",
+      "body": "Follow-up to https://github.com/microsoft/vscode/pull/329216.\n\nThat PR extends the default `sed` deny patterns to cover standalone script commands (`e`, `r`, `R`, `w`, `W`) passed as a positional script argument, which the previous flag-based patterns never inspected. The fix is regex-only so it could stay small and low-risk.\n\nRelated: https://github.com/microsoft/vscode/issues/328898 covers `sed -i` in-place parsing, and https://github.com/microsoft/vscode/issues/329028 covers moving shared auto-approval helpers into a lower layer. This issue is the script-argument half that neither one owns.\n\n## Debt\n\nThe new patterns hardcode a specific address grammar, so each one only matches the shapes we enumerated. Anything outside that grammar is not inspected, and there are now three dense regexes duplicated across `commandAutoApprover.ts` and `terminalChatAgentToolsConfiguration.ts` that have to stay in sync. Every future gap means editing six patterns.\n\nKnown shapes the current patterns do not cover:\n\n- No whitespace between the command and its argument, such as `1w/path`.\n- Whitespace between the address and the command, such as `1 e <cmd>`.\n- Address negation with `!`.\n- GNU step addresses using `first~step`.\n- Regex address modifiers `I` and `M`.\n- Newline as a command separator inside the script.\n- A script positioned after a BSD-style empty backup suffix, such as `-i ''`.\n\n## Proposal\n\nReplace the regexes with a shared script analyzer under `vs/platform/terminal/common/autoApprove`:\n\n- Reuse the tokenizer and argument-classification logic already in `SedFileWriteParser` rather than adding a second tokenizer.\n- Identify which argument is the script (`-e`/`--expression` value, `-f`/`--file`, or the first positional when neither is present).\n- Walk the script for command letters in command position, accounting for addresses, `!`, `{}` blocks, `;` and newline separators, and comments.\n- Return a structured result covering command execution, file writes, and file reads, so writes can be checked against the existing workspace-scoped write-destination logic instead of a blanket deny.\n- Fail closed and require confirmation when the script cannot be parsed confidently.\n\nBoth `commandAutoApprover.ts` and `terminalChatAgentToolsConfiguration.ts` carry `TODO` comments pointing here.\n\nAdd tests for the shapes listed above, plus negatives so ordinary usage such as `sed 's/foo/bar/g' file.txt` and `sed -n '1,10p' file.txt` keeps auto-approving.\n",
+      "author": "anthonykim1",
+      "state": "open",
+      "labels": [
+        "debt",
+        "agent-host",
+        "terminal-auto-approve"
+      ],
+      "created_at": "2026-08-05T17:27:55Z",
+      "updated_at": "2026-08-12T09:47:07Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/329218",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 329119,
+      "title": "Agents window becomes sluggish from responsive toolbar layout storm",
+      "body": "## Description\n\nThe Agents window becomes extremely sluggish, particularly while scrolling, when three agent sessions are running concurrently.\n\nA 24-second DevTools trace shows a renderer layout storm strongly correlated with responsive toolbar resize handling:\n\n- 3,907 `UpdateLayoutTree` events totaling **18.17 seconds**\n- 194 renderer tasks longer than 50 ms\n- Worst renderer task: 192 ms\n- 1,169 calls at the responsive `ToolBar` `ResizeObserver` callback site, enclosing **14.7 seconds**\n- 1,506,181 elements processed across style recalculations\n\nGC, paint, and input event handlers were comparatively small and do not explain the sluggishness.\n\n## Reproduction\n\n1. Open the Agents window.\n2. Start three agent sessions and leave them running concurrently.\n3. Scroll the sessions/transcript UI while the sessions stream updates.\n4. Record a DevTools performance trace.\n\nObserved result: scrolling and general interaction become very slow.\n\nExpected result: running multiple sessions should not cause sustained renderer layout work or long tasks that block scrolling.\n\n## Technical findings\n\nThe dominant callback maps to the responsive toolbar observer in:\n\nhttps://github.com/microsoft/vscode/blob/main/src/vs/base/browser/ui/toolbar/toolbar.ts\n\nThe observer synchronously invokes responsive overflow calculation. That path:\n\n- measures the toolbar with `getBoundingClientRect()`;\n- measures action items through `clientWidth`;\n- may push/pull action DOM nodes;\n- updates action minimum widths and overflow state.\n\nThese reads occur amid frequent streaming DOM updates and can force style recalculation. Chat creates responsive primary and secondary toolbars for each session, multiplying the cost when several sessions are active.\n\nThe exact delivery source still needs instrumentation: callbacks may represent genuine parent-driven width changes, a toolbar/consumer observer feedback cycle, or both. `ResizeObserver` normally does not redeliver an unchanged size, so a same-width cache alone is not expected to solve the issue.\n\n## Proposed direction\n\n1. Replace the raw toolbar observer with a named `DisposableResizeObserver`, constructed in the toolbar element's window.\n   - Reuses existing disposal, loop-attribution, and test-constructor support.\n   - Avoids observing auxiliary-window elements with the wrong `ResizeObserver` realm.\n2. Coalesce observer-triggered responsive updates to at most one scheduled pass per animation frame.\n3. Preserve immediate explicit `setActions()` and `relayout()` behavior, because action content can change at a stable outer width.\n4. Preserve custom `observedElement` and `getAvailableWidth` behavior used by the integrated browser.\n5. Use compatible border-box/effective-width semantics across observer and explicit layout paths.\n6. Separate measurement from mutation where practical: read available/action widths first, compute the target overflow state, then apply DOM changes once.\n7. Add a decision-level no-op/hysteresis guard only if profiling still shows width oscillation or fractional jitter after coalescing.\n8. If the base toolbar change is insufficient, investigate the compact chat toolbar observer/layout cycle as a separate contributor.\n\nChanging the default observed element to the toolbar's constructor container is not safe: chat containers share width with sibling controls, and SCM containers can be content-sized.\n\n## Regression coverage\n\n- Exercise responsive `kind: last` and `kind: all`.\n- Multiple resize deliveries in one frame cause one responsive update.\n- Real width changes update overflow and re-expand actions.\n- `relayout()` updates overflow when item content changes at a stable outer width.\n- Custom `observedElement` plus `getAvailableWidth` continues to use the derived width.\n- Border-box width semantics remain consistent.\n- Auxiliary-window elements use their own observer realm.\n- Same-state updates cause no toolbar subtree mutations.\n- Action order, focusability, keyboard navigation, and overflow-menu accessibility remain unchanged.\n\n## Performance acceptance criteria\n\nRe-run the same scripted 24-second scenario with three running sessions:\n\n- Responsive toolbar work is bounded by frame-level width changes and does not continue while idle.\n- ToolBar-attributed `UpdateLayoutTree` time drops by at least 80%.\n- Renderer tasks over 50 ms drop from 194 to fewer than 20.\n- Trace-wide `UpdateLayoutTree` time drops from 18.17 seconds to below 4 seconds.\n- Scripted scrolling maintains p95 frame time below 32 ms.\n- Toolbar overflow/re-expansion behavior remains correct in chat, SCM, and integrated browser consumers.\n\n## Review\n\nThe proposed direction was independently reviewed by two subagents and challenged by a rubber-duck review. Those reviews rejected an initial same-width-cache-only solution and led to the scheduling, observer-realm, box-model, and oscillation-focused plan above.\n",
+      "author": "DonJayamanne",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "perf"
+      ],
+      "created_at": "2026-08-05T06:41:58Z",
+      "updated_at": "2026-09-02T01:15:05Z",
+      "closed_at": "2026-09-02T01:13:35Z",
+      "url": "https://github.com/microsoft/vscode/issues/329119",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "DonJayamanne",
+          "body": "Haven't seen this recently, most likely fixed",
+          "created_at": "2026-09-02T01:13:35Z",
+          "url": "https://github.com/microsoft/vscode/issues/329119#issuecomment-5502844741"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 329106,
+      "title": "Restrict terminal auto-approval settings in untrusted workspaces",
+      "body": "Terminal auto-approval safety settings are currently workspace-overridable while a workspace is untrusted. Neighboring terminal safety settings already use `restricted: true`, so untrusted workspace configuration should not be able to change these controls either.\n\nThis issue tracks the VS Code-owned mitigation:\n\n- Mark terminal auto-approval enablement, command rules, default-rule overrides, and detected file-write policy as restricted settings.\n- Also restrict the deprecated `chat.agent.terminal.autoApprove` compatibility setting.\n- Ignore workspace-provided values for these settings while the workspace is untrusted.\n- Preserve user, remote, default, and trusted-workspace behavior.\n- Keep terminal, Agent Host, warning, sandbox, and permission logic unchanged.\n- Add parser-level regressions for untrusted single-folder and `.code-workspace` settings, plus a trusted-workspace negative control.\n\nAffected settings:\n\n- `chat.tools.terminal.enableAutoApprove`\n- `chat.tools.terminal.autoApprove`\n- `chat.tools.terminal.ignoreDefaultAutoApproveRules`\n- `chat.tools.terminal.blockDetectedFileWrites`\n- `chat.agent.terminal.autoApprove` (deprecated compatibility path)\n\nImplementation: https://github.com/microsoft/vscode/pull/329069\n\nRelated consolidation debt: https://github.com/microsoft/vscode/issues/329028",
+      "author": "anthonykim1",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "insiders-released",
+        "terminal-auto-approve"
+      ],
+      "created_at": "2026-08-05T04:24:15Z",
+      "updated_at": "2026-09-19T23:24:42Z",
+      "closed_at": "2026-08-05T04:36:19Z",
+      "url": "https://github.com/microsoft/vscode/issues/329106",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 329042,
+      "title": "Harden PowerShell terminal auto-approval parsing and default rules",
+      "body": "PowerShell terminal auto-approval currently relies on tree-sitter command captures and broad default rules. Several cases should require the normal terminal confirmation instead of being auto-approved from an incomplete or overly broad interpretation of the command line.\n\nThis issue tracks the VS Code-owned mitigation across both workbench and Agent Host terminal auto-approval:\n\n- Share the PowerShell parse-safety policy between workbench and Agent Host.\n- Require confirmation when tree-sitter reports an incomplete PowerShell parse, even when surviving command captures match allow rules.\n- Keep assignment, method invocation, scriptblock invocation, and expression-pipeline syntax outside auto-approval when the parser cannot safely reduce it to command rules.\n- Replace broad `Select-*`, `Measure-*`, `Compare-*`, `Format-*`, and `Sort-*` defaults with an explicit shared list of known cmdlets.\n- Tighten the POSIX `sort` default so case-insensitive PowerShell matching cannot approve arbitrary `Sort-*` cmdlets.\n- Keep clean PowerShell parses, Bash behavior, and user-configured auto-approval rules unchanged.\n- Add parity coverage for workbench and Agent Host, including incomplete/escaped syntax, invocation expressions, pipelines, explicit safe cmdlets, and arbitrary verb-prefixed cmdlet names.\n\nWhen a command is not auto-approved, it should show the normal confirmation and remain runnable if the user allows it; this is not a hard execution block.\n\nRelated consolidation debt: https://github.com/microsoft/vscode/issues/329028\n",
+      "author": "anthonykim1",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "insiders-released",
+        "terminal-auto-approve"
+      ],
+      "created_at": "2026-08-04T20:47:59Z",
+      "updated_at": "2026-09-18T23:26:39Z",
+      "closed_at": "2026-08-04T22:12:32Z",
+      "url": "https://github.com/microsoft/vscode/issues/329042",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 329028,
+      "title": "Share reusable terminal auto-approval helpers across workbench and Agent Host",
+      "body": "## Context\n\nRecent terminal auto-approval changes have moved reusable logic out of the workbench layer so both workbench and Agent Host can consume it:\n\n- https://github.com/microsoft/vscode/pull/329026 shares the default Git auto-approval rules.\n- https://github.com/microsoft/vscode/pull/328882 shares the `sed` in-place parser.\n\nThere is an existing note associated with:\n\n`src/vs/workbench/contrib/terminalContrib/chatAgentTools/browser/runInTerminalHelpers.ts`\n\n```ts\n// Bump the layer and rename TerminalCommandhelper?\n// double if we track expanding terminal thinking block.\n```\n\n## Debt\n\nAudit `runInTerminalHelpers.ts` and related terminal auto-approval helpers for logic that should live in a lower shared terminal layer rather than workbench.\n\nPotential work:\n\n- Identify pure helpers that are useful to both workbench and Agent Host.\n- Move shared terminal auto-approval semantics to `vs/platform/terminal/common/autoApprove` without moving workbench policy, services, localization, or UI.\n- Rename ambiguous helper types/functions such as the referenced `TerminalCommandhelper` where appropriate.\n- Avoid duplicate implementations as Agent Host and workbench terminal behavior converge.\n- Consider how the helper boundary should support expanded terminal thinking-block tracking.\n\nThis should be an organizational cleanup unless a separately reviewed behavior change is required.\n",
+      "author": "anthonykim1",
+      "state": "open",
+      "labels": [
+        "debt",
+        "terminal-auto-approve"
+      ],
+      "created_at": "2026-08-04T19:28:15Z",
+      "updated_at": "2026-08-04T19:28:15Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/329028",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 328903,
+      "title": "Share the command file-write parser contract across terminal auto-approval",
+      "body": "## Context\n\nPR https://github.com/microsoft/vscode/pull/328882 moves `SedFileWriteParser` into `vs/platform/terminal/common/autoApprove` so workbench and Agent Host can reuse it.\n\nThe parser structurally satisfies workbench's `ICommandFileWriteParser`, but cannot explicitly declare `implements ICommandFileWriteParser` because that interface still lives under the workbench contribution layer.\n\n## Debt\n\nMove the command-specific file-write parser contract to the shared terminal auto-approval layer, for example:\n\n```text\nsrc/vs/platform/terminal/common/autoApprove/commandFileWriteParser.ts\n```\n\nThen:\n\n- Have `SedFileWriteParser` explicitly implement the shared interface.\n- Update workbench's parser registry to import the shared interface.\n- Use the shared contract for future command-specific write parsers (`tee`, `dd`, `perl -i`, etc.).\n- Keep destination approval policy in workbench and Agent Host; only the parser contract belongs in the shared layer.\n\nThis is an organizational/type-contract cleanup and should not change runtime behavior.\n",
+      "author": "anthonykim1",
+      "state": "open",
+      "labels": [
+        "debt",
+        "terminal-auto-approve"
+      ],
+      "created_at": "2026-08-04T06:44:29Z",
+      "updated_at": "2026-08-04T06:44:29Z",
+      "closed_at": "",
+      "url": "https://github.com/microsoft/vscode/issues/328903",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 328852,
+      "title": "Copilot agent host identity",
+      "body": "It says \"CLI\" confusingly. \n\nCheck the work done in extension host to avoid this .",
+      "author": "anthonykim1",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "insiders-released",
+        "copilot",
+        "agent-host"
+      ],
+      "created_at": "2026-08-03T21:21:22Z",
+      "updated_at": "2026-08-25T20:44:20Z",
+      "closed_at": "2026-08-24T06:58:46Z",
+      "url": "https://github.com/microsoft/vscode/issues/328852",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "anthonykim1",
+          "body": "<img width=\"394\" height=\"330\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/a39350b9-44fd-4f5f-92cb-bc4b5ee3d003\" />\n\nWe'd want to omit the wording \"CLI\" to reduce confusion. ",
+          "created_at": "2026-08-03T21:23:01Z",
+          "url": "https://github.com/microsoft/vscode/issues/328852#issuecomment-5171884592"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 328790,
+      "title": "Do we need 2 commands to set the microphone?",
+      "body": "Testing #328440\n\n<img width=\"620\" height=\"161\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/fe44d7a8-84d8-420e-88d5-6ecd9957161b\" />",
+      "author": "TylerLeonhardt",
+      "state": "closed",
+      "labels": [
+        "bug",
+        "verified",
+        "debt",
+        "insiders-released",
+        "voice-mode"
+      ],
+      "created_at": "2026-08-03T18:29:33Z",
+      "updated_at": "2026-09-19T23:24:53Z",
+      "closed_at": "2026-08-05T16:05:02Z",
+      "url": "https://github.com/microsoft/vscode/issues/328790",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 328421,
+      "title": "Revisit above input UIs as one base class that other elements extend from",
+      "body": "The main ones that seem quite similar are\n\n- Tips\n- On boarding\n- Chat input notifications\n- Todo\n\nI would argue that tips + todo are very similar and on boarding + chat input are very similar so depending on how unified we want to make things and how configurable we want these elements to be would determine if it makes sense as one or two distinct base classes \n\ncc @justschen As I think we also now have that sticky header above the chat input as well. Happy to get your thoughts as the UI guy",
+      "author": "lramos15",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "ux",
+        "chat"
+      ],
+      "created_at": "2026-07-31T15:10:32Z",
+      "updated_at": "2026-09-27T23:31:28Z",
+      "closed_at": "2026-08-13T20:17:55Z",
+      "url": "https://github.com/microsoft/vscode/issues/328421",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "lramos15",
+          "body": "This has been substantially cleaned up ",
+          "created_at": "2026-08-13T20:17:55Z",
+          "url": "https://github.com/microsoft/vscode/issues/328421#issuecomment-5285912125"
+        }
+      ],
+      "comments_collected": true
+    }
+  ]
+}

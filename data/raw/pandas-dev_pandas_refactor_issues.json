@@ -1,0 +1,507 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "pandas-dev",
+    "repo": "pandas",
+    "label": "Refactor",
+    "requested": 12,
+    "collected": 12,
+    "collected_at": "2026-10-08T10:26:05+00:00",
+    "comments_complete": true,
+    "warning": ""
+  },
+  "issues": [
+    {
+      "number": 66347,
+      "title": "REF: Reduce cognitive complexity of `tokenize_bytes`",
+      "body": "The [`tokenize_bytes`](https://github.com/pandas-dev/pandas/blob/15b1dd913e3df72854955936b0d89c7f95648a9a/pandas/_libs/src/parser/tokenizer.c#L779-L1357) function currently has a cognitive complexity score of 551 according to `clang-tidy`, which significantly exceeds the default threshold of 25.\n\nThe complexity primarily comes from managing 16 distinct parser states within a single monolithic loop, combined with inline SIMD preprocessing and scalar fallback logic. Modularizing the state handling into smaller helper functions would help improve the readability and long-term maintainability of the CSV parser.",
+      "author": "Alvaro-Kothe",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "IO CSV"
+      ],
+      "created_at": "2026-07-15T23:13:55Z",
+      "updated_at": "2026-07-16T00:50:50Z",
+      "closed_at": "2026-07-16T00:50:50Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/66347",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "jbrockmendel",
+          "body": "This is a good issue, but I think will invite unwanted drive-by.",
+          "created_at": "2026-07-16T00:30:32Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/66347#issuecomment-4986685358"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 64002,
+      "title": "ENH: Refactor: centralize describe function selection",
+      "body": "### Feature Type\n\n- [ ] Adding new functionality to pandas\n\n- [x] Changing existing functionality in pandas\n\n- [ ] Removing existing functionality in pandas\n\n\n### Problem Description\n\nlocation : pandas/pandas/core/methods/describe.py\n\nWhile reading through describe.py, I noticed that select_describe_func is called repeatedly (once per Series, and for every column in DataFrame.describe). Since this function is pure and depends only on the dtype, we could cache or centralize the dtype → describe-function resolution.\n\nThis wouldn’t change behavior, but could:\nreduce repeated dtype checks for wide DataFrames\nmake it easier to extend describe behavior for new dtypes in one place\nThe change should be low risk and internal-only.\nIf core team agree this makes sense, I’m happy to raise a small PR with a minimal refactor + tests.\n\n### Feature Description\n\nCache the dtype describe-function selection in describe.py to avoid repeated resolution when describing Series and wide DataFrames. This is an internal refactor with no behavior change, aimed at improving efficiency and keeping dtype handling centralized and easier to extend.\n\n### Alternative Solutions\n\n_\n\n### Additional Context\n\n_No response_",
+      "author": "vkverma9534",
+      "state": "closed",
+      "labels": [
+        "Enhancement",
+        "Refactor",
+        "Needs Triage"
+      ],
+      "created_at": "2026-02-03T07:08:44Z",
+      "updated_at": "2026-02-08T10:08:58Z",
+      "closed_at": "2026-02-08T10:08:58Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/64002",
+      "comments_count": 6,
+      "comments": [
+        {
+          "author": "jorisvandenbossche",
+          "body": "My assumption is that the work being done in the actual describe function (e.g. calculating all the statistics for numeric columns) will be take a lot more time than the functions to decide which function to use based on the dtype. So the performance improvements might not be very significant.\n\nNot necessarily opposed to the changes you are proposing (it is entirely correct that this is doing duplicate work if there are columns with the same dtype), but you will have to show that 1) it gives a measurable performance improvement, and 2) it does not make the code much more complex.",
+          "created_at": "2026-02-03T14:07:40Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/64002#issuecomment-3841547598"
+        },
+        {
+          "author": "vkverma9534",
+          "body": "@jorisvandenbossche Thank you for your consideration.\n\nThat’s fair. I agree the actual describe_* work will dominate, so I don’t exepct big wins here.\n\nThe main motivation is avoiding repeated dtype resolution for wide DataFrames with many columns of the same dtype, and keeping the dtype -> function mapping in one place for maintainability. But I agree it only makes sense if it stays very small and shows at least some measurable benefit.\n\nI can put together a minimal benchmark (wide, homogeneous dtypes) and keep the refactor very lightweight. If the gains are negligible or the code gets more complex, I’m happy to drop it.",
+          "created_at": "2026-02-03T19:40:34Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/64002#issuecomment-3843281264"
+        },
+        {
+          "author": "vkverma9534",
+          "body": "should I try raising a PR showing my improvements (in my purview) and see if something works out",
+          "created_at": "2026-02-03T19:56:32Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/64002#issuecomment-3843351225"
+        },
+        {
+          "author": "vkverma9534",
+          "body": "Hi @rhshadrach  thanks for the clarification and for bringing this up in the policy discussion. Just to make sure I’m understanding correctly-> my takaeway is that #64002 is being referenced mainly as an example of a small reasonable refractor where requiring an issue first might add friction, rather than as a concern about the quality of this issu or my contributions more generally. If that’s the intent, thanks for calling it out and please let me know if I’m misreading anything.",
+          "created_at": "2026-02-04T18:49:34Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/64002#issuecomment-3849165340"
+        },
+        {
+          "author": "rhshadrach",
+          "body": "@vkverma9534 - exactly correct.",
+          "created_at": "2026-02-05T10:28:21Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/64002#issuecomment-3852629075"
+        },
+        {
+          "author": "vkverma9534",
+          "body": "@jorisvandenbossche @rhshadrach \nI ran a quick benchmark on a wide, homogeneous DataFrame (10k float64 columns). on my machine, main took ~18.87s and ~18.63s with this change, so the diff is pretty small and within noise.\n\nAs expected, the runtime is mostly dominated by the actual describe computations, so this dosen’t seem to give a meaningful benrfit overall. i agree it’s probably not worth the refactor and I’m happy to drop this and close the issue. Thanks for the discussion.",
+          "created_at": "2026-02-07T08:59:33Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/64002#issuecomment-3863989105"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 62164,
+      "title": "REF: use _cast_pointwise_result in map",
+      "body": "Recently implemented _cast_pointwise_result is the correct idiom to use to retain dtype_backend in EA.map and any similar ops.",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Apply",
+        "pyarrow dtype retention"
+      ],
+      "created_at": "2025-08-21T14:13:42Z",
+      "updated_at": "2026-04-21T22:16:37Z",
+      "closed_at": "2026-04-16T16:17:29Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/62164",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 59895,
+      "title": "REF: make _cast_pointwise_result an EA method",
+      "body": "In the extension tests.extension.base.ops.BaseOpsUtil we have a _cast_pointwise_result method that is used to patch the result of Series.combine to do appropriate dtype inference so that we have e.g.\r\n\r\n```\r\nexpected = series + other\r\nmiddle = series.combine(other, operator.add)\r\nresult = self._cast_pointwise_result(middle)\r\ntm.assert_series_equal(result, expected)\r\n```\r\n\r\n(There is also a test_combine_add method which does not currently use _cast_pointwise_result but could.  Also test_combine_le looks like we implemented an entirely separate pattern for customizing dtype inference in that test.  I'll look into seeing if these can re-use the _cast_pointwise_result pattern.)\r\n\r\nThis cast_pointwise_result should just be an EA method.  ATM we override it in the arrow, masked, and string tests (I suspect that we _should_ be overriding it in the sparse tests but it looks like we skip a bunch of them instead).\r\n\r\nThis will effectively replace _from_scalars, which was a mis-feature.  It will also let us de-kludge places where we use maybe_cast_pointwise_result and generally be more robust.\r\n",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "ExtensionArray"
+      ],
+      "created_at": "2024-09-25T22:49:29Z",
+      "updated_at": "2025-08-20T16:00:18Z",
+      "closed_at": "2025-08-20T16:00:18Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/59895",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "jbrockmendel",
+          "body": "It also looks a lot like test_combine_add+test_combine_le are made redundant by more general tests in BaseComparisonOpsTests and BaseArithmeticOpsTests",
+          "created_at": "2024-09-25T23:03:57Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/59895#issuecomment-2375421974"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 57187,
+      "title": "REF: Remove internals.base",
+      "body": "Ref: https://github.com/pandas-dev/pandas/pull/57118#discussion_r1469860926",
+      "author": "rhshadrach",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Internals"
+      ],
+      "created_at": "2024-01-31T22:37:28Z",
+      "updated_at": "2024-02-02T17:53:31Z",
+      "closed_at": "2024-02-02T17:53:31Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/57187",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 56681,
+      "title": "REF: simplify _constructor/_from_mgr/_constructor_from_mgr/...",
+      "body": "ATM we have\n\n- _constructor\n- _constructor_sliced\n- _constructor_expanddim\n- _from_mgr (update 2026-04-14 this is `@final`)\n- <s>_sliced_from_mgr</s>\n- <s>_expanddim_from_mgr</s>\n- _constructor_from_mgr\n- _constructor_sliced_from_mgr\n- _constructor_expanddim_from_mgr\n\nI suspect that we can make do with fewer of these, or at least simplify them (e.g. make some `@final`, `@classmethod`, #51772, make downstream libraries never touch Managers, very slightly improve perf in the non-subclass cases).  Some of these ideas are mutually exclusive:\n\n1) ATM _from_mgr is a classmethod, all the other *_from_mgr methods are regular methods.  The _constructor_*_from_mgr methods rely on `self._constructor*`, so could not be made classmethods unless those constructor*s also became classmethods.  Does anyone out there rely on _constructor* _not_ being a classmethod?\n\n2) `_expanddim_from_mgr` and `_sliced_from_mgr` are each only used once, in `_constructor_expanddim_from_mgr` and `_constructor_sliced_from_mgr`, respectively.  Can we just inline these and remove the methods (maybe keep the less-verbose names)?  If not, can we at least `@final` and `@classmethod` them?\n\n3) Can `_from_mgr` be made `@final`?  If not can `_constructor_from_mgr` be inlined into it?\n\n4) The 3 listed expanddim methods are there just for `Series.to_frame`.  We could get rid of all three and tell subclasses to just override `to_frame`.  (Doing this would also make it easier to tell subclass authors to handle metadata propagation in to_frame xref #32860)\n\n5) We can slightly improve perf for non-subclasses by changing `if self._constructor is Series` to `if type(self) is Series` at the cost of slightly hurting perf for subclasses.\n\n6) Most extreme: we can make it so that a) (most) subclasses don't need to override _any_ *from_mgr methods, b) subclasses `__init__` don't need to know how to handle Managers, c) we don't need the constructor*from_mgr methods and d) (most) subclass authors never touch Managers by writing e.g.\n\n```\ndef _from_mgr(self, mgr, axes):\n    df = DataFrame._existing_from_mgr_method(mgr, axes)\n    if type(self) is DataFrame:\n        return df\n    return self._constructor(df)\n```\n\ni.e. assume that the subclass `__init__` knows what to do when given a pandas object.  \n\n@jorisvandenbossche [writes](https://github.com/pandas-dev/pandas/pull/54922#issuecomment-1779545693) that this would inconvenience geopandas since it does inference when given a DataFrame but not when given a Manager.  In cases like that geopandas would need to override _from_mgr (why \"most\" is needed in a) and d) above), but ATM they need to override _constructor_from_mgr, so that wouldn't be a net increase in Stuff They Need To Do.\n\nThis idea is roughly #53871, which was reverted by #54922.\n",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Needs Discussion",
+        "Subclassing"
+      ],
+      "created_at": "2023-12-29T18:08:44Z",
+      "updated_at": "2026-09-28T17:17:17Z",
+      "closed_at": "2026-09-28T17:17:17Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/56681",
+      "comments_count": 11,
+      "comments": [
+        {
+          "author": "theOehrly",
+          "body": "Just chiming in as a maintainer of a package that subclasses Pandas DataFrames and Series'. Apart from having many constructor functions and properties, at the moment it is also not very clear what a subclass can override, should override and must not override. \r\n\r\nThe documentation for subclassing (https://pandas.pydata.org/docs/development/extending.html#subclassing-pandas-data-structures) only mentions `._constructor`, `._constructor_sliced` and `._constructor_expanddim`. I would argue that there's no way around reading the source code anyway, when subclassing. But from the comments there, it's still very difficult to figure out how everything works.\r\n\r\nUnderstanding the concepts here is fairly difficult if one does not actively participate in core development. And this has become more difficult over the last releases with the addition of new constructor related methods. Therefore, I am in favour of simplifying this system. But additionally, it would then be great to have some more documentation on the purpose of each function or property. Even if it's just in the form of comments in the code.",
+          "created_at": "2024-01-11T15:48:37Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-1887454401"
+        },
+        {
+          "author": "Deadlica",
+          "body": "take",
+          "created_at": "2024-02-22T10:46:53Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-1959179648"
+        },
+        {
+          "author": "andrefred",
+          "body": "take",
+          "created_at": "2024-02-22T10:47:17Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-1959180293"
+        },
+        {
+          "author": "Gustaf-Larsson",
+          "body": "take",
+          "created_at": "2024-02-22T10:48:52Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-1959182888"
+        },
+        {
+          "author": "raeef96",
+          "body": "take",
+          "created_at": "2024-02-22T10:50:25Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-1959185742"
+        },
+        {
+          "author": "miguelpgarcia",
+          "body": "take",
+          "created_at": "2024-04-24T14:54:23Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-2075145049"
+        },
+        {
+          "author": "jbrockmendel",
+          "body": "in #56175 @jorisvandenbossche writes [about removing constructor_expanddim_from_mgr and making subclasses override to_frame]:\n\n```\nRemoving _constructor_expanddim_from_mgr (even though used only once) feels a bit inconsistent with the other _constructor... methods, so I would prefer to keep that one just for consistency / clarity.\nThere will also be projects that are overriding this method (outside of geopandas), although I would generally guess they implement it with similar logic as _constructor_expanddim such that the change wouldn't impact results.\n```\n\n> for [...] clarity\n\nThe only clarity-related evidence I've seen is the comment above complaining about a) the quantity of these methods and b) their docs.\n\n> There will also be projects that are overriding this method (outside of geopandas)\n\nI had claude search for these and it found\n\n```\n  ┌────────────────┬───────────────────┬──────────────┐                                                                                                                             \n  │    Package     │ Monthly downloads │ GitHub stars │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ autogluon      │ 739k              │ 10,222       │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ spatialpandas  │ 25k               │ 315          │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ trackintel     │ 11k               │ 260          │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ timely-beliefs │ 6.2k              │ 42           │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ tfs-pandas     │ 6k                │ 8            │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ pynsee         │ 1.9k              │ 88           │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ swmm-pandas    │ 143               │ 7            │                                                                                                                             \n  └────────────────┴───────────────────┴──────────────┘                                                                                                                             \n```\n\nSeveral of these seem to subclass geopandas and IIUC (some of?) their overrides would be unnecessary if geopandas wrote `type(self)` instead of hard-coding `GeoSeries`.\n\nSeveral of these need to keep `_constructor_from_mgr` for correctness.  I'll throw in the towel on getting rid of that.  AFAICT only geopandas (and its subclassers) need the other two `_foo_from_mgr` methods (for perf, not correctness).  I think finding a way around that would allow us to get rid of 2 methods and simplify the docs situation for the large majority of subclass authors who don't need to care about these.\n",
+          "created_at": "2026-04-14T16:55:56Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-4245699076"
+        },
+        {
+          "author": "m-richards",
+          "body": "@jbrockmendel you and joris I'm sure are closer to the details here, but some observations. \nThere's an inherent requirement as it stands that subclasses need to overwrite `_constructor_expanddim`, `_constructor_expanddim_from_mgr` and `_constructor_sliced` - there's not a `type(self)` to use when going from 1d to 2d - unless you change the interface to requiring to_frame and `squeeze` to be overloaded by child classes or something of the sort. I agree that from the perspective of someone not super up to date on the pandas internals a shorter list of internal special things to override would be better, but I think documentation plugs this gap just as well from a pragmatic standpoint, even if it's not an elegant solution.\n\nI only had a quick look and it does seem like some overloads downstream of geopandas are overkill with the current version (but they may support multiple geopandas versions, I didn't check)",
+          "created_at": "2026-04-15T08:13:27Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-4250340698"
+        },
+        {
+          "author": "jorisvandenbossche",
+          "body": "> Several of these seem to subclass geopandas and IIUC (some of?) their overrides would be unnecessary if geopandas wrote `type(self)` instead of hard-coding `GeoSeries`.\n\nI think only `trackintel` and `pynsee` from that list do so? (spatialpandas has copied the approach from geopandas so it does similar things, but doesn't actually inherit from geopandas) \nIt can certainly be the case that we can make subclassing easier from geopandas, and I know we have had some issues (and improvements) related to that in the past (eg https://github.com/geopandas/geopandas/pull/3505)\n\nHowever, what suprises me a bit from looking at that list of sublclasses is that many of them actually override the `_constructor_from_mgr` method. It might be useful to investigate in more detail _why_ exactly they have to do so.  \nFor example, [`autogluon`](https://github.com/autogluon/autogluon/blob/45578984c9f5d9e73d32c96becd5adef75332d51/timeseries/src/autogluon/timeseries/dataset/ts_dataframe.py#L156-L165) is doing that to propagate their metadata (but should that be done automatically if we always call finalize after `_constructor_from_mgr`?) Similarly for [`timely-beliefs`](https://github.com/SeitaBV/timely-beliefs/blob/eaba8c9d015ffa4b7feb161e24bc6ef04f7fc8a2/timely_beliefs/beliefs/classes.py#L859-L863). [`tfs-pandas`](https://github.com/pylhc/tfs/blob/b79da0a1892cfdf26fcf6d40cea4e6a26ac9cd1b/tfs/frame.py#L96-L103) is defining `_constructor_from_mgr` to deal with the \"not-fully-initialized\" dataframe issue (after https://github.com/pandas-dev/pandas/issues/55120). \n[`swwm-pandas`](https://github.com/karosc/swmm-pandas/blob/a82914c717f95b02fe99f5db6543b98df46773db/src/swmm/pandas/input/_section_classes.py#L536-L538) has the method to override the class (essentially calling `self.__class__._from_mgr(mgr, axes)`), but that does not feel as needed?\n\nIn the end, it has been our desire to move \"construct from mgr\" outside of the main constructor (which I still think was a good separation of concerns), but that inevitably complicated the constructors situation for subclasses. We can look into why / try to avoid the need of subclasses _having_ to also override `_constructor_from_mgr` in addition to `_constructor`, but in the end I agree it is also a matter of better documenting this.\n\n",
+          "created_at": "2026-04-15T14:09:54Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-4252773559"
+        },
+        {
+          "author": "jorisvandenbossche",
+          "body": "> Several of these need to keep `_constructor_from_mgr` for correctness. I'll throw in the towel on getting rid of that. AFAICT only geopandas (and its subclassers) need the other two `_foo_from_mgr` methods (for perf, not correctness). I think finding a way around that would allow us to get rid of 2 methods\n\nI haven't looked in detail, but I _think_ that one reason is that many of those other packages are only subclassing DataFrame. It they would also be sublcasssing Series, I think they potentially need the equivalent `_constructor_from_mgr` on their subclassed Series for whatever reason they are having it defined on the DataFrame (eg to initialize an attribute, like `pandas.Series._constructor_from_mgr` does for the name).\n\nAlthough that reason might have been true for pandas 2.1, but since we now hardcode to create a pandas DataFrame/Series from the manager (and not the subclass) in `_constructor_from_mgr`, and then pass that pandas object to the subclass `_constructor`, that might not actually be needed? (also not for DataFrame subclasses)",
+          "created_at": "2026-04-15T14:18:45Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-4252838729"
+        },
+        {
+          "author": "jbrockmendel",
+          "body": "I think we've pushed this as far as itll go.  Closing.",
+          "created_at": "2026-09-28T17:17:17Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/56681#issuecomment-5874985874"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 56148,
+      "title": "DEPR: Certain Grouper and Grouping attributes",
+      "body": "#55738 reworks some of the internals for groupby, the following attributes are no longer necessary. \r\n\r\n* `BaseGrouper.group_keys_seq`\r\n* `BaseGrouper.reconstructed_codes`\r\n* `Grouping.group_index`\r\n* `Grouping.result_index`\r\n* `Grouping.group_arraylike`\r\n\r\nI'd expect these to be almost exclusively used internally in pandas, but since they are publicly accessible I think we should deprecate these and remove them in 3.0.",
+      "author": "rhshadrach",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Groupby",
+        "Deprecate"
+      ],
+      "created_at": "2023-11-24T13:41:29Z",
+      "updated_at": "2023-11-26T04:35:45Z",
+      "closed_at": "2023-11-26T04:35:44Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/56148",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "number": 55897,
+      "title": "REF/API/DEPR: _holds_integer checks in plotting",
+      "body": "### Pandas version checks\n\n- [X] I have checked that this issue has not already been reported.\n\n- [X] I have confirmed this bug exists on the [latest version](https://pandas.pydata.org/docs/whatsnew/index.html) of pandas.\n\n- [X] I have confirmed this bug exists on the [main branch](https://pandas.pydata.org/docs/dev/getting_started/install.html#installing-the-development-version-of-pandas) of pandas.\n\n\n### Reproducible Example\n\n```python\nNA\n```\n\n\n### Issue Description\n\nIn the plotting code we have a few places where we check `self.data.columns._holds_integer` and one on `index.inferred_type`.  AFAICT these are _almost_ equivalent to just checking the dtype of the columns/index, but with some corner cases for object-dtype indexes.  I don't think we should be special-casing these corner cases.  We should deprecate that special-casing and move to dtype-based checks.\n\n### Expected Behavior\n\nNA\n\n### Installed Versions\n\n<details>\r\n\r\nReplace this line with the output of pd.show_versions()\r\n\r\n</details>\r\n",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Visualization",
+        "Deprecate",
+        "API - Consistency"
+      ],
+      "created_at": "2023-11-09T20:05:12Z",
+      "updated_at": "2025-08-21T16:12:19Z",
+      "closed_at": "2025-08-21T16:12:19Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/55897",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "lazarust",
+          "body": "@jbrockmendel and @lithomas1 I can take this! ",
+          "created_at": "2023-11-15T01:20:24Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55897#issuecomment-1811648860"
+        },
+        {
+          "author": "lazarust",
+          "body": "take",
+          "created_at": "2023-11-15T01:20:56Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55897#issuecomment-1811649238"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 55551,
+      "title": "REF: groupby internal names",
+      "body": "I'd like to start gathering / discussing refactoring some of the naming within `pandas.core.groupby`. These are some initial ones that come to mind, I plan to expand this issue in the near future.\r\n\r\nIssues:\r\n\r\n - (https://github.com/pandas-dev/pandas/pull/55429#issuecomment-1765127776) generic.py has subclasses, whereas core.generic.py has the base class NDFrame.\r\n - `result_index` is only the result index for aggregations.\r\n - Is the 'b' capitalized in class names? DataFrameGroupBy vs ExpandingGroupby\r\n\r\nResolutions:",
+      "author": "rhshadrach",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Groupby",
+        "Needs Discussion"
+      ],
+      "created_at": "2023-10-16T20:30:23Z",
+      "updated_at": "2026-09-21T12:43:48Z",
+      "closed_at": "2026-09-21T12:43:48Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/55551",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "rhshadrach",
+          "body": "For generic.py, I'd like to split this into one for SeriesGroupBy and one for DataFrameGroupBy. This would make it easier to determine what method you're looking at (the Series version vs the DataFrame version). I propose either calling them `series.py` and `frame.py` or `series_groupby.py` and `frame_groupby.py`.\r\n\r\nFor `result_index`, I'd like to rename this `agg_index`.\r\n\r\ncc @jbrockmendel ",
+          "created_at": "2023-10-16T20:32:41Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55551#issuecomment-1765227212"
+        },
+        {
+          "author": "jbrockmendel",
+          "body": "> For result_index, I'd like to rename this agg_index.\r\n\r\nfine by me",
+          "created_at": "2023-10-16T21:02:56Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55551#issuecomment-1765270294"
+        },
+        {
+          "author": "jbrockmendel",
+          "body": "The 'b' not being capitalized was addressed by #68937.  Is there anything else actionable here?",
+          "created_at": "2026-09-21T03:07:00Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55551#issuecomment-5754851633"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 55426,
+      "title": "REF/API: EA formatting methods",
+      "body": "I went down a rabbit hole trying to unravel the many methods we have for rendering arrays.  The status quo is not great (but not urgent).  The methods I'm looking at are:\r\n\r\n- `(EA|Index|Series|Dataframe).__repr__`\r\n- `Index.format` (xref #55413)\r\n- `(Series|DataFrame).to_string`, `to_html`, `to_latex`, (maybe other Styler-like things im not familiar with?)\r\n- `to_csv`\r\n- `to_json`\r\n- (havent really looked at `to_xml`, `to_stata`, `to_hdf`, `to_excel` etc)\r\n\r\nThe pain points are roughly:\r\n\r\n1) We special-case our internal EAs in ways that complicate the code and make it difficult to reason about.  Some of these are just for perf, others actually break tests if we remove the special casing.\r\n2) Keywords specific to dt64/td64 dtypes are used with our numpy dtypes but not for pyarrow dtypes or 3rd party dtypes. In particular I'm thinking of `date_format` in `to_csv` and in `DatetimeIndexOpsMixin.format` (xref #33319)\r\n3) The `boxed` keyword in `EA._formatter` is documented as being True when rendering an EA inside a Index/Series/DataFrame, but the way it is enabled is via `fallback_formatter` in `format_array` may use it or not depending on spaghetti logic.  Also for dt64/td64/period we _dont_ box the values in Series/DataFrame but do in Index/EA.\r\n     - AFAICT this is largely motivated by the idea that `eval(repr(index))` is valid, which i don't particularly care about.\r\n4) Many of the code paths cast to object in ways that look unnecessary.\r\n5) _Timedelta64Formatter and _Datetime64Formatter have a nat_rep keyword in `__init__` that is never passed.  The caller `format_array` does pass `na_rep` (which defaults to \"NaN\" and using it expect would break a zillion tests)\r\n6) `to_json` just doesn't work with general EA dtypes (xref #35420, #31917, #32037)\r\n7) `date_format` in `to_json` behaves differently from everywhere else (xref #16492, #22317, #39135, #47930)\r\n8) General hodgepodge of mismatched keywords in different to_foo methods (most of which is unavoidable)\r\n\r\nSome ideas on improving the situation:\r\n\r\nA) Deprecate `Index.format` (xref #55413) and implement `Index._format_flat` and `Index._format_multi` for internal use.  We don't use most of the existing keywords internally, so the new methods would be appreciably simpler than the current ones.\r\nB) add relevant keywords (float_format, decimal, date_format) to `EA._formatter` to make the fallback_formatter spaghetti in 3) unnecessary\r\nC) add a vectorized formatting method to EA with the same behavior as our internal EAs' `_format_native_values`.  Then avoid special-casing our internal EAs in the relevant places.\r\n&nbsp; &nbsp; &nbsp; i) Note we used to have EA._formatting_values and i guess that was removed in favor of just `_formatter`.  I think we could implement the default `_vectorized_whatever` in terms of `_formatter` so the new method would be optional for 3rd party authors.\r\n&nbsp; &nbsp; &nbsp; ii) The \"relevant places\" would include blocks.to_native_types (used in to_csv), to_json, Index._format_native_values, and `format_array`\r\nD) Change the `boxed` behavior to box in when inside and Index but not in Series/DataFrame.\r\nE) for 5, just accept/document that `na_rep` is ignored for these dtypes and you'll always get \"NaT\"\r\nF) standardize the \"date_format\" behavior across `to_json` and other places where it shows up\r\n",
+      "author": "jbrockmendel",
+      "state": "open",
+      "labels": [
+        "Refactor",
+        "API - Consistency"
+      ],
+      "created_at": "2023-10-06T16:20:45Z",
+      "updated_at": "2026-08-18T01:37:18Z",
+      "closed_at": "",
+      "url": "https://github.com/pandas-dev/pandas/issues/55426",
+      "comments_count": 6,
+      "comments": [
+        {
+          "author": "Deadlica",
+          "body": "take",
+          "created_at": "2024-02-22T10:47:16Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55426#issuecomment-1959180272"
+        },
+        {
+          "author": "Gustaf-Larsson",
+          "body": "take",
+          "created_at": "2024-02-22T10:53:11Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55426#issuecomment-1959190517"
+        },
+        {
+          "author": "andrefred",
+          "body": "take",
+          "created_at": "2024-02-22T10:54:33Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55426#issuecomment-1959192708"
+        },
+        {
+          "author": "raeef96",
+          "body": "take",
+          "created_at": "2024-02-28T15:41:29Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55426#issuecomment-1969258763"
+        },
+        {
+          "author": "tomytp",
+          "body": "take\r\n",
+          "created_at": "2024-05-12T18:13:05Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55426#issuecomment-2106333950"
+        },
+        {
+          "author": "github-actions[bot]",
+          "body": "This issue has been automatically unassigned from @raeef96, @Deadlica, @Gustaf-Larsson, @andrefred because there's been no linked pull request or activity for **7 days**. No worries at all if other things came up! @raeef96, @Deadlica, @Gustaf-Larsson, @andrefred — you're welcome to comment `/take` to pick it back up anytime, and it's now open for anyone else to claim too. See the [contributing guide](https://pandas.pydata.org/docs/dev/development/contributing.html#issue-assignment-and-the-pull-request-lifecycle) for how this works.",
+          "created_at": "2026-08-18T01:37:18Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/55426#issuecomment-5322353616"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 54961,
+      "title": "REF: Replace args/kwargs in groupby.resample with TimeGrouper arguments",
+      "body": "The args/kwargs to this method are currently documented as:\r\n\r\n> *args, **kwargs\r\n>     Possible arguments are `how`, `fill_method`, `limit`, `kind` and `on`, and other arguments of `TimeGrouper`.\r\n\r\nI think we should instead have these argument as being keyword arguments to groupby.resample and a test that ensures the arguments to TimeGrouper are a subset of the arguments to this method.\r\n\r\nAlso, it looks like some of these arguments, how, fill_method, and limit, are entirely ignored? But I haven't checked thoroughly.\r\n\r\ncc @mroeschke ",
+      "author": "rhshadrach",
+      "state": "open",
+      "labels": [
+        "Refactor",
+        "Groupby",
+        "Resample",
+        "Needs Discussion"
+      ],
+      "created_at": "2023-09-02T15:20:59Z",
+      "updated_at": "2023-12-12T01:51:30Z",
+      "closed_at": "",
+      "url": "https://github.com/pandas-dev/pandas/issues/54961",
+      "comments_count": 4,
+      "comments": [
+        {
+          "author": "mfenner1",
+          "body": "@rhshadrach Do you happen to know when TimeGrouper was resurrected?  It was deprecated in 0.21.0:  (see  https://pandas.pydata.org/pandas-docs/stable/whatsnew/v0.21.0.html#deprecations and https://github.com/pandas-dev/pandas/issues/16747).  \r\n\r\nBut today, in main, `TimeGrouper` is a key member variable of `class Resampler`: https://github.com/pandas-dev/pandas/blob/7c6d26f632cb6ea4858a65a73085b89c0412f5c7/pandas/core/resample.py#L144 \r\n\r\nIn the deprecation comments (https://github.com/pandas-dev/pandas/issues/16747#issuecomment-310396488), it appears that `TimeGrouper` was a relic of the old-school `groupby` framework and its functionality was integrated into the `Grouper` interface.\r\n\r\nSo, I'm super curious if it was never fully removed, if it was only \"deprecated\" in terms of being an exposed/external capability, or if it was gone and has returned.  Does anyone have any insight?\r\n",
+          "created_at": "2023-12-02T17:07:08Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54961#issuecomment-1837204590"
+        },
+        {
+          "author": "rhshadrach",
+          "body": "@mfenner1 - at one point in pandas there were two separate TimeGrouper classes:\r\n\r\nhttps://github.com/pandas-dev/pandas/blob/e56794984f17d1651d74e6dbcdbf77fbec53d45f/pandas/core/api.py#L73-L81\r\n\r\nhttps://github.com/pandas-dev/pandas/blob/51db82d9cc1abcec6c912d83e714811005471379/pandas/core/resample.py#L1321-L1323\r\n\r\nThe deprecation was only for `pd.TimeGrouper`. You can still get a TimeGrouper today by creating a Grouper with the `freq` argument not None. This was never deprecated, and shouldn't be.",
+          "created_at": "2023-12-02T18:52:30Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54961#issuecomment-1837227659"
+        },
+        {
+          "author": "mfenner1",
+          "body": "@rhshadrach That is really useful!   I didn't get that little detail.  Thank you!\r\n\r\nCan I follow up with another question or two?  \r\n\r\nDo both `pd.Grouper(freq=)` and `pd.resample()` lead to the same `class TimeGrouper` objects?  Are there any explicit tests about guarantees between arguments and resulting `TimeGrouper`s?  [Maybe those questions play back into your original comments about handling the arguments .... Or maybe aligning those is exactly what you are proposing?]\r\n\r\nThanks,\r\nMark",
+          "created_at": "2023-12-03T17:10:31Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54961#issuecomment-1837541559"
+        },
+        {
+          "author": "rhshadrach",
+          "body": "> Do both `pd.Grouper(freq=)` and `pd.resample()` lead to the same `class TimeGrouper` objects? Are there any explicit tests about guarantees between arguments and resulting `TimeGrouper`s?\r\n\r\nOffhand, I do not know. Would need to step through the code and search the tests.\r\n\r\n",
+          "created_at": "2023-12-12T01:51:29Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54961#issuecomment-1851177401"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 54154,
+      "title": "REF: Proposal: change `DataFrame.to_excel` to output unformatted excel file",
+      "body": "### Feature Type\n\n- [ ] Adding new functionality to pandas\n\n- [X] Changing existing functionality in pandas\n\n- [ ] Removing existing functionality in pandas\n\n\n### Problem Description\n\n## TLDR;\r\n\r\nPlease indicate with a +1 if you are happy for the default `DataFrame.to_excel` to be changed to output an excel file **without** any bold or bordered style attached.\r\n\r\n## Description\r\n\r\nThe current action of `DataFrame.to_excel` is to produce an excel file with default bold and bordered styles for column and row headers:\r\n```python\r\ndf = pd.DataFrame([[1,2],[3,4]], index=[\"one\", \"two\"], columns=[\"A\", \"B\"])\r\ndf.to_excel(\"file.xlsx\")\r\n```\r\n![image](https://user-images.githubusercontent.com/24256554/208918872-c616b449-b399-42e6-8a03-b3581063857a.png)\r\n\r\nA number of issues are attempting to address this:\r\n - #50336 \r\n - #22758\r\n - #22773 \r\n - #52369\r\n - #50991\r\n\r\nIn a recent PR (#53973) it is proposed to remove the ability to format excel file styles with `DataFrame.to_excel` and instead document how users can use the `Styler.to_excel` to create styles excel files.\r\n\r\nThis has a number of advantages:\r\n\r\n- Simplifies the code, since it is effectively a removal and additions of documentation.\r\n- Creates a more consistent `Styler.to_excel` (which uses `DataFrame.to_excel`) since an unstyled `Styler` wont produce this bold bordering by default.\r\n- Encourages users to use a more flexible tool for formatting.\r\n\r\n@pandas-dev appreciate input to gain some form of concensus to proceed.\r\n@WillAyd @rhshadrach @mroeschke\r\n\r\n\n\n### Feature Description\n\n-\n\n### Alternative Solutions\n\n-\n\n### Additional Context\n\n-",
+      "author": "attack68",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "IO Excel"
+      ],
+      "created_at": "2023-07-16T07:28:16Z",
+      "updated_at": "2024-02-15T21:19:50Z",
+      "closed_at": "2024-02-15T21:19:49Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/54154",
+      "comments_count": 9,
+      "comments": [
+        {
+          "author": "rmhowe425",
+          "body": "Taking this since I'm already doing the work for this [PR](https://github.com/pandas-dev/pandas/pull/53973)",
+          "created_at": "2023-07-16T12:33:29Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1637072977"
+        },
+        {
+          "author": "WillAyd",
+          "body": "+1",
+          "created_at": "2023-07-16T15:42:48Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1637123171"
+        },
+        {
+          "author": "rhshadrach",
+          "body": "+1",
+          "created_at": "2023-07-16T19:07:32Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1637165200"
+        },
+        {
+          "author": "mroeschke",
+          "body": "+1 on a deprecation of to_excel from producing a formatted excel file",
+          "created_at": "2023-07-16T19:27:58Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1637171319"
+        },
+        {
+          "author": "rhshadrach",
+          "body": "@mroeschke - would you be opposed to doing this in 3.0 without deprecation? I think to deprecate this, there would need to be a way to silence the warning - e.g. an argument or option added in and then that deprecated in 3.0. Since this can't break any workflow (it's just styling), that doesn't seem worth the effort to me.",
+          "created_at": "2023-07-16T19:41:23Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1637173778"
+        },
+        {
+          "author": "mroeschke",
+          "body": "Sure a 3.0 break sounds good too",
+          "created_at": "2023-07-16T20:09:10Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1637179533"
+        },
+        {
+          "author": "alimcmaster1",
+          "body": "+1 ",
+          "created_at": "2023-07-19T22:23:24Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1642841583"
+        },
+        {
+          "author": "attack68",
+          "body": "I would suggets we have enough support here to progress with at least the PR, @rmhowe425 ",
+          "created_at": "2023-07-25T14:09:24Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1649919469"
+        },
+        {
+          "author": "rmhowe425",
+          "body": "@attack68 Excellent! I'll get started on implementation",
+          "created_at": "2023-07-25T15:02:21Z",
+          "url": "https://github.com/pandas-dev/pandas/issues/54154#issuecomment-1650012755"
+        }
+      ],
+      "comments_collected": true
+    }
+  ]
+}

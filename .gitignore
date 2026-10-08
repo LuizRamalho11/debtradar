@@ -1,0 +1,14 @@
+# Segredos
+.env
+
+# Ambiente virtual e caches do Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Documentos de origem do projeto (ficam só na máquina local)
+*.docx

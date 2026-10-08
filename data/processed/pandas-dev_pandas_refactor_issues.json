@@ -1,0 +1,2600 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "pandas-dev",
+    "repo": "pandas",
+    "label": "Refactor",
+    "requested": 12,
+    "collected": 12,
+    "collected_at": "2026-10-08T10:26:05+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:11+00:00"
+  },
+  "documents": [
+    {
+      "type": "issue",
+      "id": "#66347",
+      "number": 66347,
+      "title": "REF: Reduce cognitive complexity of `tokenize_bytes`",
+      "url": "https://github.com/pandas-dev/pandas/issues/66347",
+      "author": "Alvaro-Kothe",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "IO CSV"
+      ],
+      "created_at": "2026-07-15T23:13:55Z",
+      "updated_at": "2026-07-16T00:50:50Z",
+      "closed_at": "2026-07-16T00:50:50Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "REF: Reduce cognitive complexity of tokenize_bytes\n\nThe tokenize_bytes function currently has a cognitive complexity score of 551 according to clang-tidy, which significantly exceeds the default threshold of 25.\n\nThe complexity primarily comes from managing 16 distinct parser states within a single monolithic loop, combined with inline SIMD preprocessing and scalar fallback logic. Modularizing the state handling into smaller helper functions would help improve the readability and long-term maintainability of the CSV parser.\n\nThis is a good issue, but I think will invite unwanted drive-by.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 98,
+        "sentences": 5,
+        "pos": {
+          "NOUN": 26,
+          "VERB": 12,
+          "PUNCT": 11,
+          "ADJ": 11,
+          "ADP": 9,
+          "DET": 9,
+          "PROPN": 5,
+          "ADV": 3,
+          "NUM": 3,
+          "PRON": 3,
+          "CCONJ": 3,
+          "AUX": 3
+        },
+        "lemmas": {
+          "noun": {
+            "complexity": 3,
+            "function": 2,
+            "parser": 2,
+            "state": 2,
+            "score": 1,
+            "default": 1,
+            "threshold": 1,
+            "loop": 1,
+            "inline": 1,
+            "preprocessing": 1,
+            "logic": 1,
+            "handling": 1,
+            "helper": 1,
+            "readability": 1,
+            "term": 1,
+            "maintainability": 1,
+            "issue": 1,
+            "drive": 1
+          },
+          "adjective": {
+            "cognitive": 2,
+            "distinct": 1,
+            "single": 1,
+            "monolithic": 1,
+            "scalar": 1,
+            "fallback": 1,
+            "small": 1,
+            "long": 1,
+            "good": 1,
+            "unwanted": 1
+          },
+          "verb": {
+            "reduce": 1,
+            "accord": 1,
+            "exceed": 1,
+            "come": 1,
+            "manage": 1,
+            "combine": 1,
+            "modularize": 1,
+            "help": 1,
+            "improve": 1,
+            "think": 1,
+            "invite": 1
+          }
+        },
+        "noun_phrases": {
+          "cognitive complexity": 1,
+          "cognitive complexity score": 1,
+          "clang tidy": 1,
+          "default threshold": 1,
+          "distinct parser state": 1,
+          "single monolithic loop": 1,
+          "simd preprocessing": 1,
+          "scalar fallback logic": 1,
+          "smaller helper function": 1,
+          "long term maintainability": 1,
+          "csv parser": 1,
+          "good issue": 1,
+          "unwanted drive": 1
+        },
+        "entities": [
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "CSV",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1837,
+        "sentences": 5,
+        "positive_sentences": 2,
+        "negative_sentences": 0,
+        "neutral_sentences": 3
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#64002",
+      "number": 64002,
+      "title": "ENH: Refactor: centralize describe function selection",
+      "url": "https://github.com/pandas-dev/pandas/issues/64002",
+      "author": "vkverma9534",
+      "state": "closed",
+      "labels": [
+        "Enhancement",
+        "Refactor",
+        "Needs Triage"
+      ],
+      "created_at": "2026-02-03T07:08:44Z",
+      "updated_at": "2026-02-08T10:08:58Z",
+      "closed_at": "2026-02-08T10:08:58Z",
+      "comments_count": 6,
+      "bot_comments_ignored": 0,
+      "text": "ENH: Refactor: centralize describe function selection\n\nFeature Type\n\nAdding new functionality to pandas\n\nChanging existing functionality in pandas\n\nRemoving existing functionality in pandas\n\nProblem Description\n\nlocation : pandas/pandas/core/methods/describe.py\n\nWhile reading through describe.py, I noticed that select_describe_func is called repeatedly (once per Series, and for every column in DataFrame.describe). Since this function is pure and depends only on the dtype, we could cache or centralize the dtype → describe-function resolution.\n\nThis wouldn't change behavior, but could:\nreduce repeated dtype checks for wide DataFrames\nmake it easier to extend describe behavior for new dtypes in one place\nThe change should be low risk and internal-only.\nIf core team agree this makes sense, I'm happy to raise a small PR with a minimal refactor + tests.\n\nFeature Description\n\nCache the dtype describe-function selection in describe.py to avoid repeated resolution when describing Series and wide DataFrames. This is an internal refactor with no behavior change, aimed at improving efficiency and keeping dtype handling centralized and easier to extend.\n\nAlternative Solutions\n\n_\n\nAdditional Context\n\n_No response_\n\nMy assumption is that the work being done in the actual describe function (e.g. calculating all the statistics for numeric columns) will be take a lot more time than the functions to decide which function to use based on the dtype. So the performance improvements might not be very significant.\n\nNot necessarily opposed to the changes you are proposing (it is entirely correct that this is doing duplicate work if there are columns with the same dtype), but you will have to show that 1) it gives a measurable performance improvement, and 2) it does not make the code much more complex.\n\nThank you for your consideration.\n\nThat's fair. I agree the actual describe_* work will dominate, so I don't exepct big wins here.\n\nThe main motivation is avoiding repeated dtype resolution for wide DataFrames with many columns of the same dtype, and keeping the dtype -> function mapping in one place for maintainability. But I agree it only makes sense if it stays very small and shows at least some measurable benefit.\n\nI can put together a minimal benchmark (wide, homogeneous dtypes) and keep the refactor very lightweight. If the gains are negligible or the code gets more complex, I'm happy to drop it.\n\nshould I try raising a PR showing my improvements (in my purview) and see if something works out\n\nHi thanks for the clarification and for bringing this up in the policy discussion. Just to make sure I'm understanding correctly-> my takaeway is that #64002 is being referenced mainly as an example of a small reasonable refractor where requiring an issue first might add friction, rather than as a concern about the quality of this issu or my contributions more generally. If that's the intent, thanks for calling it out and please let me know if I'm misreading anything.\n\nexactly correct.\n\nI ran a quick benchmark on a wide, homogeneous DataFrame (10k float64 columns). on my machine, main took ~18.87s and ~18.63s with this change, so the diff is pretty small and within noise.\n\nAs expected, the runtime is mostly dominated by the actual describe computations, so this dosen't seem to give a meaningful benrfit overall. i agree it's probably not worth the refactor and I'm happy to drop this and close the issue. Thanks for the discussion.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": true,
+        "patterns": {
+          "refactor": 5
+        },
+        "categories": {
+          "general": 5
+        },
+        "matches": [
+          {
+            "pattern": "refactor",
+            "category": "general",
+            "explicit": true,
+            "text": "Refactor",
+            "source": "text",
+            "start": 5,
+            "end": 13,
+            "context": "ENH: Refactor: centralize describe function selection Feature"
+          },
+          {
+            "pattern": "refactor",
+            "category": "general",
+            "explicit": true,
+            "text": "refactor",
+            "source": "text",
+            "start": 842,
+            "end": 850,
+            "context": "nse, I'm happy to raise a small PR with a minimal refactor + tests. Feature Description Cache the dtype de"
+          },
+          {
+            "pattern": "refactor",
+            "category": "general",
+            "explicit": true,
+            "text": "refactor",
+            "source": "text",
+            "start": 1034,
+            "end": 1042,
+            "context": "g Series and wide DataFrames. This is an internal refactor with no behavior change, aimed at improving effic"
+          },
+          {
+            "pattern": "refactor",
+            "category": "general",
+            "explicit": true,
+            "text": "refactor",
+            "source": "text",
+            "start": 2311,
+            "end": 2319,
+            "context": "benchmark (wide, homogeneous dtypes) and keep the refactor very lightweight. If the gains are negligible or"
+          },
+          {
+            "pattern": "refactor",
+            "category": "general",
+            "explicit": true,
+            "text": "refactor",
+            "source": "text",
+            "start": 3377,
+            "end": 3385,
+            "context": "rfit overall. i agree it's probably not worth the refactor and I'm happy to drop this and close the issue. T"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 645,
+        "sentences": 41,
+        "pos": {
+          "NOUN": 126,
+          "VERB": 84,
+          "PUNCT": 68,
+          "ADJ": 54,
+          "DET": 52,
+          "ADP": 50,
+          "PRON": 47,
+          "AUX": 39,
+          "ADV": 28,
+          "CCONJ": 25,
+          "SCONJ": 19,
+          "PROPN": 18,
+          "PART": 17,
+          "SYM": 6,
+          "NUM": 5,
+          "X": 5,
+          "INTJ": 2
+        },
+        "lemmas": {
+          "noun": {
+            "dtype": 11,
+            "function": 7,
+            "describe": 6,
+            "panda": 5,
+            "column": 5,
+            "change": 4,
+            "refactor": 4,
+            "functionality": 3,
+            "resolution": 3,
+            "behavior": 3,
+            "work": 3,
+            "improvement": 3,
+            "thank": 3,
+            "selection": 2,
+            "core": 2,
+            "place": 2,
+            "sense": 2,
+            "performance": 2,
+            "code": 2,
+            "benchmark": 2,
+            "discussion": 2,
+            "issue": 2,
+            "description": 1,
+            "location": 1,
+            "method": 1,
+            "check": 1,
+            "risk": 1,
+            "team": 1,
+            "test": 1,
+            "efficiency": 1,
+            "context": 1,
+            "response": 1,
+            "assumption": 1,
+            "statistic": 1,
+            "lot": 1,
+            "time": 1,
+            "consideration": 1,
+            "win": 1,
+            "motivation": 1,
+            "mapping": 1,
+            "maintainability": 1,
+            "benefit": 1,
+            "gain": 1,
+            "purview": 1,
+            "clarification": 1,
+            "policy": 1,
+            "takaeway": 1,
+            "example": 1,
+            "refractor": 1,
+            "friction": 1,
+            "concern": 1,
+            "quality": 1,
+            "issu": 1,
+            "contribution": 1,
+            "intent": 1,
+            "machine": 1,
+            "diff": 1,
+            "noise": 1,
+            "runtime": 1,
+            "computation": 1,
+            "benrfit": 1
+          },
+          "adjective": {
+            "wide": 5,
+            "small": 4,
+            "happy": 3,
+            "actual": 3,
+            "new": 2,
+            "easy": 2,
+            "internal": 2,
+            "minimal": 2,
+            "correct": 2,
+            "measurable": 2,
+            "complex": 2,
+            "main": 2,
+            "homogeneous": 2,
+            "pure": 1,
+            "low": 1,
+            "centralized": 1,
+            "additional": 1,
+            "numeric": 1,
+            "significant": 1,
+            "duplicate": 1,
+            "fair": 1,
+            "big": 1,
+            "lightweight": 1,
+            "negligible": 1,
+            "sure": 1,
+            "reasonable": 1,
+            "quick": 1,
+            "meaningful": 1,
+            "worth": 1
+          },
+          "verb": {
+            "agree": 4,
+            "repeat": 3,
+            "centralize": 2,
+            "add": 2,
+            "change": 2,
+            "exist": 2,
+            "call": 2,
+            "extend": 2,
+            "describe": 2,
+            "make": 2,
+            "raise": 2,
+            "avoid": 2,
+            "keep": 2,
+            "dominate": 2,
+            "show": 2,
+            "drop": 2,
+            "remove": 1,
+            "read": 1,
+            "notice": 1,
+            "depend": 1,
+            "cache": 1,
+            "reduce": 1,
+            "aim": 1,
+            "improve": 1,
+            "handle": 1,
+            "calculate": 1,
+            "decide": 1,
+            "function": 1,
+            "use": 1,
+            "base": 1,
+            "oppose": 1,
+            "propose": 1,
+            "give": 1,
+            "thank": 1,
+            "exepct": 1,
+            "dtype": 1,
+            "stay": 1,
+            "get": 1,
+            "try": 1,
+            "work": 1,
+            "bring": 1,
+            "understand": 1,
+            "reference": 1,
+            "require": 1,
+            "let": 1,
+            "know": 1,
+            "misread": 1,
+            "run": 1,
+            "take": 1,
+            "expect": 1,
+            "close": 1
+          }
+        },
+        "noun_phrases": {
+          "existing functionality": 2,
+          "describe function selection": 1,
+          "feature type": 1,
+          "new functionality": 1,
+          "problem description": 1,
+          "pandas core method": 1,
+          "describe function resolution": 1,
+          "repeated dtype check": 1,
+          "new dtype": 1,
+          "low risk": 1,
+          "core team": 1,
+          "minimal refactor": 1,
+          "feature description": 1,
+          "dtype describe function selection": 1,
+          "repeated resolution": 1,
+          "internal refactor": 1,
+          "behavior change": 1,
+          "keeping dtype": 1,
+          "alternative solutions": 1,
+          "additional context": 1,
+          "actual describe function": 1,
+          "numeric column": 1,
+          "lot time": 1,
+          "performance improvement": 1,
+          "duplicate work": 1,
+          "measurable performance improvement": 1,
+          "actual describe": 1,
+          "big win": 1,
+          "main motivation": 1,
+          "repeated dtype resolution": 1,
+          "dtype function mapping": 1,
+          "measurable benefit": 1,
+          "minimal benchmark": 1,
+          "wide homogeneous dtype": 1,
+          "policy discussion": 1,
+          "small reasonable refractor": 1,
+          "quick benchmark": 1,
+          "wide homogeneous": 1,
+          "actual describe computation": 1,
+          "meaningful benrfit": 1
+        },
+        "entities": [
+          {
+            "text": "DataFrames",
+            "label": "ORG",
+            "count": 3
+          },
+          {
+            "text": "Series",
+            "label": "EVENT",
+            "count": 2
+          },
+          {
+            "text": "ENH",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Problem Description",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "DataFrame",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "yes",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {
+              "refactor": 5
+            },
+            "terms": {
+              "duplicate": 1
+            }
+          },
+          "architecture": {
+            "patterns": {
+              "refactor": 5
+            },
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 1
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1732,
+        "sentences": 42,
+        "positive_sentences": 18,
+        "negative_sentences": 4,
+        "neutral_sentences": 20
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#62164",
+      "number": 62164,
+      "title": "REF: use _cast_pointwise_result in map",
+      "url": "https://github.com/pandas-dev/pandas/issues/62164",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Apply",
+        "pyarrow dtype retention"
+      ],
+      "created_at": "2025-08-21T14:13:42Z",
+      "updated_at": "2026-04-21T22:16:37Z",
+      "closed_at": "2026-04-16T16:17:29Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "REF: use _cast_pointwise_result in map\n\nRecently implemented _cast_pointwise_result is the correct idiom to use to retain dtype_backend in EA.map and any similar ops.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 27,
+        "sentences": 2,
+        "pos": {
+          "VERB": 6,
+          "PUNCT": 4,
+          "NOUN": 4,
+          "PROPN": 2,
+          "ADP": 2,
+          "DET": 2,
+          "ADJ": 2,
+          "PART": 2,
+          "ADV": 1,
+          "AUX": 1,
+          "CCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "map": 1,
+            "idiom": 1,
+            "op": 1
+          },
+          "adjective": {
+            "correct": 1,
+            "similar": 1
+          },
+          "verb": {
+            "use": 2,
+            "implement": 1,
+            "retain": 1
+          }
+        },
+        "noun_phrases": {
+          "correct idiom": 1,
+          "similar op": 1
+        },
+        "entities": [
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 2
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#59895",
+      "number": 59895,
+      "title": "REF: make _cast_pointwise_result an EA method",
+      "url": "https://github.com/pandas-dev/pandas/issues/59895",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "ExtensionArray"
+      ],
+      "created_at": "2024-09-25T22:49:29Z",
+      "updated_at": "2025-08-20T16:00:18Z",
+      "closed_at": "2025-08-20T16:00:18Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "REF: make _cast_pointwise_result an EA method\n\nIn the extension tests.extension.base.ops.BaseOpsUtil we have a _cast_pointwise_result method that is used to patch the result of Series.combine to do appropriate dtype inference so that we have e.g.\n\n(There is also a test_combine_add method which does not currently use _cast_pointwise_result but could. Also test_combine_le looks like we implemented an entirely separate pattern for customizing dtype inference in that test. I'll look into seeing if these can re-use the _cast_pointwise_result pattern.)\n\nThis cast_pointwise_result should just be an EA method. ATM we override it in the arrow, masked, and string tests (I suspect that we _should_ be overriding it in the sparse tests but it looks like we skip a bunch of them instead).\n\nThis will effectively replace _from_scalars, which was a mis-feature. It will also let us de-kludge places where we use maybe_cast_pointwise_result and generally be more robust.\n\nIt also looks a lot like test_combine_add+test_combine_le are made redundant by more general tests in BaseComparisonOpsTests and BaseArithmeticOpsTests",
+      "code": "expected = series + other\nmiddle = series.combine(other, operator.add)\nresult = self._cast_pointwise_result(middle)\ntm.assert_series_equal(result, expected)",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 192,
+        "sentences": 12,
+        "pos": {
+          "NOUN": 32,
+          "VERB": 27,
+          "PRON": 27,
+          "PUNCT": 19,
+          "AUX": 15,
+          "DET": 14,
+          "ADV": 12,
+          "ADP": 11,
+          "ADJ": 10,
+          "PROPN": 8,
+          "SCONJ": 7,
+          "CCONJ": 5,
+          "PART": 3,
+          "X": 2
+        },
+        "lemmas": {
+          "noun": {
+            "method": 4,
+            "test": 4,
+            "dtype": 2,
+            "inference": 2,
+            "pattern": 2,
+            "extension": 1,
+            "result": 1,
+            "arrow": 1,
+            "string": 1,
+            "bunch": 1,
+            "mis": 1,
+            "feature": 1,
+            "place": 1,
+            "lot": 1
+          },
+          "adjective": {
+            "appropriate": 1,
+            "separate": 1,
+            "sparse": 1,
+            "kludge": 1,
+            "robust": 1,
+            "redundant": 1,
+            "general": 1
+          },
+          "verb": {
+            "look": 4,
+            "use": 3,
+            "override": 2,
+            "patch": 1,
+            "implement": 1,
+            "customize": 1,
+            "see": 1,
+            "mask": 1,
+            "suspect": 1,
+            "skip": 1,
+            "replace": 1,
+            "let": 1
+          }
+        },
+        "noun_phrases": {
+          "appropriate dtype inference": 1,
+          "entirely separate pattern": 1,
+          "customizing dtype inference": 1,
+          "string test": 1,
+          "sparse test": 1,
+          "mis feature": 1,
+          "general test": 1
+        },
+        "entities": [
+          {
+            "text": "EA",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "yes",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 4
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1955,
+        "sentences": 10,
+        "positive_sentences": 5,
+        "negative_sentences": 0,
+        "neutral_sentences": 5
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#57187",
+      "number": 57187,
+      "title": "REF: Remove internals.base",
+      "url": "https://github.com/pandas-dev/pandas/issues/57187",
+      "author": "rhshadrach",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Internals"
+      ],
+      "created_at": "2024-01-31T22:37:28Z",
+      "updated_at": "2024-02-02T17:53:31Z",
+      "closed_at": "2024-02-02T17:53:31Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "REF: Remove internals.base\n\nRef:",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 6,
+        "sentences": 2,
+        "pos": {
+          "PROPN": 2,
+          "PUNCT": 2,
+          "VERB": 1,
+          "ADJ": 1
+        },
+        "lemmas": {
+          "noun": {},
+          "adjective": {},
+          "verb": {
+            "remove": 1
+          }
+        },
+        "noun_phrases": {},
+        "entities": [
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 2
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#56681",
+      "number": 56681,
+      "title": "REF: simplify _constructor/_from_mgr/_constructor_from_mgr/...",
+      "url": "https://github.com/pandas-dev/pandas/issues/56681",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Needs Discussion",
+        "Subclassing"
+      ],
+      "created_at": "2023-12-29T18:08:44Z",
+      "updated_at": "2026-09-28T17:17:17Z",
+      "closed_at": "2026-09-28T17:17:17Z",
+      "comments_count": 11,
+      "bot_comments_ignored": 0,
+      "text": "REF: simplify _constructor/_from_mgr/_constructor_from_mgr/...\n\nATM we have\n\n_constructor\n_constructor_sliced\n_constructor_expanddim\n_from_mgr (update 2026-04-14 this is )\n<s>_sliced_from_mgr</s>\n<s>_expanddim_from_mgr</s>\n_constructor_from_mgr\n_constructor_sliced_from_mgr\n_constructor_expanddim_from_mgr\n\nI suspect that we can make do with fewer of these, or at least simplify them (e.g. make some , , #51772, make downstream libraries never touch Managers, very slightly improve perf in the non-subclass cases). Some of these ideas are mutually exclusive:\n\nATM _from_mgr is a classmethod, all the other *_from_mgr methods are regular methods. The _constructor_*_from_mgr methods rely on self._constructor*, so could not be made classmethods unless those constructor*s also became classmethods. Does anyone out there rely on _constructor* _not_ being a classmethod?\n\n_expanddim_from_mgr and _sliced_from_mgr are each only used once, in _constructor_expanddim_from_mgr and _constructor_sliced_from_mgr, respectively. Can we just inline these and remove the methods (maybe keep the less-verbose names)? If not, can we at least and them?\n\nCan _from_mgr be made ? If not can _constructor_from_mgr be inlined into it?\n\nThe 3 listed expanddim methods are there just for Series.to_frame. We could get rid of all three and tell subclasses to just override to_frame. (Doing this would also make it easier to tell subclass authors to handle metadata propagation in to_frame xref #32860)\n\nWe can slightly improve perf for non-subclasses by changing if self._constructor is Series to if type(self) is Series at the cost of slightly hurting perf for subclasses.\n\nMost extreme: we can make it so that a) (most) subclasses don't need to override _any_ *from_mgr methods, b) subclasses __init__ don't need to know how to handle Managers, c) we don't need the constructor*from_mgr methods and d) (most) subclass authors never touch Managers by writing e.g.\n\ni.e. assume that the subclass __init__ knows what to do when given a pandas object.\n\nwrites that this would inconvenience geopandas since it does inference when given a DataFrame but not when given a Manager. In cases like that geopandas would need to override _from_mgr (why \"most\" is needed in a) and d) above), but ATM they need to override _constructor_from_mgr, so that wouldn't be a net increase in Stuff They Need To Do.\n\nThis idea is roughly #53871, which was reverted by #54922.\n\nJust chiming in as a maintainer of a package that subclasses Pandas DataFrames and Series'. Apart from having many constructor functions and properties, at the moment it is also not very clear what a subclass can override, should override and must not override.\n\nThe documentation for subclassing ( ) only mentions ._constructor, ._constructor_sliced and ._constructor_expanddim. I would argue that there's no way around reading the source code anyway, when subclassing. But from the comments there, it's still very difficult to figure out how everything works.\n\nUnderstanding the concepts here is fairly difficult if one does not actively participate in core development. And this has become more difficult over the last releases with the addition of new constructor related methods. Therefore, I am in favour of simplifying this system. But additionally, it would then be great to have some more documentation on the purpose of each function or property. Even if it's just in the form of comments in the code.\n\ntake\n\ntake\n\ntake\n\ntake\n\ntake\n\nin #56175 writes [about removing constructor_expanddim_from_mgr and making subclasses override to_frame]:\n\nfor [...] clarity\n\nThe only clarity-related evidence I've seen is the comment above complaining about a) the quantity of these methods and b) their docs.\n\nThere will also be projects that are overriding this method (outside of geopandas)\n\nI had claude search for these and it found\n\nSeveral of these seem to subclass geopandas and IIUC (some of?) their overrides would be unnecessary if geopandas wrote type(self) instead of hard-coding GeoSeries.\n\nSeveral of these need to keep _constructor_from_mgr for correctness. I'll throw in the towel on getting rid of that. AFAICT only geopandas (and its subclassers) need the other two _foo_from_mgr methods (for perf, not correctness). I think finding a way around that would allow us to get rid of 2 methods and simplify the docs situation for the large majority of subclass authors who don't need to care about these.\n\nyou and joris I'm sure are closer to the details here, but some observations.\nThere's an inherent requirement as it stands that subclasses need to overwrite _constructor_expanddim, _constructor_expanddim_from_mgr and _constructor_sliced - there's not a type(self) to use when going from 1d to 2d - unless you change the interface to requiring to_frame and squeeze to be overloaded by child classes or something of the sort. I agree that from the perspective of someone not super up to date on the pandas internals a shorter list of internal special things to override would be better, but I think documentation plugs this gap just as well from a pragmatic standpoint, even if it's not an elegant solution.\n\nI only had a quick look and it does seem like some overloads downstream of geopandas are overkill with the current version (but they may support multiple geopandas versions, I didn't check)\n\nSeveral of these seem to subclass geopandas and IIUC (some of?) their overrides would be unnecessary if geopandas wrote type(self) instead of hard-coding GeoSeries.\n\nI think only trackintel and pynsee from that list do so? (spatialpandas has copied the approach from geopandas so it does similar things, but doesn't actually inherit from geopandas)\nIt can certainly be the case that we can make subclassing easier from geopandas, and I know we have had some issues (and improvements) related to that in the past (eg )\n\nHowever, what suprises me a bit from looking at that list of sublclasses is that many of them actually override the _constructor_from_mgr method. It might be useful to investigate in more detail _why_ exactly they have to do so.\nFor example, autogluon is doing that to propagate their metadata (but should that be done automatically if we always call finalize after _constructor_from_mgr?) Similarly for timely-beliefs. tfs-pandas is defining _constructor_from_mgr to deal with the \"not-fully-initialized\" dataframe issue (after ).\nswwm-pandas has the method to override the class (essentially calling self.__class__._from_mgr(mgr, axes)), but that does not feel as needed?\n\nIn the end, it has been our desire to move \"construct from mgr\" outside of the main constructor (which I still think was a good separation of concerns), but that inevitably complicated the constructors situation for subclasses. We can look into why / try to avoid the need of subclasses _having_ to also override _constructor_from_mgr in addition to _constructor, but in the end I agree it is also a matter of better documenting this.\n\nSeveral of these need to keep _constructor_from_mgr for correctness. I'll throw in the towel on getting rid of that. AFAICT only geopandas (and its subclassers) need the other two _foo_from_mgr methods (for perf, not correctness). I think finding a way around that would allow us to get rid of 2 methods\n\nI haven't looked in detail, but I _think_ that one reason is that many of those other packages are only subclassing DataFrame. It they would also be sublcasssing Series, I think they potentially need the equivalent _constructor_from_mgr on their subclassed Series for whatever reason they are having it defined on the DataFrame (eg to initialize an attribute, like pandas.Series._constructor_from_mgr does for the name).\n\nAlthough that reason might have been true for pandas 2.1, but since we now hardcode to create a pandas DataFrame/Series from the manager (and not the subclass) in _constructor_from_mgr, and then pass that pandas object to the subclass _constructor, that might not actually be needed? (also not for DataFrame subclasses)\n\nI think we've pushed this as far as itll go. Closing.",
+      "code": "def _from_mgr(self, mgr, axes):\n    df = DataFrame._existing_from_mgr_method(mgr, axes)\n    if type(self) is DataFrame:\n        return df\n    return self._constructor(df)\nRemoving _constructor_expanddim_from_mgr (even though used only once) feels a bit inconsistent with the other _constructor... methods, so I would prefer to keep that one just for consistency / clarity.\nThere will also be projects that are overriding this method (outside of geopandas), although I would generally guess they implement it with similar logic as _constructor_expanddim such that the change wouldn't impact results.\n┌────────────────┬───────────────────┬──────────────┐                                                                                                                             \n  │    Package     │ Monthly downloads │ GitHub stars │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ autogluon      │ 739k              │ 10,222       │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ spatialpandas  │ 25k               │ 315          │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ trackintel     │ 11k               │ 260          │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ timely-beliefs │ 6.2k              │ 42           │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ tfs-pandas     │ 6k                │ 8            │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ pynsee         │ 1.9k              │ 88           │                                                                                                                             \n  ├────────────────┼───────────────────┼──────────────┤                                                                                                                             \n  │ swmm-pandas    │ 143               │ 7            │                                                                                                                             \n  └────────────────┴───────────────────┴──────────────┘",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "documentation": 3,
+          "docs": 2
+        },
+        "categories": {
+          "documentation": 5
+        },
+        "matches": [
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 2699,
+            "end": 2712,
+            "context": "ride, should override and must not override. The documentation for subclassing ( ) only mentions ._constructor,"
+          },
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 3330,
+            "end": 3343,
+            "context": "ionally, it would then be great to have some more documentation on the purpose of each function or property. Even"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 3730,
+            "end": 3734,
+            "context": "out a) the quantity of these methods and b) their docs. There will also be projects that are overriding"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 4352,
+            "end": 4356,
+            "context": "allow us to get rid of 2 methods and simplify the docs situation for the large majority of subclass auth"
+          },
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 5044,
+            "end": 5057,
+            "context": "l things to override would be better, but I think documentation plugs this gap just as well from a pragmatic stan"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 1537,
+        "sentences": 79,
+        "pos": {
+          "NOUN": 254,
+          "PUNCT": 211,
+          "VERB": 198,
+          "PRON": 141,
+          "ADP": 134,
+          "AUX": 107,
+          "DET": 95,
+          "ADV": 85,
+          "ADJ": 64,
+          "PART": 60,
+          "CCONJ": 47,
+          "PROPN": 45,
+          "SCONJ": 43,
+          "NUM": 26,
+          "X": 18,
+          "SYM": 9
+        },
+        "lemmas": {
+          "noun": {
+            "method": 16,
+            "subclass": 15,
+            "geopanda": 12,
+            "constructor": 8,
+            "panda": 8,
+            "perf": 5,
+            "classmethod": 4,
+            "correctness": 4,
+            "manager": 3,
+            "case": 3,
+            "author": 3,
+            "documentation": 3,
+            "way": 3,
+            "comment": 3,
+            "override": 3,
+            "need": 3,
+            "detail": 3,
+            "list": 3,
+            "reason": 3,
+            "idea": 2,
+            "init": 2,
+            "object": 2,
+            "package": 2,
+            "function": 2,
+            "property": 2,
+            "code": 2,
+            "addition": 2,
+            "clarity": 2,
+            "towel": 2,
+            "subclasser": 2,
+            "situation": 2,
+            "class": 2,
+            "thing": 2,
+            "version": 2,
+            "issue": 2,
+            "end": 2,
+            "library": 1,
+            "verbose": 1,
+            "name": 1,
+            "expanddim": 1,
+            "propagation": 1,
+            "non": 1,
+            "cost": 1,
+            "inference": 1,
+            "increase": 1,
+            "maintainer": 1,
+            "moment": 1,
+            "source": 1,
+            "concept": 1,
+            "core": 1,
+            "development": 1,
+            "release": 1,
+            "favour": 1,
+            "system": 1,
+            "purpose": 1,
+            "form": 1,
+            "evidence": 1,
+            "quantity": 1,
+            "doc": 1,
+            "project": 1,
+            "claude": 1,
+            "search": 1,
+            "majority": 1,
+            "joris": 1,
+            "observation": 1,
+            "requirement": 1,
+            "interface": 1,
+            "child": 1,
+            "sort": 1,
+            "perspective": 1,
+            "date": 1,
+            "gap": 1,
+            "standpoint": 1,
+            "solution": 1,
+            "look": 1,
+            "overload": 1,
+            "overkill": 1,
+            "trackintel": 1,
+            "approach": 1,
+            "improvement": 1,
+            "past": 1,
+            "bit": 1,
+            "sublclasse": 1,
+            "example": 1,
+            "autogluon": 1,
+            "metadata": 1,
+            "belief": 1,
+            "tfs": 1,
+            "swwm": 1,
+            "axis": 1,
+            "desire": 1,
+            "outside": 1,
+            "separation": 1,
+            "concern": 1,
+            "matter": 1,
+            "attribute": 1
+          },
+          "adjective": {
+            "difficult": 3,
+            "easy": 2,
+            "unnecessary": 2,
+            "well": 2,
+            "few": 1,
+            "downstream": 1,
+            "non": 1,
+            "subclass": 1,
+            "exclusive": 1,
+            "regular": 1,
+            "metadata": 1,
+            "extreme": 1,
+            "net": 1,
+            "clear": 1,
+            "new": 1,
+            "great": 1,
+            "large": 1,
+            "sure": 1,
+            "close": 1,
+            "inherent": 1,
+            "super": 1,
+            "short": 1,
+            "internal": 1,
+            "special": 1,
+            "pragmatic": 1,
+            "elegant": 1,
+            "quick": 1,
+            "current": 1,
+            "multiple": 1,
+            "similar": 1,
+            "useful": 1,
+            "finalize": 1,
+            "timely": 1,
+            "dataframe": 1,
+            "main": 1,
+            "good": 1,
+            "equivalent": 1,
+            "true": 1
+          },
+          "verb": {
+            "need": 14,
+            "override": 12,
+            "think": 8,
+            "subclasse": 7,
+            "rid": 5,
+            "write": 5,
+            "simplify": 4,
+            "know": 3,
+            "give": 3,
+            "have": 3,
+            "relate": 3,
+            "find": 3,
+            "look": 3,
+            "touch": 2,
+            "improve": 2,
+            "rely": 2,
+            "inline": 2,
+            "remove": 2,
+            "tell": 2,
+            "handle": 2,
+            "change": 2,
+            "subclass": 2,
+            "cod": 2,
+            "throw": 2,
+            "allow": 2,
+            "agree": 2,
+            "define": 2,
+            "initialize": 2,
+            "update": 1,
+            "suspect": 1,
+            "list": 1,
+            "hurt": 1,
+            "assume": 1,
+            "inconvenience": 1,
+            "revert": 1,
+            "chime": 1,
+            "mention": 1,
+            "argue": 1,
+            "read": 1,
+            "figure": 1,
+            "work": 1,
+            "understand": 1,
+            "participate": 1,
+            "make": 1,
+            "see": 1,
+            "complain": 1,
+            "care": 1,
+            "stand": 1,
+            "overwrite": 1,
+            "use": 1,
+            "go": 1,
+            "require": 1,
+            "squeeze": 1,
+            "overload": 1,
+            "internal": 1,
+            "plug": 1,
+            "support": 1,
+            "check": 1,
+            "pynsee": 1,
+            "copy": 1,
+            "inherit": 1,
+            "suprise": 1,
+            "investigate": 1,
+            "propagate": 1,
+            "deal": 1,
+            "call": 1,
+            "feel": 1,
+            "construct": 1,
+            "complicate": 1,
+            "try": 1,
+            "avoid": 1,
+            "document": 1,
+            "sublcassse": 1,
+            "hardcode": 1,
+            "create": 1,
+            "pass": 1,
+            "push": 1,
+            "close": 1
+          }
+        },
+        "noun_phrases": {
+          "subclass author": 3,
+          "hard cod": 2,
+          "downstream library": 1,
+          "non subclass case": 1,
+          "regular method": 1,
+          "verbose name": 1,
+          "listed expanddim method": 1,
+          "metadata propagation": 1,
+          "slightly hurting perf": 1,
+          "net increase": 1,
+          "constructor function": 1,
+          "source code": 1,
+          "core development": 1,
+          "new constructor related method": 1,
+          "clarity related evidence": 1,
+          "claude search": 1,
+          "docs situation": 1,
+          "large majority": 1,
+          "inherent requirement": 1,
+          "child class": 1,
+          "shorter list": 1,
+          "internal special thing": 1,
+          "pragmatic standpoint": 1,
+          "elegant solution": 1,
+          "quick look": 1,
+          "current version": 1,
+          "multiple geopandas version": 1,
+          "similar thing": 1,
+          "timely belief": 1,
+          "tfs panda": 1,
+          "fully initialized dataframe issue": 1,
+          "swwm panda": 1,
+          "main constructor": 1,
+          "good separation": 1,
+          "constructors situation": 1,
+          "subclassed series": 1,
+          "pandas series": 1,
+          "subclass constructor": 1
+        },
+        "entities": [
+          {
+            "text": "Series",
+            "label": "EVENT",
+            "count": 5
+          },
+          {
+            "text": "DataFrame",
+            "label": "ORG",
+            "count": 4
+          },
+          {
+            "text": "ATM",
+            "label": "ORG",
+            "count": 3
+          },
+          {
+            "text": "IIUC",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "GeoSeries",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "AFAICT",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Stuff They Need To Do",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "Pandas DataFrames",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "joris",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "tfs-pandas",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Claude",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "yes",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {
+              "hardcode": 1,
+              "simplify": 4
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "doc": 1,
+              "documentation": 3
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.0512,
+        "sentences": 82,
+        "positive_sentences": 18,
+        "negative_sentences": 10,
+        "neutral_sentences": 54
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#56148",
+      "number": 56148,
+      "title": "DEPR: Certain Grouper and Grouping attributes",
+      "url": "https://github.com/pandas-dev/pandas/issues/56148",
+      "author": "rhshadrach",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Groupby",
+        "Deprecate"
+      ],
+      "created_at": "2023-11-24T13:41:29Z",
+      "updated_at": "2023-11-26T04:35:45Z",
+      "closed_at": "2023-11-26T04:35:44Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "DEPR: Certain Grouper and Grouping attributes\n\n#55738 reworks some of the internals for groupby, the following attributes are no longer necessary.\n\nBaseGrouper.group_keys_seq\nBaseGrouper.reconstructed_codes\nGrouping.group_index\nGrouping.result_index\nGrouping.group_arraylike\n\nI'd expect these to be almost exclusively used internally in pandas, but since they are publicly accessible I think we should deprecate these and remove them in 3.0.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 61,
+        "sentences": 5,
+        "pos": {
+          "NOUN": 10,
+          "PRON": 8,
+          "VERB": 7,
+          "ADV": 6,
+          "PUNCT": 5,
+          "AUX": 5,
+          "ADP": 4,
+          "ADJ": 3,
+          "CCONJ": 3,
+          "NUM": 3,
+          "PROPN": 2,
+          "DET": 2,
+          "SYM": 1,
+          "PART": 1,
+          "SCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "attribute": 2,
+            "depr": 1,
+            "rework": 1,
+            "internal": 1,
+            "groupby": 1,
+            "panda": 1
+          },
+          "adjective": {
+            "certain": 1,
+            "necessary": 1,
+            "accessible": 1
+          },
+          "verb": {
+            "follow": 1,
+            "expect": 1,
+            "think": 1,
+            "deprecate": 1,
+            "remove": 1
+          }
+        },
+        "noun_phrases": {
+          "certain grouper": 1,
+          "grouping attribute": 1,
+          "following attribute": 1
+        },
+        "entities": [
+          {
+            "text": "Certain Grouper",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "groupby",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0341,
+        "sentences": 8,
+        "positive_sentences": 1,
+        "negative_sentences": 0,
+        "neutral_sentences": 7
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#55897",
+      "number": 55897,
+      "title": "REF/API/DEPR: _holds_integer checks in plotting",
+      "url": "https://github.com/pandas-dev/pandas/issues/55897",
+      "author": "jbrockmendel",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Visualization",
+        "Deprecate",
+        "API - Consistency"
+      ],
+      "created_at": "2023-11-09T20:05:12Z",
+      "updated_at": "2025-08-21T16:12:19Z",
+      "closed_at": "2025-08-21T16:12:19Z",
+      "comments_count": 2,
+      "bot_comments_ignored": 0,
+      "text": "REF/API/DEPR: _holds_integer checks in plotting\n\nPandas version checks\n\nI have checked that this issue has not already been reported.\n\nI have confirmed this bug exists on the latest version of pandas.\n\nI have confirmed this bug exists on the main branch of pandas.\n\nReproducible Example\n\nIssue Description\n\nIn the plotting code we have a few places where we check self.data.columns._holds_integer and one on index.inferred_type. AFAICT these are _almost_ equivalent to just checking the dtype of the columns/index, but with some corner cases for object-dtype indexes. I don't think we should be special-casing these corner cases. We should deprecate that special-casing and move to dtype-based checks.\n\nExpected Behavior\n\nNA\n\nInstalled Versions\n\nReplace this line with the output of pd.show_versions()\n\nand I can take this!\n\ntake",
+      "code": "NA",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 154,
+        "sentences": 19,
+        "pos": {
+          "NOUN": 30,
+          "VERB": 21,
+          "PUNCT": 17,
+          "DET": 13,
+          "PROPN": 12,
+          "ADP": 12,
+          "PRON": 12,
+          "AUX": 11,
+          "ADJ": 7,
+          "PART": 4,
+          "CCONJ": 4,
+          "SYM": 3,
+          "SCONJ": 3,
+          "ADV": 3,
+          "X": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "check": 3,
+            "version": 2,
+            "bug": 2,
+            "panda": 2,
+            "dtype": 2,
+            "index": 2,
+            "corner": 2,
+            "case": 2,
+            "issue": 1,
+            "branch": 1,
+            "description": 1,
+            "plotting": 1,
+            "code": 1,
+            "place": 1,
+            "column": 1,
+            "object": 1,
+            "casing": 1,
+            "line": 1,
+            "output": 1
+          },
+          "adjective": {
+            "special": 2,
+            "late": 1,
+            "main": 1,
+            "afaict": 1,
+            "equivalent": 1
+          },
+          "verb": {
+            "check": 3,
+            "confirm": 2,
+            "exist": 2,
+            "plot": 1,
+            "report": 1,
+            "think": 1,
+            "case": 1,
+            "deprecate": 1,
+            "dtype": 1,
+            "base": 1,
+            "expect": 1,
+            "replace": 1
+          }
+        },
+        "noun_phrases": {
+          "ref api depr": 1,
+          "version check": 1,
+          "latest version": 1,
+          "main branch": 1,
+          "issue description": 1,
+          "plotting code": 1,
+          "columns index": 1,
+          "corner case": 1,
+          "object dtype index": 1,
+          "special casing corner case": 1,
+          "special casing": 1,
+          "dtype based check": 1,
+          "installed versions": 1
+        },
+        "entities": [
+          {
+            "text": "Pandas",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "pandas",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Expected Behavior",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 17,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 17
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#55551",
+      "number": 55551,
+      "title": "REF: groupby internal names",
+      "url": "https://github.com/pandas-dev/pandas/issues/55551",
+      "author": "rhshadrach",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "Groupby",
+        "Needs Discussion"
+      ],
+      "created_at": "2023-10-16T20:30:23Z",
+      "updated_at": "2026-09-21T12:43:48Z",
+      "closed_at": "2026-09-21T12:43:48Z",
+      "comments_count": 3,
+      "bot_comments_ignored": 0,
+      "text": "REF: groupby internal names\n\nI'd like to start gathering / discussing refactoring some of the naming within pandas.core.groupby. These are some initial ones that come to mind, I plan to expand this issue in the near future.\n\nIssues:\n\n( ) generic.py has subclasses, whereas core.generic.py has the base class NDFrame.\nresult_index is only the result index for aggregations.\nIs the 'b' capitalized in class names? DataFrameGroupBy vs ExpandingGroupby\n\nResolutions:\n\nFor generic.py, I'd like to split this into one for SeriesGroupBy and one for DataFrameGroupBy. This would make it easier to determine what method you're looking at (the Series version vs the DataFrame version). I propose either calling them series.py and frame.py or series_groupby.py and frame_groupby.py.\n\nFor result_index, I'd like to rename this agg_index.\n\ncc\n\nFor result_index, I'd like to rename this agg_index.\n\nfine by me\n\nThe 'b' not being capitalized was addressed by #68937. Is there anything else actionable here?",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": true,
+        "patterns": {
+          "refactor": 1
+        },
+        "categories": {
+          "general": 1
+        },
+        "matches": [
+          {
+            "pattern": "refactor",
+            "category": "general",
+            "explicit": true,
+            "text": "refactoring",
+            "source": "text",
+            "start": 70,
+            "end": 81,
+            "context": "l names I'd like to start gathering / discussing refactoring some of the naming within pandas.core.groupby. Th"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 182,
+        "sentences": 18,
+        "pos": {
+          "PUNCT": 28,
+          "NOUN": 27,
+          "VERB": 24,
+          "PRON": 18,
+          "ADP": 16,
+          "PROPN": 13,
+          "AUX": 13,
+          "DET": 12,
+          "ADJ": 7,
+          "PART": 7,
+          "NUM": 6,
+          "CCONJ": 5,
+          "ADV": 4,
+          "SCONJ": 1,
+          "SYM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "name": 2,
+            "issue": 2,
+            "class": 2,
+            "version": 2,
+            "naming": 1,
+            "one": 1,
+            "mind": 1,
+            "future": 1,
+            "subclass": 1,
+            "base": 1,
+            "result": 1,
+            "index": 1,
+            "aggregation": 1,
+            "resolution": 1,
+            "method": 1
+          },
+          "adjective": {
+            "groupby": 1,
+            "internal": 1,
+            "initial": 1,
+            "near": 1,
+            "easy": 1,
+            "fine": 1,
+            "actionable": 1
+          },
+          "verb": {
+            "like": 4,
+            "capitalize": 2,
+            "rename": 2,
+            "start": 1,
+            "gather": 1,
+            "discuss": 1,
+            "refactore": 1,
+            "come": 1,
+            "plan": 1,
+            "expand": 1,
+            "split": 1,
+            "determine": 1,
+            "look": 1,
+            "propose": 1,
+            "call": 1,
+            "address": 1
+          }
+        },
+        "noun_phrases": {
+          "internal name": 1,
+          "initial one": 1,
+          "near future": 1,
+          "base class": 1,
+          "result index": 1,
+          "class name": 1,
+          "series version": 1
+        },
+        "entities": [
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "NDFrame",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "DataFrameGroupBy",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Series",
+            "label": "EVENT",
+            "count": 1
+          },
+          {
+            "text": "DataFrame",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "possible",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {
+              "refactor": 1
+            },
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {
+              "refactor": 1
+            },
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1326,
+        "sentences": 18,
+        "positive_sentences": 7,
+        "negative_sentences": 0,
+        "neutral_sentences": 11
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#55426",
+      "number": 55426,
+      "title": "REF/API: EA formatting methods",
+      "url": "https://github.com/pandas-dev/pandas/issues/55426",
+      "author": "jbrockmendel",
+      "state": "open",
+      "labels": [
+        "Refactor",
+        "API - Consistency"
+      ],
+      "created_at": "2023-10-06T16:20:45Z",
+      "updated_at": "2026-08-18T01:37:18Z",
+      "closed_at": "",
+      "comments_count": 6,
+      "bot_comments_ignored": 1,
+      "text": "REF/API: EA formatting methods\n\nI went down a rabbit hole trying to unravel the many methods we have for rendering arrays. The status quo is not great (but not urgent). The methods I'm looking at are:\n\n(EA|Index|Series|Dataframe).__repr__\nIndex.format (xref #55413)\n(Series|DataFrame).to_string, to_html, to_latex, (maybe other Styler-like things im not familiar with?)\nto_csv\nto_json\n(havent really looked at to_xml, to_stata, to_hdf, to_excel etc)\n\nThe pain points are roughly:\n\nWe special-case our internal EAs in ways that complicate the code and make it difficult to reason about. Some of these are just for perf, others actually break tests if we remove the special casing.\nKeywords specific to dt64/td64 dtypes are used with our numpy dtypes but not for pyarrow dtypes or 3rd party dtypes. In particular I'm thinking of date_format in to_csv and in DatetimeIndexOpsMixin.format (xref #33319)\nThe boxed keyword in EA._formatter is documented as being True when rendering an EA inside a Index/Series/DataFrame, but the way it is enabled is via fallback_formatter in format_array may use it or not depending on spaghetti logic. Also for dt64/td64/period we _dont_ box the values in Series/DataFrame but do in Index/EA.\nAFAICT this is largely motivated by the idea that eval(repr(index)) is valid, which i don't particularly care about.\nMany of the code paths cast to object in ways that look unnecessary.\n_Timedelta64Formatter and _Datetime64Formatter have a nat_rep keyword in __init__ that is never passed. The caller format_array does pass na_rep (which defaults to \"NaN\" and using it expect would break a zillion tests)\nto_json just doesn't work with general EA dtypes (xref #35420, #31917, #32037)\ndate_format in to_json behaves differently from everywhere else (xref #16492, #22317, #39135, #47930)\nGeneral hodgepodge of mismatched keywords in different to_foo methods (most of which is unavoidable)\n\nSome ideas on improving the situation:\n\nA) Deprecate Index.format (xref #55413) and implement Index._format_flat and Index._format_multi for internal use. We don't use most of the existing keywords internally, so the new methods would be appreciably simpler than the current ones.\nB) add relevant keywords (float_format, decimal, date_format) to EA._formatter to make the fallback_formatter spaghetti in 3) unnecessary\nC) add a vectorized formatting method to EA with the same behavior as our internal EAs' _format_native_values. Then avoid special-casing our internal EAs in the relevant places.\n&nbsp; &nbsp; &nbsp; i) Note we used to have EA._formatting_values and i guess that was removed in favor of just _formatter. I think we could implement the default _vectorized_whatever in terms of _formatter so the new method would be optional for 3rd party authors.\n&nbsp; &nbsp; &nbsp; ii) The \"relevant places\" would include blocks.to_native_types (used in to_csv), to_json, Index._format_native_values, and format_array\nD) Change the boxed behavior to box in when inside and Index but not in Series/DataFrame.\nE) for 5, just accept/document that na_rep is ignored for these dtypes and you'll always get \"NaT\"\nF) standardize the \"date_format\" behavior across to_json and other places where it shows up\n\ntake\n\ntake\n\ntake\n\ntake\n\ntake",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 645,
+        "sentences": 31,
+        "pos": {
+          "PUNCT": 109,
+          "NOUN": 98,
+          "PROPN": 65,
+          "VERB": 63,
+          "ADP": 57,
+          "ADJ": 45,
+          "PRON": 35,
+          "AUX": 33,
+          "DET": 32,
+          "CCONJ": 24,
+          "ADV": 21,
+          "SYM": 20,
+          "PART": 19,
+          "NUM": 14,
+          "SCONJ": 8,
+          "X": 2
+        },
+        "lemmas": {
+          "noun": {
+            "method": 7,
+            "dtype": 6,
+            "keyword": 5,
+            "way": 3,
+            "behavior": 3,
+            "place": 3,
+            "formatting": 2,
+            "code": 2,
+            "test": 2,
+            "party": 2,
+            "spaghetti": 2,
+            "idea": 2,
+            "formatter": 2,
+            "rabbit": 1,
+            "hole": 1,
+            "array": 1,
+            "status": 1,
+            "quo": 1,
+            "thing": 1,
+            "pain": 1,
+            "point": 1,
+            "case": 1,
+            "perf": 1,
+            "casing": 1,
+            "logic": 1,
+            "period": 1,
+            "value": 1,
+            "path": 1,
+            "init": 1,
+            "caller": 1,
+            "zillion": 1,
+            "behave": 1,
+            "hodgepodge": 1,
+            "situation": 1,
+            "use": 1,
+            "one": 1,
+            "note": 1,
+            "favor": 1,
+            "default": 1,
+            "term": 1,
+            "author": 1,
+            "document": 1
+          },
+          "adjective": {
+            "special": 3,
+            "internal": 3,
+            "relevant": 3,
+            "boxed": 2,
+            "unnecessary": 2,
+            "new": 2,
+            "great": 1,
+            "urgent": 1,
+            "like": 1,
+            "familiar": 1,
+            "difficult": 1,
+            "specific": 1,
+            "numpy": 1,
+            "pyarrow": 1,
+            "particular": 1,
+            "true": 1,
+            "motivated": 1,
+            "valid": 1,
+            "general": 1,
+            "different": 1,
+            "unavoidable": 1,
+            "simple": 1,
+            "current": 1,
+            "decimal": 1,
+            "vectorized": 1,
+            "optional": 1
+          },
+          "verb": {
+            "look": 3,
+            "render": 2,
+            "break": 2,
+            "remove": 2,
+            "think": 2,
+            "use": 2,
+            "box": 2,
+            "pass": 2,
+            "implement": 2,
+            "add": 2,
+            "go": 1,
+            "try": 1,
+            "unravel": 1,
+            "complicate": 1,
+            "reason": 1,
+            "keyword": 1,
+            "document": 1,
+            "enable": 1,
+            "depend": 1,
+            "care": 1,
+            "cast": 1,
+            "object": 1,
+            "default": 1,
+            "expect": 1,
+            "work": 1,
+            "mismatch": 1,
+            "improve": 1,
+            "exist": 1,
+            "avoid": 1,
+            "case": 1,
+            "guess": 1,
+            "include": 1,
+            "change": 1,
+            "accept": 1,
+            "ignore": 1,
+            "standardize": 1,
+            "show": 1
+          }
+        },
+        "noun_phrases": {
+          "new method": 2,
+          "relevant place": 2,
+          "ref api": 1,
+          "formatting method": 1,
+          "rabbit hole": 1,
+          "status quo": 1,
+          "maybe styler like thing": 1,
+          "pain point": 1,
+          "special case": 1,
+          "special casing": 1,
+          "numpy dtype": 1,
+          "pyarrow dtype": 1,
+          "party dtype": 1,
+          "boxed keyword": 1,
+          "index series": 1,
+          "spaghetti logic": 1,
+          "code path": 1,
+          "zillion test": 1,
+          "general dtype": 1,
+          "general hodgepodge": 1,
+          "mismatched keyword": 1,
+          "different method": 1,
+          "internal use": 1,
+          "existing keyword": 1,
+          "current one": 1,
+          "relevant keyword": 1,
+          "vectorized formatting method": 1,
+          "special casing internal": 1,
+          "party author": 1,
+          "boxed behavior": 1,
+          "accept document": 1
+        },
+        "entities": [
+          {
+            "text": "EA",
+            "label": "ORG",
+            "count": 4
+          },
+          {
+            "text": "Series",
+            "label": "EVENT",
+            "count": 2
+          },
+          {
+            "text": "Styler",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "AFAICT",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "NaN",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "NaT",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "F",
+            "label": "PRODUCT",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 2
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.012,
+        "sentences": 41,
+        "positive_sentences": 6,
+        "negative_sentences": 5,
+        "neutral_sentences": 30
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#54961",
+      "number": 54961,
+      "title": "REF: Replace args/kwargs in groupby.resample with TimeGrouper arguments",
+      "url": "https://github.com/pandas-dev/pandas/issues/54961",
+      "author": "rhshadrach",
+      "state": "open",
+      "labels": [
+        "Refactor",
+        "Groupby",
+        "Resample",
+        "Needs Discussion"
+      ],
+      "created_at": "2023-09-02T15:20:59Z",
+      "updated_at": "2023-12-12T01:51:30Z",
+      "closed_at": "",
+      "comments_count": 4,
+      "bot_comments_ignored": 0,
+      "text": "REF: Replace args/kwargs in groupby.resample with TimeGrouper arguments\n\nThe args/kwargs to this method are currently documented as:\n\n*args, **kwargs\nPossible arguments are how, fill_method, limit, kind and on, and other arguments of TimeGrouper.\n\nI think we should instead have these argument as being keyword arguments to groupby.resample and a test that ensures the arguments to TimeGrouper are a subset of the arguments to this method.\n\nAlso, it looks like some of these arguments, how, fill_method, and limit, are entirely ignored? But I haven't checked thoroughly.\n\ncc\n\nDo you happen to know when TimeGrouper was resurrected? It was deprecated in 0.21.0: (see and ).\n\nBut today, in main, TimeGrouper is a key member variable of class Resampler:\n\nIn the deprecation comments ( ), it appears that TimeGrouper was a relic of the old-school groupby framework and its functionality was integrated into the Grouper interface.\n\nSo, I'm super curious if it was never fully removed, if it was only \"deprecated\" in terms of being an exposed/external capability, or if it was gone and has returned. Does anyone have any insight?\n\nat one point in pandas there were two separate TimeGrouper classes:\n\nThe deprecation was only for pd.TimeGrouper. You can still get a TimeGrouper today by creating a Grouper with the freq argument not None. This was never deprecated, and shouldn't be.\n\nThat is really useful! I didn't get that little detail. Thank you!\n\nCan I follow up with another question or two?\n\nDo both pd.Grouper(freq=) and pd.resample() lead to the same class TimeGrouper objects? Are there any explicit tests about guarantees between arguments and resulting TimeGroupers? [Maybe those questions play back into your original comments about handling the arguments .... Or maybe aligning those is exactly what you are proposing?]\n\nThanks,\nMark\n\nDo both pd.Grouper(freq=) and pd.resample() lead to the same class TimeGrouper objects? Are there any explicit tests about guarantees between arguments and resulting TimeGroupers?\n\nOffhand, I do not know. Would need to step through the code and search the tests.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 409,
+        "sentences": 31,
+        "pos": {
+          "PUNCT": 65,
+          "NOUN": 61,
+          "VERB": 41,
+          "AUX": 36,
+          "ADP": 35,
+          "PRON": 32,
+          "DET": 30,
+          "PROPN": 28,
+          "ADV": 21,
+          "ADJ": 18,
+          "CCONJ": 18,
+          "SCONJ": 8,
+          "PART": 7,
+          "NUM": 4,
+          "SYM": 3,
+          "X": 2
+        },
+        "lemmas": {
+          "noun": {
+            "argument": 12,
+            "test": 4,
+            "class": 4,
+            "kwarg": 3,
+            "method": 2,
+            "today": 2,
+            "deprecation": 2,
+            "comment": 2,
+            "question": 2,
+            "object": 2,
+            "guarantee": 2,
+            "arg": 1,
+            "limit": 1,
+            "subset": 1,
+            "member": 1,
+            "variable": 1,
+            "relic": 1,
+            "school": 1,
+            "groupby": 1,
+            "framework": 1,
+            "functionality": 1,
+            "interface": 1,
+            "term": 1,
+            "capability": 1,
+            "insight": 1,
+            "point": 1,
+            "panda": 1,
+            "detail": 1,
+            "thank": 1,
+            "code": 1
+          },
+          "adjective": {
+            "explicit": 2,
+            "possible": 1,
+            "kind": 1,
+            "keyword": 1,
+            "main": 1,
+            "key": 1,
+            "old": 1,
+            "curious": 1,
+            "exposed": 1,
+            "external": 1,
+            "separate": 1,
+            "useful": 1,
+            "little": 1,
+            "original": 1
+          },
+          "verb": {
+            "deprecate": 3,
+            "know": 2,
+            "lead": 2,
+            "result": 2,
+            "document": 1,
+            "think": 1,
+            "ensure": 1,
+            "look": 1,
+            "limit": 1,
+            "ignore": 1,
+            "check": 1,
+            "happen": 1,
+            "resurrect": 1,
+            "appear": 1,
+            "integrate": 1,
+            "remove": 1,
+            "go": 1,
+            "return": 1,
+            "create": 1,
+            "thank": 1,
+            "follow": 1,
+            "play": 1,
+            "handle": 1,
+            "align": 1,
+            "propose": 1,
+            "need": 1,
+            "step": 1,
+            "search": 1
+          }
+        },
+        "noun_phrases": {
+          "class object": 2,
+          "explicit test": 2,
+          "replace args kwarg": 1,
+          "args kwarg": 1,
+          "kwargs possible argument": 1,
+          "keyword argument": 1,
+          "key member variable": 1,
+          "class resampler": 1,
+          "deprecation comment": 1,
+          "old school groupby framework": 1,
+          "grouper interface": 1,
+          "exposed external capability": 1,
+          "separate class": 1,
+          "freq argument": 1,
+          "little detail": 1,
+          "original comment": 1
+        },
+        "entities": [
+          {
+            "text": "TimeGrouper",
+            "label": "ORG",
+            "count": 11
+          },
+          {
+            "text": "TimeGroupers",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Resampler",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Grouper",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "pandas",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Grouper",
+            "label": "EVENT",
+            "count": 1
+          },
+          {
+            "text": "Mark",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Offhand",
+            "label": "GPE",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "yes",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 4
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.0931,
+        "sentences": 32,
+        "positive_sentences": 6,
+        "negative_sentences": 0,
+        "neutral_sentences": 26
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#54154",
+      "number": 54154,
+      "title": "REF: Proposal: change `DataFrame.to_excel` to output unformatted excel file",
+      "url": "https://github.com/pandas-dev/pandas/issues/54154",
+      "author": "attack68",
+      "state": "closed",
+      "labels": [
+        "Refactor",
+        "IO Excel"
+      ],
+      "created_at": "2023-07-16T07:28:16Z",
+      "updated_at": "2024-02-15T21:19:50Z",
+      "closed_at": "2024-02-15T21:19:49Z",
+      "comments_count": 9,
+      "bot_comments_ignored": 0,
+      "text": "REF: Proposal: change DataFrame.to_excel to output unformatted excel file\n\nFeature Type\n\nAdding new functionality to pandas\n\nChanging existing functionality in pandas\n\nRemoving existing functionality in pandas\n\nProblem Description\n\nTLDR;\n\nPlease indicate with a +1 if you are happy for the default DataFrame.to_excel to be changed to output an excel file without any bold or bordered style attached.\n\nDescription\n\nThe current action of DataFrame.to_excel is to produce an excel file with default bold and bordered styles for column and row headers:\n\nA number of issues are attempting to address this:\n#50336\n#22758\n#22773\n#52369\n#50991\n\nIn a recent PR (#53973) it is proposed to remove the ability to format excel file styles with DataFrame.to_excel and instead document how users can use the Styler.to_excel to create styles excel files.\n\nThis has a number of advantages:\n\nSimplifies the code, since it is effectively a removal and additions of documentation.\nCreates a more consistent Styler.to_excel (which uses DataFrame.to_excel) since an unstyled Styler wont produce this bold bordering by default.\nEncourages users to use a more flexible tool for formatting.\n\nappreciate input to gain some form of concensus to proceed.\n\nFeature Description\n\nAlternative Solutions\n\nAdditional Context\n\nTaking this since I'm already doing the work for this PR\n\n+1\n\n+1\n\n+1 on a deprecation of to_excel from producing a formatted excel file\n\nwould you be opposed to doing this in 3.0 without deprecation? I think to deprecate this, there would need to be a way to silence the warning - e.g. an argument or option added in and then that deprecated in 3.0. Since this can't break any workflow (it's just styling), that doesn't seem worth the effort to me.\n\nSure a 3.0 break sounds good too\n\n+1\n\nI would suggets we have enough support here to progress with at least the PR,\n\nExcellent! I'll get started on implementation",
+      "code": "df = pd.DataFrame([[1,2],[3,4]], index=[\"one\", \"two\"], columns=[\"A\", \"B\"])\ndf.to_excel(\"file.xlsx\")",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "documentation": 1
+        },
+        "categories": {
+          "documentation": 1
+        },
+        "matches": [
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 946,
+            "end": 959,
+            "context": "ince it is effectively a removal and additions of documentation. Creates a more consistent Styler.to_excel (which"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 341,
+        "sentences": 32,
+        "pos": {
+          "NOUN": 62,
+          "VERB": 54,
+          "ADP": 29,
+          "DET": 29,
+          "PUNCT": 27,
+          "ADJ": 22,
+          "PRON": 21,
+          "AUX": 20,
+          "PROPN": 19,
+          "PART": 17,
+          "ADV": 10,
+          "NUM": 9,
+          "SCONJ": 7,
+          "CCONJ": 7,
+          "SYM": 6,
+          "INTJ": 2
+        },
+        "lemmas": {
+          "noun": {
+            "file": 6,
+            "style": 4,
+            "functionality": 3,
+            "panda": 3,
+            "default": 3,
+            "number": 2,
+            "user": 2,
+            "deprecation": 2,
+            "proposal": 1,
+            "description": 1,
+            "action": 1,
+            "column": 1,
+            "row": 1,
+            "header": 1,
+            "issue": 1,
+            "ability": 1,
+            "advantage": 1,
+            "code": 1,
+            "removal": 1,
+            "addition": 1,
+            "documentation": 1,
+            "tool": 1,
+            "input": 1,
+            "form": 1,
+            "concensus": 1,
+            "context": 1,
+            "work": 1,
+            "excel": 1,
+            "way": 1,
+            "warning": 1,
+            "argument": 1,
+            "option": 1,
+            "workflow": 1,
+            "styling": 1,
+            "effort": 1,
+            "break": 1,
+            "support": 1,
+            "implementation": 1
+          },
+          "adjective": {
+            "excel": 4,
+            "bold": 3,
+            "unformatted": 1,
+            "new": 1,
+            "happy": 1,
+            "current": 1,
+            "recent": 1,
+            "consistent": 1,
+            "unstyled": 1,
+            "flexible": 1,
+            "additional": 1,
+            "worth": 1,
+            "good": 1
+          },
+          "verb": {
+            "change": 3,
+            "border": 3,
+            "produce": 3,
+            "format": 3,
+            "use": 3,
+            "output": 2,
+            "add": 2,
+            "exist": 2,
+            "remove": 2,
+            "create": 2,
+            "deprecate": 2,
+            "indicate": 1,
+            "attach": 1,
+            "attempt": 1,
+            "address": 1,
+            "propose": 1,
+            "document": 1,
+            "excel": 1,
+            "simplify": 1,
+            "encourage": 1,
+            "appreciate": 1,
+            "gain": 1,
+            "proceed": 1,
+            "take": 1,
+            "oppose": 1,
+            "think": 1,
+            "need": 1,
+            "silence": 1,
+            "break": 1,
+            "sound": 1,
+            "sugget": 1,
+            "progress": 1,
+            "start": 1
+          }
+        },
+        "noun_phrases": {
+          "existing functionality": 2,
+          "excel file": 2,
+          "unformatted excel file": 1,
+          "feature type": 1,
+          "new functionality": 1,
+          "problem description": 1,
+          "bold bordered style": 1,
+          "current action": 1,
+          "default bold bordered style": 1,
+          "row header": 1,
+          "excel file style": 1,
+          "styles excel file": 1,
+          "unstyled styler": 1,
+          "flexible tool": 1,
+          "feature description": 1,
+          "alternative solutions": 1,
+          "formatted excel file": 1
+        },
+        "entities": [
+          {
+            "text": "REF",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Problem Description",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Styler",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "possible",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "possible",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {
+              "simplify": 1
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "documentation": 1
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1954,
+        "sentences": 38,
+        "positive_sentences": 15,
+        "negative_sentences": 2,
+        "neutral_sentences": 21
+      }
+    }
+  ]
+}

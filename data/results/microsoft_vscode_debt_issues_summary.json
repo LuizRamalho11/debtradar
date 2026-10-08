@@ -1,0 +1,951 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "debt",
+    "requested": 30,
+    "collected": 30,
+    "collected_at": "2026-10-07T23:36:02+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:29:35+00:00"
+  },
+  "totals": {
+    "documents": 30,
+    "debt_documents": 16,
+    "tokens": 14830,
+    "sentences": 881,
+    "explicit_debt_documents": 11,
+    "classified_documents": 13,
+    "first_date": "2026-07-31",
+    "last_date": "2026-10-06"
+  },
+  "by_type": {
+    "issue": {
+      "documents": 30,
+      "debt_documents": 16
+    }
+  },
+  "classification": {
+    "code": {
+      "yes": 7,
+      "possible": 11,
+      "no": 12
+    },
+    "architecture": {
+      "yes": 3,
+      "possible": 7,
+      "no": 20
+    },
+    "tests": {
+      "yes": 6,
+      "possible": 8,
+      "no": 16
+    },
+    "documentation": {
+      "yes": 0,
+      "possible": 2,
+      "no": 28
+    },
+    "dependencies": {
+      "yes": 1,
+      "possible": 0,
+      "no": 29
+    }
+  },
+  "resolution": {
+    "with_debt": {
+      "documents": 16,
+      "closed": 7,
+      "median_days_to_close": 1.3
+    },
+    "without_debt": {
+      "documents": 14,
+      "closed": 7,
+      "median_days_to_close": 4.0
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "documents": 30,
+      "positive": 8,
+      "neutral": 15,
+      "negative": 7,
+      "mean_compound": -0.0079
+    },
+    "by_category": {
+      "code": {
+        "documents": 7,
+        "positive": 2,
+        "neutral": 3,
+        "negative": 2,
+        "mean_compound": -0.0055
+      },
+      "architecture": {
+        "documents": 3,
+        "positive": 1,
+        "neutral": 2,
+        "negative": 0,
+        "mean_compound": 0.0233
+      },
+      "tests": {
+        "documents": 6,
+        "positive": 1,
+        "neutral": 3,
+        "negative": 2,
+        "mean_compound": -0.0316
+      },
+      "documentation": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "dependencies": {
+        "documents": 1,
+        "positive": 1,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0793
+      }
+    }
+  },
+  "frequencies": {
+    "terms": {
+      "noun": [
+        {
+          "name": "icon",
+          "count": 72,
+          "documents": 3
+        },
+        {
+          "name": "file",
+          "count": 49,
+          "documents": 13
+        },
+        {
+          "name": "session",
+          "count": 42,
+          "documents": 11
+        },
+        {
+          "name": "control",
+          "count": 38,
+          "documents": 3
+        },
+        {
+          "name": "state",
+          "count": 37,
+          "documents": 9
+        },
+        {
+          "name": "input",
+          "count": 35,
+          "documents": 7
+        },
+        {
+          "name": "path",
+          "count": 35,
+          "documents": 11
+        },
+        {
+          "name": "test",
+          "count": 34,
+          "documents": 11
+        },
+        {
+          "name": "workbench",
+          "count": 34,
+          "documents": 11
+        },
+        {
+          "name": "owner",
+          "count": 33,
+          "documents": 3
+        },
+        {
+          "name": "relationship",
+          "count": 33,
+          "documents": 2
+        },
+        {
+          "name": "rule",
+          "count": 30,
+          "documents": 10
+        },
+        {
+          "name": "work",
+          "count": 29,
+          "documents": 15
+        },
+        {
+          "name": "change",
+          "count": 28,
+          "documents": 11
+        },
+        {
+          "name": "model",
+          "count": 28,
+          "documents": 9
+        },
+        {
+          "name": "auto",
+          "count": 27,
+          "documents": 7
+        },
+        {
+          "name": "margin",
+          "count": 27,
+          "documents": 2
+        },
+        {
+          "name": "notice",
+          "count": 26,
+          "documents": 2
+        },
+        {
+          "name": "ownership",
+          "count": 26,
+          "documents": 5
+        },
+        {
+          "name": "user",
+          "count": 26,
+          "documents": 11
+        }
+      ],
+      "adjective": [
+        {
+          "name": "new",
+          "count": 27,
+          "documents": 7
+        },
+        {
+          "name": "different",
+          "count": 23,
+          "documents": 9
+        },
+        {
+          "name": "current",
+          "count": 22,
+          "documents": 8
+        },
+        {
+          "name": "explicit",
+          "count": 21,
+          "documents": 7
+        },
+        {
+          "name": "token",
+          "count": 21,
+          "documents": 4
+        },
+        {
+          "name": "terminal",
+          "count": 19,
+          "documents": 5
+        },
+        {
+          "name": "visual",
+          "count": 14,
+          "documents": 3
+        },
+        {
+          "name": "layout",
+          "count": 13,
+          "documents": 6
+        },
+        {
+          "name": "stable",
+          "count": 13,
+          "documents": 5
+        },
+        {
+          "name": "small",
+          "count": 12,
+          "documents": 7
+        },
+        {
+          "name": "separate",
+          "count": 11,
+          "documents": 8
+        },
+        {
+          "name": "useful",
+          "count": 11,
+          "documents": 6
+        },
+        {
+          "name": "broad",
+          "count": 10,
+          "documents": 5
+        },
+        {
+          "name": "canonical",
+          "count": 10,
+          "documents": 3
+        },
+        {
+          "name": "local",
+          "count": 10,
+          "documents": 5
+        },
+        {
+          "name": "low",
+          "count": 10,
+          "documents": 5
+        },
+        {
+          "name": "responsive",
+          "count": 10,
+          "documents": 1
+        },
+        {
+          "name": "spacing",
+          "count": 10,
+          "documents": 1
+        },
+        {
+          "name": "wrong",
+          "count": 10,
+          "documents": 7
+        },
+        {
+          "name": "active",
+          "count": 9,
+          "documents": 3
+        }
+      ],
+      "verb": [
+        {
+          "name": "share",
+          "count": 55,
+          "documents": 13
+        },
+        {
+          "name": "exist",
+          "count": 41,
+          "documents": 15
+        },
+        {
+          "name": "use",
+          "count": 34,
+          "documents": 14
+        },
+        {
+          "name": "change",
+          "count": 26,
+          "documents": 12
+        },
+        {
+          "name": "add",
+          "count": 23,
+          "documents": 11
+        },
+        {
+          "name": "suggest",
+          "count": 23,
+          "documents": 2
+        },
+        {
+          "name": "apply",
+          "count": 21,
+          "documents": 6
+        },
+        {
+          "name": "need",
+          "count": 21,
+          "documents": 12
+        },
+        {
+          "name": "own",
+          "count": 20,
+          "documents": 6
+        },
+        {
+          "name": "require",
+          "count": 20,
+          "documents": 11
+        },
+        {
+          "name": "run",
+          "count": 20,
+          "documents": 7
+        },
+        {
+          "name": "remain",
+          "count": 18,
+          "documents": 7
+        },
+        {
+          "name": "remove",
+          "count": 16,
+          "documents": 8
+        },
+        {
+          "name": "fix",
+          "count": 15,
+          "documents": 11
+        },
+        {
+          "name": "provide",
+          "count": 14,
+          "documents": 7
+        },
+        {
+          "name": "render",
+          "count": 14,
+          "documents": 5
+        },
+        {
+          "name": "cover",
+          "count": 13,
+          "documents": 7
+        },
+        {
+          "name": "reuse",
+          "count": 13,
+          "documents": 5
+        },
+        {
+          "name": "scope",
+          "count": 13,
+          "documents": 10
+        },
+        {
+          "name": "write",
+          "count": 13,
+          "documents": 10
+        }
+      ]
+    },
+    "noun_phrases": [
+      {
+        "name": "agent host",
+        "count": 19,
+        "documents": 10
+      },
+      {
+        "name": "suggested owner",
+        "count": 10,
+        "documents": 1
+      },
+      {
+        "name": "chat input",
+        "count": 6,
+        "documents": 4
+      },
+      {
+        "name": "scoped enablement work",
+        "count": 6,
+        "documents": 6
+      },
+      {
+        "name": "agents window",
+        "count": 5,
+        "documents": 3
+      },
+      {
+        "name": "follow cleanup",
+        "count": 5,
+        "documents": 5
+      },
+      {
+        "name": "alignment area",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "auto applied instruction",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "customer learning load",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "existing code",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "intentional divergence",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "active stack",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "agent session",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "canonical guidance",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "css file",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "current design direction",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "detailed workflow",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "explicit ownership",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "failure mode",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "icon geometry",
+        "count": 3,
+        "documents": 1
+      }
+    ],
+    "technologies": [
+      {
+        "name": "Copilot",
+        "category": "tool",
+        "count": 20,
+        "documents": 7
+      },
+      {
+        "name": "VS Code",
+        "category": "tool",
+        "count": 19,
+        "documents": 10
+      },
+      {
+        "name": "CSS",
+        "category": "language",
+        "count": 14,
+        "documents": 4
+      },
+      {
+        "name": "Codex",
+        "category": "tool",
+        "count": 10,
+        "documents": 3
+      },
+      {
+        "name": "npm",
+        "category": "tool",
+        "count": 8,
+        "documents": 2
+      },
+      {
+        "name": "Claude",
+        "category": "tool",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "Git",
+        "category": "tool",
+        "count": 6,
+        "documents": 3
+      },
+      {
+        "name": "GitHub",
+        "category": "tool",
+        "count": 6,
+        "documents": 3
+      },
+      {
+        "name": "PowerShell",
+        "category": "language",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "Electron",
+        "category": "framework",
+        "count": 5,
+        "documents": 2
+      },
+      {
+        "name": "ESLint",
+        "category": "tool",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "TypeScript",
+        "category": "language",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "Windows",
+        "category": "platform",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Bash",
+        "category": "language",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "JavaScript",
+        "category": "language",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Linux",
+        "category": "platform",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Node.js",
+        "category": "framework",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Playwright",
+        "category": "tool",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "SQLite",
+        "category": "database",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "entities": [
+      {
+        "name": "UI [ORG]",
+        "text": "UI",
+        "label": "ORG",
+        "count": 25,
+        "documents": 9
+      },
+      {
+        "name": "Copilot [ORG]",
+        "text": "Copilot",
+        "label": "ORG",
+        "count": 11,
+        "documents": 4
+      },
+      {
+        "name": "CSS [ORG]",
+        "text": "CSS",
+        "label": "ORG",
+        "count": 10,
+        "documents": 3
+      },
+      {
+        "name": "VS Code [PRODUCT]",
+        "text": "VS Code",
+        "label": "PRODUCT",
+        "count": 9,
+        "documents": 5
+      },
+      {
+        "name": "DOM [ORG]",
+        "text": "DOM",
+        "label": "ORG",
+        "count": 5,
+        "documents": 3
+      },
+      {
+        "name": "PowerShell [ORG]",
+        "text": "PowerShell",
+        "label": "ORG",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "SDK [ORG]",
+        "text": "SDK",
+        "label": "ORG",
+        "count": 5,
+        "documents": 4
+      },
+      {
+        "name": "XDG [ORG]",
+        "text": "XDG",
+        "label": "ORG",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "Claude [PERSON]",
+        "text": "Claude",
+        "label": "PERSON",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "MCP [ORG]",
+        "text": "MCP",
+        "label": "ORG",
+        "count": 4,
+        "documents": 3
+      },
+      {
+        "name": "AHP [ORG]",
+        "text": "AHP",
+        "label": "ORG",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "Electron [ORG]",
+        "text": "Electron",
+        "label": "ORG",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "GitHub [ORG]",
+        "text": "GitHub",
+        "label": "ORG",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "IconLabel [ORG]",
+        "text": "IconLabel",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "AI [GPE]",
+        "text": "AI",
+        "label": "GPE",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "API [ORG]",
+        "text": "API",
+        "label": "ORG",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "CI [GPE]",
+        "text": "CI",
+        "label": "GPE",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "CLI [ORG]",
+        "text": "CLI",
+        "label": "ORG",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Codicon [ORG]",
+        "text": "Codicon",
+        "label": "ORG",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Consistency [PRODUCT]",
+        "text": "Consistency",
+        "label": "PRODUCT",
+        "count": 2,
+        "documents": 1
+      }
+    ],
+    "regex_patterns": [
+      {
+        "name": "cleanup",
+        "category": "general",
+        "count": 11,
+        "documents": 11
+      },
+      {
+        "name": "legacy",
+        "category": "general",
+        "count": 11,
+        "documents": 3
+      },
+      {
+        "name": "debt",
+        "category": "general",
+        "count": 9,
+        "documents": 8
+      },
+      {
+        "name": "duplication",
+        "category": "code",
+        "count": 8,
+        "documents": 5
+      },
+      {
+        "name": "documentation",
+        "category": "documentation",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "architecture",
+        "category": "architecture",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "missing_tests",
+        "category": "tests",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "flaky_test",
+        "category": "tests",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "refactor",
+        "category": "general",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "todo",
+        "category": "code",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "unit_test",
+        "category": "tests",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "vulnerable_dependency",
+        "category": "dependencies",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "debt_categories": [
+      {
+        "name": "code",
+        "yes": 7,
+        "possible": 11,
+        "no": 12
+      },
+      {
+        "name": "tests",
+        "yes": 6,
+        "possible": 8,
+        "no": 16
+      },
+      {
+        "name": "architecture",
+        "yes": 3,
+        "possible": 7,
+        "no": 20
+      },
+      {
+        "name": "dependencies",
+        "yes": 1,
+        "possible": 0,
+        "no": 29
+      },
+      {
+        "name": "documentation",
+        "yes": 0,
+        "possible": 2,
+        "no": 28
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "month": "2026-07",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.1225
+    },
+    {
+      "month": "2026-08",
+      "documents": 22,
+      "debt_documents": 11,
+      "explicit_debt": 9,
+      "categories": {
+        "code": 4,
+        "architecture": 1,
+        "tests": 3,
+        "documentation": 0,
+        "dependencies": 1
+      },
+      "mean_compound": -0.0189
+    },
+    {
+      "month": "2026-09",
+      "documents": 6,
+      "debt_documents": 5,
+      "explicit_debt": 2,
+      "categories": {
+        "code": 3,
+        "architecture": 2,
+        "tests": 3,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0215
+    },
+    {
+      "month": "2026-10",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": -0.0714
+    }
+  ]
+}

@@ -1,0 +1,793 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "pallets",
+    "repo": "flask",
+    "label": "",
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T00:31:05+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:10+00:00"
+  },
+  "totals": {
+    "documents": 15,
+    "debt_documents": 4,
+    "tokens": 3359,
+    "sentences": 245,
+    "explicit_debt_documents": 0,
+    "classified_documents": 4,
+    "first_date": "2026-07-13",
+    "last_date": "2026-09-24"
+  },
+  "by_type": {
+    "issue": {
+      "documents": 15,
+      "debt_documents": 4
+    }
+  },
+  "classification": {
+    "code": {
+      "yes": 1,
+      "possible": 1,
+      "no": 13
+    },
+    "architecture": {
+      "yes": 0,
+      "possible": 0,
+      "no": 15
+    },
+    "tests": {
+      "yes": 1,
+      "possible": 2,
+      "no": 12
+    },
+    "documentation": {
+      "yes": 3,
+      "possible": 3,
+      "no": 9
+    },
+    "dependencies": {
+      "yes": 0,
+      "possible": 1,
+      "no": 14
+    }
+  },
+  "resolution": {
+    "with_debt": {
+      "documents": 4,
+      "closed": 4,
+      "median_days_to_close": 0.0
+    },
+    "without_debt": {
+      "documents": 11,
+      "closed": 10,
+      "median_days_to_close": 0.0
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "documents": 15,
+      "positive": 2,
+      "neutral": 8,
+      "negative": 5,
+      "mean_compound": -0.0358
+    },
+    "by_category": {
+      "code": {
+        "documents": 1,
+        "positive": 0,
+        "neutral": 1,
+        "negative": 0,
+        "mean_compound": -0.0093
+      },
+      "architecture": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "tests": {
+        "documents": 1,
+        "positive": 0,
+        "neutral": 1,
+        "negative": 0,
+        "mean_compound": -0.0277
+      },
+      "documentation": {
+        "documents": 3,
+        "positive": 0,
+        "neutral": 3,
+        "negative": 0,
+        "mean_compound": 0.0214
+      },
+      "dependencies": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      }
+    }
+  },
+  "frequencies": {
+    "terms": {
+      "noun": [
+        {
+          "name": "server",
+          "count": 18,
+          "documents": 3
+        },
+        {
+          "name": "context",
+          "count": 17,
+          "documents": 1
+        },
+        {
+          "name": "thread",
+          "count": 17,
+          "documents": 1
+        },
+        {
+          "name": "app",
+          "count": 14,
+          "documents": 3
+        },
+        {
+          "name": "request",
+          "count": 12,
+          "documents": 2
+        },
+        {
+          "name": "doc",
+          "count": 11,
+          "documents": 4
+        },
+        {
+          "name": "issue",
+          "count": 11,
+          "documents": 6
+        },
+        {
+          "name": "response",
+          "count": 11,
+          "documents": 4
+        },
+        {
+          "name": "behavior",
+          "count": 10,
+          "documents": 6
+        },
+        {
+          "name": "environment",
+          "count": 10,
+          "documents": 5
+        },
+        {
+          "name": "example",
+          "count": 10,
+          "documents": 4
+        },
+        {
+          "name": "path",
+          "count": 10,
+          "documents": 4
+        },
+        {
+          "name": "version",
+          "count": 10,
+          "documents": 6
+        },
+        {
+          "name": "method",
+          "count": 9,
+          "documents": 2
+        },
+        {
+          "name": "test",
+          "count": 9,
+          "documents": 3
+        },
+        {
+          "name": "error",
+          "count": 8,
+          "documents": 3
+        },
+        {
+          "name": "class",
+          "count": 7,
+          "documents": 2
+        },
+        {
+          "name": "configuration",
+          "count": 7,
+          "documents": 1
+        },
+        {
+          "name": "connection",
+          "count": 7,
+          "documents": 2
+        },
+        {
+          "name": "worker",
+          "count": 7,
+          "documents": 2
+        }
+      ],
+      "adjective": [
+        {
+          "name": "main",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "new",
+          "count": 4,
+          "documents": 3
+        },
+        {
+          "name": "current",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "different",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "fine",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "high",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "nested",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "bad",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "cross",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "flask",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "happy",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "hard",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "later",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "multiple",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "noisy",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "open",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "relevant",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "scalar",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "valid",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "waitress",
+          "count": 2,
+          "documents": 1
+        }
+      ],
+      "verb": [
+        {
+          "name": "run",
+          "count": 10,
+          "documents": 3
+        },
+        {
+          "name": "add",
+          "count": 9,
+          "documents": 6
+        },
+        {
+          "name": "fail",
+          "count": 9,
+          "documents": 5
+        },
+        {
+          "name": "need",
+          "count": 7,
+          "documents": 3
+        },
+        {
+          "name": "report",
+          "count": 7,
+          "documents": 3
+        },
+        {
+          "name": "use",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "close",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "expect",
+          "count": 6,
+          "documents": 6
+        },
+        {
+          "name": "find",
+          "count": 6,
+          "documents": 6
+        },
+        {
+          "name": "look",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "set",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "write",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "abandon",
+          "count": 5,
+          "documents": 1
+        },
+        {
+          "name": "raise",
+          "count": 5,
+          "documents": 4
+        },
+        {
+          "name": "think",
+          "count": 5,
+          "documents": 3
+        },
+        {
+          "name": "try",
+          "count": 5,
+          "documents": 3
+        },
+        {
+          "name": "configure",
+          "count": 4,
+          "documents": 1
+        },
+        {
+          "name": "cover",
+          "count": 4,
+          "documents": 3
+        },
+        {
+          "name": "document",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "exist",
+          "count": 4,
+          "documents": 3
+        }
+      ]
+    },
+    "noun_phrases": [
+      {
+        "name": "high path traversal",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "flask version",
+        "count": 5,
+        "documents": 5
+      },
+      {
+        "name": "app context",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "flask class",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "python version",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "environment variable",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "later request",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "application json",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "body iterator",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "class attribute",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "configuration loading",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "documentation issue",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "expected behavior",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "main branch",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "response body",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "werkzeug doc",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "worker thread",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "abandoned body iterator",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "abandoned generator",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "abandonment case",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "technologies": [
+      {
+        "name": "Flask",
+        "category": "framework",
+        "count": 31,
+        "documents": 10
+      },
+      {
+        "name": "Python",
+        "category": "language",
+        "count": 11,
+        "documents": 8
+      },
+      {
+        "name": "PostgreSQL",
+        "category": "database",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "GitHub",
+        "category": "tool",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "entities": [
+      {
+        "name": "Flask [GPE]",
+        "text": "Flask",
+        "label": "GPE",
+        "count": 12,
+        "documents": 7
+      },
+      {
+        "name": "Werkzeug [GPE]",
+        "text": "Werkzeug",
+        "label": "GPE",
+        "count": 9,
+        "documents": 4
+      },
+      {
+        "name": "Flask [PRODUCT]",
+        "text": "Flask",
+        "label": "PRODUCT",
+        "count": 5,
+        "documents": 5
+      },
+      {
+        "name": "Werkzeug [ORG]",
+        "text": "Werkzeug",
+        "label": "ORG",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "GC [ORG]",
+        "text": "GC",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "LLM [ORG]",
+        "text": "LLM",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "TypeError [ORG]",
+        "text": "TypeError",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "AI [ORG]",
+        "text": "AI",
+        "label": "ORG",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "Flask [ORG]",
+        "text": "Flask",
+        "label": "ORG",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "Infinity [NORP]",
+        "text": "Infinity",
+        "label": "NORP",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "NaN [GPE]",
+        "text": "NaN",
+        "label": "GPE",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Arabic [LANGUAGE]",
+        "text": "Arabic",
+        "label": "LANGUAGE",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "CWE [ORG]",
+        "text": "CWE",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Cloudflare [ORG]",
+        "text": "Cloudflare",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "DeprecationWarning [ORG]",
+        "text": "DeprecationWarning",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "DeprecationWarning [PERSON]",
+        "text": "DeprecationWarning",
+        "label": "PERSON",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Duplicate [ORG]",
+        "text": "Duplicate",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "English [LANGUAGE]",
+        "text": "English",
+        "label": "LANGUAGE",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Flask Hosting Platforms [ORG]",
+        "text": "Flask Hosting Platforms",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Flask [FAC]",
+        "text": "Flask",
+        "label": "FAC",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "regex_patterns": [
+      {
+        "name": "docs",
+        "category": "documentation",
+        "count": 11,
+        "documents": 4
+      },
+      {
+        "name": "documentation",
+        "category": "documentation",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "update_docs",
+        "category": "documentation",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "debt_categories": [
+      {
+        "name": "documentation",
+        "yes": 3,
+        "possible": 3,
+        "no": 9
+      },
+      {
+        "name": "tests",
+        "yes": 1,
+        "possible": 2,
+        "no": 12
+      },
+      {
+        "name": "code",
+        "yes": 1,
+        "possible": 1,
+        "no": 13
+      },
+      {
+        "name": "dependencies",
+        "yes": 0,
+        "possible": 1,
+        "no": 14
+      },
+      {
+        "name": "architecture",
+        "yes": 0,
+        "possible": 0,
+        "no": 15
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "month": "2026-07",
+      "documents": 2,
+      "debt_documents": 1,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 1,
+        "dependencies": 0
+      },
+      "mean_compound": -0.0037
+    },
+    {
+      "month": "2026-08",
+      "documents": 9,
+      "debt_documents": 2,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 1,
+        "documentation": 1,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0043
+    },
+    {
+      "month": "2026-09",
+      "documents": 4,
+      "debt_documents": 1,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 1,
+        "dependencies": 0
+      },
+      "mean_compound": -0.1423
+    }
+  ]
+}

@@ -1,0 +1,870 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "debt",
+    "sources": [
+      "prs"
+    ],
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T11:01:27+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:10+00:00"
+  },
+  "totals": {
+    "documents": 15,
+    "debt_documents": 3,
+    "tokens": 1271,
+    "sentences": 96,
+    "explicit_debt_documents": 2,
+    "classified_documents": 3,
+    "first_date": "2025-11-10",
+    "last_date": "2026-09-21"
+  },
+  "by_type": {
+    "pull_request": {
+      "documents": 15,
+      "debt_documents": 3
+    }
+  },
+  "classification": {
+    "code": {
+      "yes": 2,
+      "possible": 1,
+      "no": 12
+    },
+    "architecture": {
+      "yes": 0,
+      "possible": 2,
+      "no": 13
+    },
+    "tests": {
+      "yes": 1,
+      "possible": 2,
+      "no": 12
+    },
+    "documentation": {
+      "yes": 0,
+      "possible": 1,
+      "no": 14
+    },
+    "dependencies": {
+      "yes": 0,
+      "possible": 0,
+      "no": 15
+    }
+  },
+  "resolution": {
+    "with_debt": {
+      "documents": 3,
+      "closed": 3,
+      "median_days_to_close": 0.1
+    },
+    "without_debt": {
+      "documents": 12,
+      "closed": 12,
+      "median_days_to_close": 0.6
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "documents": 15,
+      "positive": 2,
+      "neutral": 10,
+      "negative": 3,
+      "mean_compound": -0.0271
+    },
+    "by_category": {
+      "code": {
+        "documents": 2,
+        "positive": 1,
+        "neutral": 1,
+        "negative": 0,
+        "mean_compound": 0.0911
+      },
+      "architecture": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "tests": {
+        "documents": 1,
+        "positive": 0,
+        "neutral": 1,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "documentation": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "dependencies": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      }
+    }
+  },
+  "frequencies": {
+    "terms": {
+      "noun": [
+        {
+          "name": "setting",
+          "count": 14,
+          "documents": 5
+        },
+        {
+          "name": "extension",
+          "count": 10,
+          "documents": 5
+        },
+        {
+          "name": "fix",
+          "count": 7,
+          "documents": 7
+        },
+        {
+          "name": "workspace",
+          "count": 7,
+          "documents": 1
+        },
+        {
+          "name": "change",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "file",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "localization",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "signal",
+          "count": 5,
+          "documents": 1
+        },
+        {
+          "name": "validation",
+          "count": 5,
+          "documents": 5
+        },
+        {
+          "name": "consumer",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "manifest",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "reference",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "request",
+          "count": 4,
+          "documents": 1
+        },
+        {
+          "name": "team",
+          "count": 4,
+          "documents": 3
+        },
+        {
+          "name": "test",
+          "count": 4,
+          "documents": 3
+        },
+        {
+          "name": "component",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "element",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "method",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "npm",
+          "count": 3,
+          "documents": 3
+        },
+        {
+          "name": "runtime",
+          "count": 3,
+          "documents": 3
+        }
+      ],
+      "adjective": [
+        {
+          "name": "new",
+          "count": 4,
+          "documents": 1
+        },
+        {
+          "name": "stale",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "common",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "terminal",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "unchanged",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "untrusted",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "accent",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "available",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "friendly",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "glow",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "insensitive",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "obsolete",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "pull",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "ready",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "separate",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "single",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "unrelated",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "unused",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "vendored",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "able",
+          "count": 1,
+          "documents": 1
+        }
+      ],
+      "verb": [
+        {
+          "name": "remove",
+          "count": 18,
+          "documents": 7
+        },
+        {
+          "name": "deprecate",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "set",
+          "count": 7,
+          "documents": 5
+        },
+        {
+          "name": "run",
+          "count": 6,
+          "documents": 6
+        },
+        {
+          "name": "edit",
+          "count": 5,
+          "documents": 4
+        },
+        {
+          "name": "restrict",
+          "count": 5,
+          "documents": 1
+        },
+        {
+          "name": "add",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "build",
+          "count": 4,
+          "documents": 1
+        },
+        {
+          "name": "light",
+          "count": 4,
+          "documents": 1
+        },
+        {
+          "name": "parse",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "remain",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "verify",
+          "count": 4,
+          "documents": 4
+        },
+        {
+          "name": "work",
+          "count": 4,
+          "documents": 2
+        },
+        {
+          "name": "change",
+          "count": 3,
+          "documents": 3
+        },
+        {
+          "name": "delete",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "fix",
+          "count": 3,
+          "documents": 3
+        },
+        {
+          "name": "need",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "preserve",
+          "count": 3,
+          "documents": 3
+        },
+        {
+          "name": "update",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "write",
+          "count": 3,
+          "documents": 3
+        }
+      ]
+    },
+    "noun_phrases": [
+      {
+        "name": "git diff",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "remaining reference",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "built extension",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "component governance",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "edited extension manifest",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "edited extension manifest localization file",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "friendly ping",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "new method",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "new pull request",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "pull request",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "runtime consumer",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "script explorer",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "accent insensitive filtering",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "accent insensitive logic",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "actual state change",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "agent host session",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "authoritative extension host",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "autorun fire",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "base common signal",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "building table",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "technologies": [
+      {
+        "name": "VS Code",
+        "category": "tool",
+        "count": 5,
+        "documents": 3
+      },
+      {
+        "name": "Git",
+        "category": "tool",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "HTML",
+        "category": "language",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "npm",
+        "category": "tool",
+        "count": 4,
+        "documents": 3
+      },
+      {
+        "name": "Copilot",
+        "category": "tool",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "CSS",
+        "category": "language",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Node.js",
+        "category": "framework",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "entities": [
+      {
+        "name": "JSON [PERSON]",
+        "text": "JSON",
+        "label": "PERSON",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "VS Code [PRODUCT]",
+        "text": "VS Code",
+        "label": "PRODUCT",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "DOM [ORG]",
+        "text": "DOM",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "CG [ORG]",
+        "text": "CG",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "CSS [ORG]",
+        "text": "CSS",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Copilot SDK [ORG]",
+        "text": "Copilot SDK",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Explorer [ORG]",
+        "text": "Explorer",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Files [PERSON]",
+        "text": "Files",
+        "label": "PERSON",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Foundry Local [ORG]",
+        "text": "Foundry Local",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Glow [PERSON]",
+        "text": "Glow",
+        "label": "PERSON",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Ignore [ORG]",
+        "text": "Ignore",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Ignore [PERSON]",
+        "text": "Ignore",
+        "label": "PERSON",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Korean [NORP]",
+        "text": "Korean",
+        "label": "NORP",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Mark [PERSON]",
+        "text": "Mark",
+        "label": "PERSON",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Monaco [NORP]",
+        "text": "Monaco",
+        "label": "NORP",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "NES [ORG]",
+        "text": "NES",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Quick Pick [ORG]",
+        "text": "Quick Pick",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "SDK [ORG]",
+        "text": "SDK",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "UI [ORG]",
+        "text": "UI",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Unicode [ORG]",
+        "text": "Unicode",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "regex_patterns": [
+      {
+        "name": "unit_test",
+        "category": "tests",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "refactor",
+        "category": "general",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "workaround",
+        "category": "general",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "debt_categories": [
+      {
+        "name": "code",
+        "yes": 2,
+        "possible": 1,
+        "no": 12
+      },
+      {
+        "name": "tests",
+        "yes": 1,
+        "possible": 2,
+        "no": 12
+      },
+      {
+        "name": "architecture",
+        "yes": 0,
+        "possible": 2,
+        "no": 13
+      },
+      {
+        "name": "documentation",
+        "yes": 0,
+        "possible": 1,
+        "no": 14
+      },
+      {
+        "name": "dependencies",
+        "yes": 0,
+        "possible": 0,
+        "no": 15
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "month": "2025-11",
+      "documents": 4,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": -0.0309
+    },
+    {
+      "month": "2026-01",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": -0.296
+    },
+    {
+      "month": "2026-02",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": -0.0377
+    },
+    {
+      "month": "2026-06",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0075
+    },
+    {
+      "month": "2026-07",
+      "documents": 1,
+      "debt_documents": 1,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 1,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0
+    },
+    {
+      "month": "2026-08",
+      "documents": 6,
+      "debt_documents": 1,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.013
+    },
+    {
+      "month": "2026-09",
+      "documents": 1,
+      "debt_documents": 1,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": -0.0342
+    }
+  ]
+}

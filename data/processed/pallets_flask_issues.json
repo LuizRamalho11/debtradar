@@ -1,0 +1,2957 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "pallets",
+    "repo": "flask",
+    "label": "",
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T00:31:05+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:10+00:00"
+  },
+  "documents": [
+    {
+      "type": "issue",
+      "id": "#6165",
+      "number": 6165,
+      "title": "update docs for `MAX_CONTENT_LENGTH`",
+      "url": "https://github.com/pallets/flask/issues/6165",
+      "author": "Meterel",
+      "state": "closed",
+      "labels": [
+        "docs"
+      ],
+      "created_at": "2026-09-24T22:41:33Z",
+      "updated_at": "2026-09-25T21:19:03Z",
+      "closed_at": "2026-09-24T22:56:18Z",
+      "comments_count": 3,
+      "bot_comments_ignored": 0,
+      "text": "update docs for MAX_CONTENT_LENGTH\n\nClarify MAX_CONTENT_LENGTH should be avoided in the docs in favor of setting the limit on the server just like its written in the Werkzeug docs.\n\nI have this Flask app with Waitress as the production server and MAX_CONTENT_LENGTH set to 10 bytes\n\nand this client to send data to it until the connection is closed\n\nand the app kept receiving and writing the request to disk way over 10 bytes until it hit Waitress's max_request_body_size limit that defaults to 1Gib, with the client printing\n\nEnvironment:\n\nPython version: 3.13.7\nFlask version: 3.1.3\n\nThat has nothing to do with Flask, you need to configure Waitress, or the HTTP server in front of Waitress.\n\nYes, that's why it's already written in the Werkzeug docs to configure it on the server instead. You need to add that to the Flask docs as well.\n\nThe Werkzeug docs were updated to say what they say now approximately a month ago. I don't constantly go back and forth keeping the two in sync.\n\nMAX_CONTENT_LENGTH should not be _avoided_. In fact, the docs as written in Werkzeug wouldn't help you either. They say that max_content_length must be set _somewhere_. The problem you're reporting is that Waitress buffers the response before it gets to the application. Because of that Waitress behavior, the max length can only be configured there, not further down the stack.\n\nSo I suppose what the docs need to say is \"be aware of the stack you're using, how each tool interacts with requests and responses, and how to configure each one appropriately.\" That seems like such general advice, and applies to everything not just max_content_length, so I don't think it's worth saying specifically there.",
+      "code": "from flask import Flask,request\nfrom waitress import serve\n\napp=Flask(__name__)\napp.config[\"MAX_CONTENT_LENGTH\"]=10\n\n@app.post(\"/\")\ndef index():\n    print(request.get_data())\n    return \"OK\"\n\nserve(app,listen=\"localhost:8000\")\nfrom urllib.request import urlopen\nfrom random import randbytes\n\nbytes_sent=0\nchunk_size=10_000_000\ndef stream():\n    global bytes_sent\n\n    while True:\n        yield randbytes(chunk_size)\n        bytes_sent+=chunk_size\n\ntry:\n    urlopen(\"http://localhost:8000/\",stream())\nexcept Exception as e:\n    print(e)\nprint(f\"sent around {bytes_sent} bytes\")\n<urlopen error [WinError 10054] ...>\nsent around 1080000000 bytes",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "update_docs": 1,
+          "docs": 7
+        },
+        "categories": {
+          "documentation": 8
+        },
+        "matches": [
+          {
+            "pattern": "update_docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "update docs",
+            "source": "text",
+            "start": 0,
+            "end": 11,
+            "context": "update docs for MAX_CONTENT_LENGTH Clarify MAX_CONTENT_LENGT"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 88,
+            "end": 92,
+            "context": "arify MAX_CONTENT_LENGTH should be avoided in the docs in favor of setting the limit on the server just"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 175,
+            "end": 179,
+            "context": "the server just like its written in the Werkzeug docs. I have this Flask app with Waitress as the prod"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 749,
+            "end": 753,
+            "context": ", that's why it's already written in the Werkzeug docs to configure it on the server instead. You need t"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 827,
+            "end": 831,
+            "context": "server instead. You need to add that to the Flask docs as well. The Werkzeug docs were updated to say w"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 855,
+            "end": 859,
+            "context": "add that to the Flask docs as well. The Werkzeug docs were updated to say what they say now approximate"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 1045,
+            "end": 1049,
+            "context": "TENT_LENGTH should not be _avoided_. In fact, the docs as written in Werkzeug wouldn't help you either."
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 1390,
+            "end": 1394,
+            "context": "ot further down the stack. So I suppose what the docs need to say is \"be aware of the stack you're usin"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 325,
+        "sentences": 19,
+        "pos": {
+          "NOUN": 51,
+          "VERB": 47,
+          "ADP": 31,
+          "DET": 29,
+          "PUNCT": 29,
+          "PRON": 28,
+          "ADV": 22,
+          "AUX": 21,
+          "PROPN": 17,
+          "PART": 16,
+          "SCONJ": 12,
+          "CCONJ": 9,
+          "NUM": 6,
+          "ADJ": 6,
+          "INTJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "doc": 7,
+            "server": 4,
+            "limit": 2,
+            "app": 2,
+            "byte": 2,
+            "client": 2,
+            "request": 2,
+            "version": 2,
+            "response": 2,
+            "stack": 2,
+            "favor": 1,
+            "production": 1,
+            "datum": 1,
+            "connection": 1,
+            "way": 1,
+            "month": 1,
+            "sync": 1,
+            "fact": 1,
+            "problem": 1,
+            "buffer": 1,
+            "application": 1,
+            "behavior": 1,
+            "max": 1,
+            "length": 1,
+            "tool": 1,
+            "advice": 1
+          },
+          "adjective": {
+            "waitress": 2,
+            "aware": 1,
+            "general": 1,
+            "worth": 1
+          },
+          "verb": {
+            "write": 4,
+            "configure": 4,
+            "set": 3,
+            "need": 3,
+            "update": 2,
+            "avoid": 2,
+            "keep": 2,
+            "doc": 1,
+            "send": 1,
+            "close": 1,
+            "receive": 1,
+            "disk": 1,
+            "hit": 1,
+            "default": 1,
+            "print": 1,
+            "add": 1,
+            "help": 1,
+            "report": 1,
+            "get": 1,
+            "suppose": 1,
+            "interact": 1,
+            "apply": 1,
+            "think": 1,
+            "say": 1
+          }
+        },
+        "noun_phrases": {
+          "werkzeug doc": 2,
+          "flask app": 1,
+          "production server": 1,
+          "waitress limit": 1,
+          "python version": 1,
+          "flask version": 1,
+          "http server": 1,
+          "flask doc": 1,
+          "waitress behavior": 1,
+          "max length": 1,
+          "general advice": 1
+        },
+        "entities": [
+          {
+            "text": "Werkzeug",
+            "label": "GPE",
+            "count": 4
+          },
+          {
+            "text": "Flask",
+            "label": "GPE",
+            "count": 2
+          },
+          {
+            "text": "Flask",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Waitress",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "max",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 4
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "yes",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "doc": 8
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.045,
+        "sentences": 19,
+        "positive_sentences": 5,
+        "negative_sentences": 2,
+        "neutral_sentences": 12
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6163",
+      "number": 6163,
+      "title": "spam",
+      "url": "https://github.com/pallets/flask/issues/6163",
+      "author": "CSOAI-ORG",
+      "state": "closed",
+      "labels": [
+        "rejected AI"
+      ],
+      "created_at": "2026-09-15T03:47:22Z",
+      "updated_at": "2026-10-03T00:13:28Z",
+      "closed_at": "2026-09-15T04:06:57Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "spam\n\nspam",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 2,
+        "sentences": 2,
+        "pos": {
+          "NOUN": 2
+        },
+        "lemmas": {
+          "noun": {
+            "spam": 2
+          },
+          "adjective": {},
+          "verb": {}
+        },
+        "noun_phrases": {},
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.3612,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 2,
+        "neutral_sentences": 0
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6161",
+      "number": 6161,
+      "title": "spam",
+      "url": "https://github.com/pallets/flask/issues/6161",
+      "author": "project-afterlife",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-12T13:55:12Z",
+      "updated_at": "2026-09-27T00:15:37Z",
+      "closed_at": "2026-09-12T13:57:22Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "spam\n\nFix branch:\n\nMore information can be required if needed.\n\nMore information can be required if needed.\n\nReportBot autonomous - redacted@example.com",
+      "code": "# ReportBot auto-fix\nprint('fix')",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 24,
+        "sentences": 5,
+        "pos": {
+          "NOUN": 5,
+          "PUNCT": 4,
+          "AUX": 4,
+          "VERB": 4,
+          "PROPN": 2,
+          "ADJ": 2,
+          "SCONJ": 2,
+          "X": 1
+        },
+        "lemmas": {
+          "noun": {
+            "information": 2,
+            "spam": 1,
+            "branch": 1,
+            "autonomous": 1
+          },
+          "adjective": {},
+          "verb": {
+            "require": 2,
+            "need": 2
+          }
+        },
+        "noun_phrases": {
+          "fix branch": 1
+        },
+        "entities": [
+          {
+            "text": "ReportBot",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.0722,
+        "sentences": 5,
+        "positive_sentences": 0,
+        "negative_sentences": 1,
+        "neutral_sentences": 4
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6160",
+      "number": 6160,
+      "title": "spam",
+      "url": "https://github.com/pallets/flask/issues/6160",
+      "author": "project-afterlife",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-09-12T13:52:04Z",
+      "updated_at": "2026-09-27T00:15:38Z",
+      "closed_at": "2026-09-12T13:56:52Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "spam\n\nx",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 2,
+        "sentences": 2,
+        "pos": {
+          "NOUN": 2
+        },
+        "lemmas": {
+          "noun": {
+            "spam": 1
+          },
+          "adjective": {},
+          "verb": {}
+        },
+        "noun_phrases": {},
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.1806,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 1,
+        "neutral_sentences": 1
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6146",
+      "number": 6146,
+      "title": "Add Cloudflare to Flask Hosting Platforms docs?",
+      "url": "https://github.com/pallets/flask/issues/6146",
+      "author": "hoodmane",
+      "state": "open",
+      "labels": [],
+      "created_at": "2026-08-31T19:17:12Z",
+      "updated_at": "2026-09-26T12:56:43Z",
+      "closed_at": "",
+      "comments_count": 3,
+      "bot_comments_ignored": 0,
+      "text": "Add Cloudflare to Flask Hosting Platforms docs?\n\nCloudflare workers supports deploying Flask applications. We have the following short guide for deploying Flask workers:\n\nCould we add a link to this page to the \"Hosting Platforms\" section of the docs?\n\nIt looks like the examples repo listed at the bottom of that page doesn't actually include the referenced example.\n\nOops, forgot to merge it. It is there now, thanks!\n\nany update on this? Would appreciate a yes/no/(yes conditioned on some improvement) response when you have time.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "docs": 2
+        },
+        "categories": {
+          "documentation": 2
+        },
+        "matches": [
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 42,
+            "end": 46,
+            "context": "Add Cloudflare to Flask Hosting Platforms docs? Cloudflare workers supports deploying Flask app"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 246,
+            "end": 250,
+            "context": "is page to the \"Hosting Platforms\" section of the docs? It looks like the examples repo listed at the b"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 102,
+        "sentences": 9,
+        "pos": {
+          "NOUN": 20,
+          "VERB": 17,
+          "PUNCT": 14,
+          "DET": 12,
+          "PROPN": 10,
+          "ADP": 9,
+          "PRON": 7,
+          "AUX": 4,
+          "ADV": 3,
+          "SCONJ": 2,
+          "PART": 2,
+          "ADJ": 1,
+          "SYM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "doc": 2,
+            "worker": 2,
+            "page": 2,
+            "example": 2,
+            "application": 1,
+            "guide": 1,
+            "link": 1,
+            "section": 1,
+            "oop": 1,
+            "thank": 1,
+            "update": 1,
+            "yes": 1,
+            "improvement": 1,
+            "response": 1,
+            "time": 1
+          },
+          "adjective": {
+            "short": 1
+          },
+          "verb": {
+            "add": 2,
+            "deploy": 2,
+            "support": 1,
+            "follow": 1,
+            "look": 1,
+            "repo": 1,
+            "list": 1,
+            "include": 1,
+            "reference": 1,
+            "forget": 1,
+            "merge": 1,
+            "appreciate": 1,
+            "condition": 1
+          }
+        },
+        "noun_phrases": {
+          "flask hosting platforms": 1,
+          "cloudflare worker": 1,
+          "flask application": 1,
+          "following short guide": 1,
+          "flask worker": 1,
+          "hosting platforms section": 1,
+          "referenced example": 1
+        },
+        "entities": [
+          {
+            "text": "Flask Hosting Platforms",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Cloudflare",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Flask",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Flask",
+            "label": "NORP",
+            "count": 1
+          },
+          {
+            "text": "the \"Hosting Platforms",
+            "label": "LAW",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 3
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "possible",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "doc": 2
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1716,
+        "sentences": 9,
+        "positive_sentences": 3,
+        "negative_sentences": 0,
+        "neutral_sentences": 6
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6143",
+      "number": 6143,
+      "title": "`add_url_rule` leaves a route registered even after an endpoint conflict",
+      "url": "https://github.com/pallets/flask/issues/6143",
+      "author": "anonymous756fsd",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-28T15:24:13Z",
+      "updated_at": "2026-09-12T00:12:37Z",
+      "closed_at": "2026-08-28T17:13:03Z",
+      "comments_count": 2,
+      "bot_comments_ignored": 0,
+      "text": "add_url_rule leaves a route registered even after an endpoint conflict\n\nDescription\n'add_url_rule' correctly raises an error when an endpoint already exists and you try to register a different view function with the same endpoint.\n\nHowever, after you catch the error and continue running the code, the URL you tried to add (/b, for example) still exists. When a user requests /b, it is routed to the view function that was already registered for that endpoint, rather than the new view function whose registration failed.\n\nExample\n\nExpected Result\n\nActual Result\n\nI think Flask correctly rejects the view-function overwrite, but the failed registration has already added the URL rule.\n\nEnvironment:\n\nPython version: 3.11.2\nFlask version: 3.1.3\n\nAfter searching, I didn't find any discussion about this behavior's semantic(or i just ignored :>). If this is an intentional implementation, I think it would at least be worth documenting or commenting explicitly.\n\nIf you throw away the error saying you did something wrong, then yes you might end up with incorrect setup.",
+      "code": "from flask import Flask\n\napp = Flask(__name__)\n\ndef first():\n    return \"first\"\n\ndef second():\n    return \"second\"\n\napp.add_url_rule(\"/a\", endpoint=\"same\", view_func=first)\n\ntry:\n    app.add_url_rule(\"/b\", endpoint=\"same\", view_func=second)\nexcept AssertionError as e:\n    print(e)\n\nclient = app.test_client()\n\nprint(client.get(\"/a\").status_code, client.get(\"/a\").data)\nprint(client.get(\"/b\").status_code, client.get(\"/b\").data)\nView function mapping is overwriting an existing endpoint function: same\n200 b'first'\n404 ...\nView function mapping is overwriting an existing endpoint function: same\n200 b'first'\n200 b'first'",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 195,
+        "sentences": 13,
+        "pos": {
+          "NOUN": 35,
+          "VERB": 32,
+          "PUNCT": 27,
+          "DET": 21,
+          "PRON": 15,
+          "ADV": 13,
+          "ADP": 11,
+          "PROPN": 9,
+          "ADJ": 8,
+          "AUX": 8,
+          "SCONJ": 5,
+          "CCONJ": 4,
+          "PART": 4,
+          "NUM": 2,
+          "INTJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "endpoint": 4,
+            "view": 4,
+            "error": 3,
+            "function": 3,
+            "url": 2,
+            "registration": 2,
+            "version": 2,
+            "route": 1,
+            "conflict": 1,
+            "code": 1,
+            "example": 1,
+            "user": 1,
+            "result": 1,
+            "overwrite": 1,
+            "rule": 1,
+            "environment": 1,
+            "discussion": 1,
+            "behavior": 1,
+            "implementation": 1,
+            "setup": 1
+          },
+          "adjective": {
+            "different": 1,
+            "new": 1,
+            "intentional": 1,
+            "worth": 1,
+            "wrong": 1,
+            "incorrect": 1
+          },
+          "verb": {
+            "register": 3,
+            "exist": 2,
+            "try": 2,
+            "add": 2,
+            "fail": 2,
+            "think": 2,
+            "leave": 1,
+            "raise": 1,
+            "catch": 1,
+            "continue": 1,
+            "run": 1,
+            "request": 1,
+            "rout": 1,
+            "function": 1,
+            "expect": 1,
+            "reject": 1,
+            "search": 1,
+            "find": 1,
+            "ignore": 1,
+            "document": 1,
+            "comment": 1,
+            "throw": 1,
+            "say": 1,
+            "end": 1
+          }
+        },
+        "noun_phrases": {
+          "endpoint conflict": 1,
+          "different view function": 1,
+          "view function": 1,
+          "new view": 1,
+          "expected result": 1,
+          "actual result": 1,
+          "view function overwrite": 1,
+          "failed registration": 1,
+          "url rule": 1,
+          "python version": 1,
+          "flask version": 1,
+          "intentional implementation": 1,
+          "incorrect setup": 1
+        },
+        "entities": [
+          {
+            "text": "Flask",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 2
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.119,
+        "sentences": 15,
+        "positive_sentences": 1,
+        "negative_sentences": 5,
+        "neutral_sentences": 9
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6139",
+      "number": 6139,
+      "title": "AI junk",
+      "url": "https://github.com/pallets/flask/issues/6139",
+      "author": "truongsontung",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-24T13:33:18Z",
+      "updated_at": "2026-09-08T00:13:34Z",
+      "closed_at": "2026-08-24T13:37:22Z",
+      "comments_count": 2,
+      "bot_comments_ignored": 0,
+      "text": "AI junk\n\nSummary\n\nMultiple security vulnerabilities in Flask: CRITICAL code execution via exec() in config.py, HIGH path traversal in 5 locations.\n\nVulnerabilities Found\n\nCRITICAL config.py:209 - Code Execution via exec() in from_pyfile\nexec(compile(config_file.read(), filename, \"exec\"), d.__dict__) executes arbitrary Python code from a file.\n\nHIGH config.py:204 - Path Traversal in from_pyfile\nfilename = os.path.join(self.root_path, filename) without sanitization. Absolute paths bypass root_path.\n\nHIGH config.py:290 - Path Traversal in from_file\nSame os.path.join pattern without validation.\n\nHIGH app.py:441 - Path Traversal in open_resource\npath = os.path.join(self.root_path, resource) without path validation.\n\nHIGH app.py:463 - Path Traversal in open_instance_resource\nSame pattern.\n\nHIGH blueprints.py:123 - Path Traversal in open_resource\nos.path.join without traversal protection.\n\nMEDIUM cli.py:1023 - Code Execution via eval() in shell_command\neval(compile(f.read(), startup, \"exec\")) on PYTHONSTARTUP env var.\n\nRecommended Fix\n\nUse werkzeug.utils.safe_join for all path operations\nValidate that resolved paths stay within intended directories\nDocument/document-warn on exec/eval usage in config loading\n\nNote\nSeveral of these are documented Flask features (loading config from Python files is designed to exec code). However, the path traversal combined with env-var-configurable filenames may not be intended.\n\nSomeone sent us this EXACT SAME slop before.\n\nRoot path etc are not relevant to any of those things. The config file can be anywhere.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 258,
+        "sentences": 20,
+        "pos": {
+          "NOUN": 64,
+          "PUNCT": 58,
+          "PROPN": 45,
+          "ADP": 30,
+          "ADJ": 16,
+          "VERB": 15,
+          "AUX": 7,
+          "DET": 6,
+          "PRON": 6,
+          "NUM": 3,
+          "PART": 3,
+          "ADV": 3,
+          "SYM": 1,
+          "X": 1
+        },
+        "lemmas": {
+          "noun": {
+            "path": 7,
+            "exec": 5,
+            "filename": 4,
+            "code": 3,
+            "traversal": 3,
+            "file": 3,
+            "vulnerability": 2,
+            "execution": 2,
+            "pattern": 2,
+            "validation": 2,
+            "document": 2,
+            "config": 2,
+            "junk": 1,
+            "security": 1,
+            "location": 1,
+            "sanitization": 1,
+            "bypass": 1,
+            "resource": 1,
+            "protection": 1,
+            "eval": 1,
+            "startup": 1,
+            "operation": 1,
+            "validate": 1,
+            "directory": 1,
+            "usage": 1,
+            "loading": 1,
+            "note": 1,
+            "feature": 1,
+            "env": 1,
+            "var": 1,
+            "configurable": 1,
+            "slop": 1,
+            "root": 1,
+            "thing": 1
+          },
+          "adjective": {
+            "high": 3,
+            "multiple": 1,
+            "arbitrary": 1,
+            "absolute": 1,
+            "eval": 1,
+            "relevant": 1
+          },
+          "verb": {
+            "intend": 2,
+            "find": 1,
+            "execute": 1,
+            "path": 1,
+            "recommend": 1,
+            "resolve": 1,
+            "stay": 1,
+            "warn": 1,
+            "document": 1,
+            "load": 1,
+            "design": 1,
+            "exec": 1,
+            "combine": 1,
+            "send": 1
+          }
+        },
+        "noun_phrases": {
+          "high path traversal": 6,
+          "multiple security vulnerability": 1,
+          "critical code execution": 1,
+          "code execution": 1,
+          "arbitrary python code": 1,
+          "absolute paths bypass": 1,
+          "path validation": 1,
+          "traversal protection": 1,
+          "medium code execution": 1,
+          "pythonstartup env var": 1,
+          "path operation": 1,
+          "intended directory": 1,
+          "exec eval usage": 1,
+          "config loading": 1,
+          "flask feature": 1,
+          "python file": 1,
+          "path traversal": 1,
+          "env var configurable filename": 1,
+          "exact slop": 1,
+          "config file": 1
+        },
+        "entities": [
+          {
+            "text": "Flask",
+            "label": "GPE",
+            "count": 1
+          },
+          {
+            "text": "PYTHONSTARTUP",
+            "label": "GPE",
+            "count": 1
+          },
+          {
+            "text": "Validate",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Flask",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Python",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Root",
+            "label": "PRODUCT",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 2
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 2
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "possible"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {
+              "vulnerability": 2
+            }
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0167,
+        "sentences": 29,
+        "positive_sentences": 2,
+        "negative_sentences": 3,
+        "neutral_sentences": 24
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6126",
+      "number": 6126,
+      "title": "AI junk",
+      "url": "https://github.com/pallets/flask/issues/6126",
+      "author": "sl-rwl",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-09T09:52:22Z",
+      "updated_at": "2026-08-24T00:06:19Z",
+      "closed_at": "2026-08-09T09:53:43Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "AI junk\n\nExecutive summary\n\n[critical] Exposed GitHub token in app/config.py — A hard-coded personal access token was found in the repository.\n[medium] Duplicate issues across languages — Issues #12 and #19 describe the same bug in English and Arabic.\n[low] README missing usage and license sections — The README covers the project and installation only.\n\nDo not dump this AI slop on us. The first point doesn't even make sense since such a file does not exist.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 95,
+        "sentences": 7,
+        "pos": {
+          "NOUN": 19,
+          "VERB": 11,
+          "PUNCT": 9,
+          "DET": 9,
+          "PROPN": 8,
+          "X": 7,
+          "ADJ": 6,
+          "ADP": 5,
+          "AUX": 4,
+          "CCONJ": 4,
+          "SYM": 3,
+          "ADV": 3,
+          "PART": 3,
+          "NUM": 2,
+          "PRON": 1,
+          "SCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "issue": 2,
+            "junk": 1,
+            "summary": 1,
+            "app": 1,
+            "access": 1,
+            "repository": 1,
+            "language": 1,
+            "bug": 1,
+            "readme": 1,
+            "usage": 1,
+            "license": 1,
+            "section": 1,
+            "project": 1,
+            "installation": 1,
+            "slop": 1,
+            "point": 1,
+            "sense": 1,
+            "file": 1
+          },
+          "adjective": {
+            "critical": 1,
+            "personal": 1,
+            "medium": 1,
+            "duplicate": 1
+          },
+          "verb": {
+            "token": 2,
+            "expose": 1,
+            "cod": 1,
+            "find": 1,
+            "describe": 1,
+            "miss": 1,
+            "cover": 1,
+            "dump": 1,
+            "exist": 1
+          }
+        },
+        "noun_phrases": {
+          "executive summary": 1,
+          "critical expose": 1,
+          "hard coded personal access": 1,
+          "low readme missing usage license section": 1
+        },
+        "entities": [
+          {
+            "text": "Duplicate",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "English",
+            "label": "LANGUAGE",
+            "count": 1
+          },
+          {
+            "text": "Arabic",
+            "label": "LANGUAGE",
+            "count": 1
+          },
+          {
+            "text": "AI",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "GitHub",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "possible",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "possible",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {
+              "duplicate": 1
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "readme": 1
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.0857,
+        "sentences": 7,
+        "positive_sentences": 1,
+        "negative_sentences": 2,
+        "neutral_sentences": 4
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6123",
+      "number": 6123,
+      "title": "`stream_with_context`: abandoned generator leaves the app context current on the worker thread; later requests skip `teardown_appcontext`",
+      "url": "https://github.com/pallets/flask/issues/6123",
+      "author": "robkooper",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-08T15:15:19Z",
+      "updated_at": "2026-08-26T00:07:12Z",
+      "closed_at": "2026-08-11T15:44:33Z",
+      "comments_count": 10,
+      "bot_comments_ignored": 0,
+      "text": "stream_with_context: abandoned generator leaves the app context current on the worker thread; later requests skip teardown_appcontext\n\nstream_with_context pushes the request's contexts onto whichever thread iterates the response body, and pops them only if the generator completes or is closed on that same thread. When a client disconnects mid-stream, the server abandons the body iterator and GC finalizes it later — often on a different thread. That cross-context pop fails (LookupError/ValueError from ContextVar.reset, swallowed as \"Exception ignored in ...\"), and the app context stays current on the worker thread.\n\nBecause RequestContext.push reuses an ambient app context of the same app, every later request on that pooled thread runs under the stuck context and teardown_appcontext never fires for it. Anything keyed to the app context then leaks once per thread for the life of the process — with Flask-SQLAlchemy that is one connection held idle-in-transaction per poisoned thread, with nothing in the logs.\n\nRelated: #5774 fixed the same cross-context token failure for async views; #5804 covers teardown ordering in the 3.1.2 rewrite. Neither covers the abandonment case. The docs mention that headers/session need care with stream_with_context, but not that a disconnect can leave the context stuck on the thread — a warning there would be helpful even if the behavior itself is hard to change.\n\nReproduction\n\nOne long-lived \"worker\" thread serves two requests; the abandoned body iterator is GC-finalized on the main thread in between (in real deployments the reference is dropped by server machinery outside the worker — servers may never call close() on the iterator after a disconnect):\n\nOutput (Flask 3.1.3, Python 3.13):\n\nExpected behavior\n\nRequest B runs under its own app context and teardown_appcontext fires when it finishes. Instead it silently runs under request A's leaked context, teardown never runs, and the thread stays poisoned indefinitely.\n\nEnvironment:\n\nPython version: 3.13 (also reproduced on 3.11)\nFlask version: 3.1.3. The main branch (3.2-dev, post-#5639 merged context) looks affected as well: stream_with_context there enters the single context via with ctx: around the priming yield None, so the context is pushed at creation and only exited when the generator completes or is closed.\n\nSup!\nI'm sort of new to this open source contribution stuff and been looking for a contribution in a big project like this.\nCould I try on this one?\n\nI don't think this is something for a new contributor. But you're welcome to read our contributing guide and AI policy and decide for yourself.\n\nThe example seems to require \"server-side reference outlives the request\", which seems extremely unusual. You're deliberately moving a reference from one thread to another, then reporting that the references act weird.\n\nI would really prefer an example that uses a plain flask app and actual requests, rather than trying to simulate a bunch of stuff. There's so much complexity in the example right now that I'm having a hard time following it.\n\nthe server abandons the body iterator and GC finalizes it later\n\nThis seems like something to report to the server doing this? They should be calling close on the iterator if it has that method. Otherwise they're creating an unclosed resource, something Python has been getting noisier and noisier about with warnings. If you look at Werkzeug's dev server and various app running functions, they all do this.\n\nThe app where I ran into this issue is an LLM gateway streaming chat responses from a generator that uses flask + SQLAlchemy/Postgres behind uvicorn (via a2wsgi). Under load I was slowly leaking 20–100 Postgres connections a day until I had to restart.\n\nThe trap: the streaming generator held a Flask app/request context across its yields, and a2wsgi iterates the response body on a reused thread-pool thread. When a client disconnected mid-stream the generator was abandoned, the context was never popped, and SQLAlchemy's per-context session teardown never ran. The database connection was stuck in \"idle in transaction\" (which I reaped before I found the issue by setting the postgresql idle_in_transaction_session_timeout = 10min). Every later request that landed on that same thread reused the still-current context, so its session teardown never ran either. Each one quietly leaked another connection, which resulting the app loosing connections in the pool slowely and eventually crash, not immediatly.\n\nThe trap:\n\nCan you please re-post the issue in your own words without using an LLM to generate anything? See our LLM policy\n\nAlso, that response doesn't really answer my questions. It really seems like this needs to be reported to the server that's doing this, it's not behaving correctly.\n\nHere is an example that is maybe better, flask, uvcorn, sqlalchemy and a2wsgi\n\nSorry, that's still way too much. I can't debug a2wsgi, I'm not familiar with it at all, if you think it's causing issues then report that to them. Use Flask's dev server, it's threaded. It doesn't seem like sqlalchemy is necessary at all to demonstrate that contexts aren't cleaned up.\n\nI've been looking into this for hours now, and as far as I can tell the problem is that something is not closing the response. Flask _can't_ do that, it's in the server's control at that point.\n\nIn your first example, you're never calling body.close() when the \"connection\" is disconnected, and you're deliberately moving it somewhere with a different contextvar. If you call body.close() in the worker (not in some other thread) it works fine.\n\nIn your second example, presumably a2wsgi isn't handling client disconnects correctly, it needs to detect them and close the response.\n\nIt seems like Flask is managing the context correctly but your server is not handling disconnects correctly. How should a2wsgi do that? I don't know, but I'd suggest you report it to them.",
+      "code": "import gc\nimport queue\nimport threading\n\nfrom flask import Flask, Response, stream_with_context\nfrom flask.globals import _cv_app\n\napp = Flask(__name__)\nteardowns = []\n\n@app.teardown_appcontext\ndef note_teardown(exc):\n    teardowns.append(threading.current_thread().name)\n\n@app.route(\"/stream\")\ndef stream():\n    def gen():\n        for i in range(100):\n            yield f\"chunk{i}\\n\"\n    return Response(stream_with_context(gen()))\n\n@app.route(\"/plain\")\ndef plain():\n    return \"ok\"\n\nabandoned = queue.Queue()   # holds the dropped iterator, like server machinery\nstep2 = threading.Event()\n\ndef worker():\n    # --- request A: streaming response, client disconnects after one chunk ---\n    with app.test_request_context(\"/stream\"):\n        rv = app.full_dispatch_request()\n    body = iter(rv.response)\n    next(body)   # first chunk: stream_with_context pushes app+request ctx HERE\n    abandoned.put((body, rv))   # server-side reference outlives the request\n    del body, rv\n    print(\"A: ambient ctx after abandonment:\", _cv_app.get(None))\n\n    step2.wait()  # main thread GC-finalizes the generator meanwhile\n\n    # --- request B: any later request on this pooled worker thread ---\n    print(\"B: ambient ctx at request start:\", _cv_app.get(None))\n    teardowns.clear()\n    with app.test_request_context(\"/plain\"):    # reuses the ambient ctx of the\n        app.full_dispatch_request()             # same app -> no fresh app ctx\n    print(\"B: teardown_appcontext ran for B:\", bool(teardowns))\n    print(\"B: ambient ctx after B finished:\", _cv_app.get(None))\n\nt = threading.Thread(target=worker, name=\"wsgi-worker-0\")\nt.start()\n\nabandoned.get()          # take the reference, then drop it on the MAIN thread\ngc.collect()             # generator finalized here -> cross-context pop fails\nstep2.set()\nt.join()\nException ignored in: <generator object stream_with_context.<locals>.generator at 0x...>\nTraceback (most recent call last):\n  File \".../flask/helpers.py\", line 130, in generator\n    with app_ctx, req_ctx:\n  File \".../flask/ctx.py\", line 284, in __exit__\n    self.pop(exc_value)\n  File \".../flask/ctx.py\", line 264, in pop\n    ctx = _cv_app.get()\nLookupError: <ContextVar name='flask.app_ctx' at 0x...>\nA: ambient ctx after abandonment: <flask.ctx.AppContext object at 0x10b49c830>\nB: ambient ctx at request start: <flask.ctx.AppContext object at 0x10b49c830>\nB: teardown_appcontext ran for B: False\nB: ambient ctx after B finished: <flask.ctx.AppContext object at 0x10b49c830>\nimport os\nimport socket\nimport threading\nimport time\n\nfrom flask import Flask, Response, stream_with_context\nfrom flask.globals import _cv_app\nfrom sqlalchemy import create_engine, text\nfrom sqlalchemy.orm import scoped_session, sessionmaker\nfrom sqlalchemy.pool import QueuePool\nfrom a2wsgi import WSGIMiddleware\nimport uvicorn\n\nPORT = 8765\nPOOL_SIZE = 30\n\n# sqlite database with connection pool\nengine = create_engine(\n    \"sqlite:///./mydb.db\",\n    poolclass=QueuePool,\n    pool_size=POOL_SIZE,\n    max_overflow=0,\n    connect_args={\"check_same_thread\": False},\n)\n\n# my flask app\napp = Flask(__name__)\nasgi_app = WSGIMiddleware(app, workers=16)\n\n# code to keep track of connections\ndef _scope():\n    ctx = _cv_app.get(None)\n    return id(ctx) if ctx is not None else None\n\nSession = scoped_session(sessionmaker(bind=engine), scopefunc=_scope)\n\n@app.teardown_appcontext\ndef _cleanup(exc):\n    # Flask runs this when the app context is popped. If the context is stranded\n    # on a stuck worker thread, this never fires for it -> connection leaks.\n    Session.remove()\n\n# my generator to stream the answer back\ndef _tokens():\n    # Open a session thens tream the result\n    Session().execute(text(\"select 1\")).all()\n    for i in range(50):\n        yield f\"data: token {i}\\n\\n\"\n        time.sleep(0.05)\n\n# endpoint that streams the result\n@app.route(\"/stream\")\ndef stream():\n    return Response(stream_with_context(_tokens()), mimetype=\"text/event-stream\")\n\n# start serving the data\ndef _serve():\n    uvicorn.run(asgi_app, host=\"127.0.0.1\", port=PORT, log_level=\"critical\")\n\n# request data, wait a bit, break connection\ndef _abort_request():\n    s = socket.create_connection((\"127.0.0.1\", PORT), timeout=5)\n    s.sendall(\n        b\"GET /stream HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\"\n    )\n    # set this to 1 == leak, 5 == no leak\n    time.sleep(1)             # let the stream start and a few tokens flow\n    s.recv(256)               # read a little\n    s.close()                 # disconnect mid-stream -> abandons the generator\n\ndef main():\n    # start the flask app\n    threading.Thread(target=_serve, daemon=True).start()\n    time.sleep(2)\n\n    # start the clients\n    print(f\"{'batch':>6} {'checked_out':>12} {'live sessions':>14}\")\n    for batch in range(1, 6):\n        threads = [threading.Thread(target=_abort_request) for _ in range(20)]\n        for t in threads:\n            t.start()\n        for t in threads:\n            t.join()\n        time.sleep(1)\n        checked_out = engine.pool.checkedout()\n        live_sessions = len(Session.registry.registry)\n        print(f\"{batch:>6} {checked_out:>12} {live_sessions:>14}\")\n\n    print(\n        \"\\nLEAK\" if engine.pool.checkedout() > 0\n        else \"\\nno leak — connections all returned\"\n    )\n    checked_out = engine.pool.checkedout()\n    live_sessions = len(Session.registry.registry)\n    print(f\"{batch:>6} {checked_out:>12} {live_sessions:>14}\")\n\n\nif __name__ == \"__main__\":\n    main()",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "docs": 1
+        },
+        "categories": {
+          "documentation": 1
+        },
+        "matches": [
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 1191,
+            "end": 1195,
+            "context": "rewrite. Neither covers the abandonment case. The docs mention that headers/session need care with strea"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 1141,
+        "sentences": 58,
+        "pos": {
+          "NOUN": 219,
+          "VERB": 151,
+          "PUNCT": 146,
+          "DET": 103,
+          "PRON": 97,
+          "ADP": 88,
+          "ADV": 71,
+          "AUX": 64,
+          "ADJ": 61,
+          "PROPN": 35,
+          "PART": 31,
+          "CCONJ": 28,
+          "SCONJ": 26,
+          "NUM": 12,
+          "SYM": 6,
+          "X": 2,
+          "INTJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "context": 17,
+            "thread": 17,
+            "app": 11,
+            "server": 11,
+            "request": 10,
+            "generator": 6,
+            "response": 6,
+            "connection": 6,
+            "example": 6,
+            "worker": 5,
+            "body": 5,
+            "iterator": 5,
+            "disconnect": 4,
+            "reference": 4,
+            "issue": 4,
+            "client": 3,
+            "session": 3,
+            "dev": 3,
+            "stream": 2,
+            "transaction": 2,
+            "teardown": 2,
+            "warning": 2,
+            "behavior": 2,
+            "version": 2,
+            "yield": 2,
+            "contribution": 2,
+            "stuff": 2,
+            "policy": 2,
+            "trap": 2,
+            "pool": 2,
+            "sqlalchemy": 2,
+            "pop": 1,
+            "life": 1,
+            "process": 1,
+            "idle": 1,
+            "log": 1,
+            "failure": 1,
+            "view": 1,
+            "ordering": 1,
+            "rewrite": 1,
+            "abandonment": 1,
+            "case": 1,
+            "doc": 1,
+            "header": 1,
+            "care": 1,
+            "reproduction": 1,
+            "deployment": 1,
+            "machinery": 1,
+            "output": 1,
+            "fire": 1,
+            "environment": 1,
+            "branch": 1,
+            "priming": 1,
+            "creation": 1,
+            "source": 1,
+            "project": 1,
+            "contributor": 1,
+            "guide": 1,
+            "bunch": 1,
+            "complexity": 1,
+            "time": 1,
+            "method": 1,
+            "resource": 1,
+            "running": 1,
+            "function": 1,
+            "gateway": 1,
+            "streaming": 1,
+            "chat": 1,
+            "postgre": 1,
+            "load": 1,
+            "day": 1,
+            "mid": 1,
+            "database": 1,
+            "postgresql": 1,
+            "word": 1,
+            "llm": 1,
+            "question": 1,
+            "hour": 1,
+            "problem": 1,
+            "flask": 1,
+            "control": 1,
+            "point": 1,
+            "contextvar": 1
+          },
+          "adjective": {
+            "current": 3,
+            "different": 2,
+            "cross": 2,
+            "later": 2,
+            "hard": 2,
+            "main": 2,
+            "new": 2,
+            "flask": 2,
+            "noisy": 2,
+            "mid": 1,
+            "context": 1,
+            "ambient": 1,
+            "stuck": 1,
+            "token": 1,
+            "async": 1,
+            "helpful": 1,
+            "real": 1,
+            "single": 1,
+            "open": 1,
+            "big": 1,
+            "welcome": 1,
+            "unusual": 1,
+            "weird": 1,
+            "plain": 1,
+            "actual": 1,
+            "unclosed": 1,
+            "uvicorn": 1,
+            "streaming": 1,
+            "idle": 1,
+            "well": 1,
+            "uvcorn": 1,
+            "familiar": 1,
+            "necessary": 1,
+            "fine": 1,
+            "second": 1
+          },
+          "verb": {
+            "run": 7,
+            "abandon": 5,
+            "report": 5,
+            "close": 4,
+            "leak": 4,
+            "disconnect": 3,
+            "finalize": 3,
+            "reuse": 3,
+            "look": 3,
+            "leave": 2,
+            "push": 2,
+            "iterate": 2,
+            "pop": 2,
+            "complete": 2,
+            "hold": 2,
+            "poison": 2,
+            "cover": 2,
+            "stick": 2,
+            "teardown": 2,
+            "try": 2,
+            "think": 2,
+            "move": 2,
+            "use": 2,
+            "call": 2,
+            "need": 2,
+            "handle": 2,
+            "skip": 1,
+            "context": 1,
+            "fail": 1,
+            "swallow": 1,
+            "ignore": 1,
+            "stay": 1,
+            "pool": 1,
+            "fire": 1,
+            "key": 1,
+            "relate": 1,
+            "fix": 1,
+            "mention": 1,
+            "change": 1,
+            "live": 1,
+            "serve": 1,
+            "drop": 1,
+            "expect": 1,
+            "finish": 1,
+            "reproduce": 1,
+            "merge": 1,
+            "affect": 1,
+            "enter": 1,
+            "exit": 1,
+            "read": 1,
+            "contribute": 1,
+            "decide": 1,
+            "require": 1,
+            "outlive": 1,
+            "act": 1,
+            "prefer": 1,
+            "simulate": 1,
+            "have": 1,
+            "follow": 1,
+            "create": 1,
+            "get": 1,
+            "restart": 1,
+            "reap": 1,
+            "find": 1,
+            "set": 1,
+            "land": 1,
+            "result": 1,
+            "loose": 1,
+            "crash": 1,
+            "post": 1,
+            "generate": 1,
+            "answer": 1,
+            "behave": 1,
+            "debug": 1,
+            "cause": 1,
+            "thread": 1,
+            "demonstrate": 1,
+            "clean": 1,
+            "tell": 1,
+            "work": 1,
+            "detect": 1,
+            "manage": 1,
+            "know": 1,
+            "suggest": 1
+          }
+        },
+        "noun_phrases": {
+          "app context": 4,
+          "later request": 3,
+          "worker thread": 2,
+          "response body": 2,
+          "body iterator": 2,
+          "abandoned generator": 1,
+          "whichever thread": 1,
+          "different thread": 1,
+          "reuses ambient app context": 1,
+          "pooled thread": 1,
+          "stuck context": 1,
+          "poisoned thread": 1,
+          "cross context token failure": 1,
+          "async view": 1,
+          "teardown ordering": 1,
+          "abandonment case": 1,
+          "headers session": 1,
+          "long lived worker thread": 1,
+          "abandoned body iterator": 1,
+          "main thread": 1,
+          "real deployment": 1,
+          "server machinery": 1,
+          "expected behavior": 1,
+          "leaked context": 1,
+          "python version": 1,
+          "flask version": 1,
+          "main branch": 1,
+          "merged context": 1,
+          "single context": 1,
+          "priming yield": 1,
+          "open source contribution stuff": 1,
+          "big project": 1,
+          "new contributor": 1,
+          "contributing guide": 1,
+          "server reference": 1,
+          "plain flask app": 1,
+          "actual request": 1,
+          "hard time": 1,
+          "unclosed resource": 1,
+          "werkzeug dev server": 1,
+          "app running function": 1,
+          "flask postgre": 1,
+          "postgres connection": 1,
+          "streaming generator": 1,
+          "flask app request context": 1,
+          "reused thread pool thread": 1,
+          "database connection": 1,
+          "current context": 1,
+          "app loosing connection": 1,
+          "llm policy": 1,
+          "flask dev server": 1,
+          "server control": 1,
+          "different contextvar": 1,
+          "second example": 1,
+          "client disconnect": 1
+        },
+        "entities": [
+          {
+            "text": "GC",
+            "label": "ORG",
+            "count": 3
+          },
+          {
+            "text": "LLM",
+            "label": "ORG",
+            "count": 3
+          },
+          {
+            "text": "Flask",
+            "label": "GPE",
+            "count": 2
+          },
+          {
+            "text": "Flask-SQLAlchemy",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Flask",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Sup",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "AI",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Python",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Werkzeug",
+            "label": "GPE",
+            "count": 1
+          },
+          {
+            "text": "Postgres",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Flask",
+            "label": "FAC",
+            "count": 1
+          },
+          {
+            "text": "SQLAlchemy",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 7
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 3
+        },
+        {
+          "name": "PostgreSQL",
+          "category": "database",
+          "count": 3
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "possible",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "doc": 1
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0476,
+        "sentences": 58,
+        "positive_sentences": 12,
+        "negative_sentences": 19,
+        "neutral_sentences": 27
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6122",
+      "number": 6122,
+      "title": "Add async view pattern guide with Quart migration",
+      "url": "https://github.com/pallets/flask/issues/6122",
+      "author": "rexblade58",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-08T14:46:13Z",
+      "updated_at": "2026-08-23T00:06:14Z",
+      "closed_at": "2026-08-08T15:36:50Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "Add async view pattern guide with Quart migration\n\nDocument async view patterns in Flask and migration path to Quart for native async support.\n\nThanks for the feedback! I found the answer I was looking for. Closing this to keep the issue tracker clean.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 47,
+        "sentences": 5,
+        "pos": {
+          "NOUN": 17,
+          "VERB": 6,
+          "ADP": 6,
+          "PUNCT": 4,
+          "PROPN": 3,
+          "DET": 3,
+          "PRON": 3,
+          "ADJ": 2,
+          "CCONJ": 1,
+          "AUX": 1,
+          "PART": 1
+        },
+        "lemmas": {
+          "noun": {
+            "async": 3,
+            "pattern": 2,
+            "migration": 2,
+            "view": 1,
+            "guide": 1,
+            "document": 1,
+            "path": 1,
+            "support": 1,
+            "thank": 1,
+            "feedback": 1,
+            "answer": 1,
+            "issue": 1,
+            "tracker": 1
+          },
+          "adjective": {
+            "native": 1,
+            "clean": 1
+          },
+          "verb": {
+            "add": 1,
+            "view": 1,
+            "find": 1,
+            "look": 1,
+            "close": 1
+          }
+        },
+        "noun_phrases": {
+          "async view pattern guide": 1,
+          "quart migration": 1,
+          "document async": 1,
+          "migration path": 1,
+          "native async support": 1
+        },
+        "entities": [
+          {
+            "text": "Flask",
+            "label": "GPE",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.1789,
+        "sentences": 5,
+        "positive_sentences": 2,
+        "negative_sentences": 0,
+        "neutral_sentences": 3
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6120",
+      "number": 6120,
+      "title": "Update tests for Werkzeug deprecated header parsing helpers",
+      "url": "https://github.com/pallets/flask/issues/6120",
+      "author": "ciclos5258",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-05T20:18:08Z",
+      "updated_at": "2026-08-20T00:06:44Z",
+      "closed_at": "2026-08-05T20:19:35Z",
+      "comments_count": 4,
+      "bot_comments_ignored": 0,
+      "text": "Update tests for Werkzeug deprecated header parsing helpers\n\nDescription\n\nFlask tests currently use deprecated Werkzeug header parsing helpers:\n\nparse_cache_control_header\nparse_set_header\n\nWhen running tests against Werkzeug main, these functions emit DeprecationWarning, which causes test collection to fail because warnings are treated as errors.\n\nExpected behavior\n\nTests should use the new Werkzeug APIs:\n\nRequestCacheControl.from_header\nHeaderSet.from_header\n\nEnvironment\n\nFlask main branch\nWerkzeug main branch\nPython 3.10+\n\nReproduction\n\nRun:\n\nuv run --locked --no-default-groups --group dev tox run\n\nThe test suite fails during collection because deprecated Werkzeug functions raise DeprecationWarning.\n\ni am fix it, creating PR right now\n\nNo need to open an issue for this. This is part of the normal release/deprecation schedule.\n\nDo not submit a fix. The fix is to wait for the next Werkzeug and Flask versions to be released.\n\nok, my bad",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 151,
+        "sentences": 20,
+        "pos": {
+          "NOUN": 41,
+          "VERB": 22,
+          "PROPN": 19,
+          "PUNCT": 15,
+          "ADJ": 9,
+          "DET": 9,
+          "AUX": 7,
+          "ADP": 6,
+          "PRON": 6,
+          "PART": 5,
+          "SCONJ": 4,
+          "ADV": 3,
+          "NUM": 2,
+          "SYM": 1,
+          "CCONJ": 1,
+          "INTJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "test": 6,
+            "header": 2,
+            "helper": 2,
+            "function": 2,
+            "collection": 2,
+            "branch": 2,
+            "fix": 2,
+            "update": 1,
+            "description": 1,
+            "warning": 1,
+            "error": 1,
+            "behavior": 1,
+            "run": 1,
+            "default": 1,
+            "group": 1,
+            "tox": 1,
+            "suite": 1,
+            "need": 1,
+            "issue": 1,
+            "release": 1,
+            "deprecation": 1,
+            "schedule": 1,
+            "version": 1
+          },
+          "adjective": {
+            "main": 3,
+            "new": 1,
+            "normal": 1,
+            "bad": 1
+          },
+          "verb": {
+            "deprecate": 3,
+            "parse": 2,
+            "use": 2,
+            "run": 2,
+            "fail": 2,
+            "emit": 1,
+            "cause": 1,
+            "treat": 1,
+            "expect": 1,
+            "raise": 1,
+            "fix": 1,
+            "create": 1,
+            "open": 1,
+            "submit": 1,
+            "wait": 1,
+            "release": 1
+          }
+        },
+        "noun_phrases": {
+          "update test": 1,
+          "header parsing helper": 1,
+          "flask test": 1,
+          "deprecated werkzeug header parsing helper": 1,
+          "test collection": 1,
+          "new werkzeug": 1,
+          "flask main branch": 1,
+          "werkzeug main branch": 1,
+          "run default group": 1,
+          "dev tox": 1,
+          "test suite": 1,
+          "werkzeug function": 1,
+          "normal release deprecation schedule": 1,
+          "werkzeug flask version": 1
+        },
+        "entities": [
+          {
+            "text": "Werkzeug",
+            "label": "ORG",
+            "count": 4
+          },
+          {
+            "text": "Werkzeug",
+            "label": "GPE",
+            "count": 3
+          },
+          {
+            "text": "DeprecationWarning",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "DeprecationWarning",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Flask",
+            "label": "GPE",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 3
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "yes",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 6
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0277,
+        "sentences": 24,
+        "positive_sentences": 3,
+        "negative_sentences": 3,
+        "neutral_sentences": 18
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6119",
+      "number": 6119,
+      "title": "AI junk",
+      "url": "https://github.com/pallets/flask/issues/6119",
+      "author": "MicroMilo",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-04T10:04:59Z",
+      "updated_at": "2026-08-19T00:06:15Z",
+      "closed_at": "2026-08-04T14:00:09Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "AI junk\n\nSummary\n\nConfig.from_prefixed_env can raise an uncaught TypeError when an environment\nvariable creates a scalar configuration value and another variable later tries\nto use that same value as a nested mapping.\n\nReproduction\n\nWith Flask's development source at commit\n6a2f545bfd8ed31e19066a299296917e034aca58:\n\nThe call raises:\n\nWhat happens\n\nfrom_prefixed_env processes matching environment variables in sorted order.\nThe first variable sets config[\"FOO\"] to the string \"bar\". When processing\nFLASK_FOO__BAR, the nested traversal reaches this value and then attempts to\nassign through it:\n\nThe intermediate value is a string rather than a mapping, so configuration\nloading fails with a low-level TypeError.\n\nRelevant source at the reproduction commit:\n\nExpected behavior\n\nConfiguration loading should not fail with an implementation-level\nTypeError for a prefix collision. The behavior should be defined and\ndeterministic, for example by rejecting the conflicting configuration with a\nclear error, or by documenting and implementing precedence/merge semantics.\n\nImpact\n\nAn application can fail during startup or configuration initialization when\nenvironment variables are assembled from multiple sources and a scalar key\nand nested key happen to share a prefix. This can be difficult to diagnose\nbecause the error does not identify the conflicting environment variables.\n\nSuggested regression test\n\nAdd a test covering both FLASK_FOO=bar and FLASK_FOO__BAR=baz, and assert the\nchosen behavior for the scalar/nested conflict. If the intended behavior is to\nreject the configuration, the error should identify the conflicting path.\n\nEnvironment\n\nFlask source commit: 6a2f545bfd8ed31e19066a299296917e034aca58\nFlask version: 3.2.0.dev\nPython: 3.13.13\nReproduction is independent of operating system semantics because it only\nrelies on the environment-variable traversal logic.\n\nI have not assigned a CWE classification. This is reported as a configuration\nrobustness and error-handling issue rather than a nullability finding.",
+      "code": "FLASK_FOO=bar FLASK_FOO__BAR=baz python - <<'PY'\nfrom flask import Flask\n\napp = Flask(__name__)\napp.config.from_prefixed_env()\nPY\nTypeError: 'str' object does not support item assignment\ncurrent = current[part]\n...\ncurrent[tail] = value",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 319,
+        "sentences": 27,
+        "pos": {
+          "NOUN": 92,
+          "VERB": 43,
+          "DET": 38,
+          "PUNCT": 33,
+          "ADP": 22,
+          "ADJ": 19,
+          "AUX": 15,
+          "PROPN": 14,
+          "CCONJ": 11,
+          "PART": 9,
+          "SCONJ": 7,
+          "PRON": 6,
+          "ADV": 5,
+          "SYM": 3,
+          "X": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "configuration": 7,
+            "environment": 6,
+            "variable": 6,
+            "value": 4,
+            "source": 4,
+            "behavior": 4,
+            "error": 4,
+            "mapping": 2,
+            "reproduction": 2,
+            "commit": 2,
+            "string": 2,
+            "bar": 2,
+            "traversal": 2,
+            "loading": 2,
+            "level": 2,
+            "prefix": 2,
+            "semantic": 2,
+            "test": 2,
+            "junk": 1,
+            "uncaught": 1,
+            "development": 1,
+            "process": 1,
+            "order": 1,
+            "implementation": 1,
+            "collision": 1,
+            "example": 1,
+            "precedence": 1,
+            "merge": 1,
+            "impact": 1,
+            "application": 1,
+            "startup": 1,
+            "initialization": 1,
+            "key": 1,
+            "regression": 1,
+            "baz": 1,
+            "scalar": 1,
+            "conflict": 1,
+            "path": 1,
+            "version": 1,
+            "operating": 1,
+            "system": 1,
+            "logic": 1,
+            "classification": 1,
+            "robustness": 1,
+            "issue": 1,
+            "nullability": 1,
+            "finding": 1
+          },
+          "adjective": {
+            "nested": 3,
+            "scalar": 2,
+            "sorted": 1,
+            "intermediate": 1,
+            "low": 1,
+            "relevant": 1,
+            "deterministic": 1,
+            "clear": 1,
+            "multiple": 1,
+            "key": 1,
+            "difficult": 1,
+            "independent": 1,
+            "variable": 1,
+            "cwe": 1
+          },
+          "verb": {
+            "fail": 3,
+            "conflict": 3,
+            "raise": 2,
+            "happen": 2,
+            "assign": 2,
+            "reject": 2,
+            "identify": 2,
+            "create": 1,
+            "try": 1,
+            "use": 1,
+            "match": 1,
+            "set": 1,
+            "process": 1,
+            "reach": 1,
+            "attempt": 1,
+            "expect": 1,
+            "define": 1,
+            "document": 1,
+            "implement": 1,
+            "assemble": 1,
+            "share": 1,
+            "diagnose": 1,
+            "suggest": 1,
+            "add": 1,
+            "cover": 1,
+            "assert": 1,
+            "choose": 1,
+            "nest": 1,
+            "intend": 1,
+            "commit": 1,
+            "rely": 1,
+            "report": 1,
+            "handle": 1
+          }
+        },
+        "noun_phrases": {
+          "environment variable": 3,
+          "configuration loading": 2,
+          "scalar configuration value": 1,
+          "nested mapping": 1,
+          "flask development source": 1,
+          "sorted order": 1,
+          "string bar": 1,
+          "nested traversal": 1,
+          "intermediate value": 1,
+          "low level": 1,
+          "relevant source": 1,
+          "reproduction commit": 1,
+          "implementation level": 1,
+          "prefix collision": 1,
+          "conflicting configuration": 1,
+          "clear error": 1,
+          "precedence merge semantic": 1,
+          "startup configuration initialization": 1,
+          "multiple source": 1,
+          "scalar key": 1,
+          "conflicting environment variable": 1,
+          "regression test": 1,
+          "chosen behavior": 1,
+          "scalar nested conflict": 1,
+          "intended behavior": 1,
+          "conflicting path": 1,
+          "flask version": 1,
+          "operating system semantic": 1,
+          "environment variable traversal logic": 1,
+          "cwe classification": 1,
+          "configuration robustness error handling issue": 1,
+          "nullability finding": 1
+        },
+        "entities": [
+          {
+            "text": "TypeError",
+            "label": "ORG",
+            "count": 3
+          },
+          {
+            "text": "Flask",
+            "label": "GPE",
+            "count": 1
+          },
+          {
+            "text": "Flask",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "CWE",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 3
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 2
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0434,
+        "sentences": 44,
+        "positive_sentences": 5,
+        "negative_sentences": 7,
+        "neutral_sentences": 32
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6114",
+      "number": 6114,
+      "title": "jsonify emits NaN and Infinity, which are not valid JSON",
+      "url": "https://github.com/pallets/flask/issues/6114",
+      "author": "PranavAchar01",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-08-01T05:42:39Z",
+      "updated_at": "2026-08-16T00:06:13Z",
+      "closed_at": "2026-08-01T13:44:56Z",
+      "comments_count": 2,
+      "bot_comments_ignored": 0,
+      "text": "jsonify emits NaN and Infinity, which are not valid JSON\n\njsonify serialises float(\"nan\") and float(\"inf\") as the bare literals NaN and Infinity. Those are not valid JSON (RFC 8259 allows only decimal numbers), so the response is served as application/json but cannot be parsed by a strict parser, including the browser's JSON.parse.\n\nThis inherits from json.dumps, whose allow_nan defaults to True. DefaultJSONProvider sets default, ensure_ascii and sort_keys, but never touches allow_nan, so the permissive default applies.\n\nThe path to it is ordinary: any average, ratio or division that can meet an empty input produces nan without anything looking wrong on the server.\n\nReplication:\n\nThe response advertises application/json with a 200, but the body is not JSON:\n\nSo the failure surfaces in the client rather than the server, which makes it awkward to trace back.\n\nExpected: either the same behaviour with it documented, or serialisation raises so the problem shows up server-side, where ValueError: Out of range float values are not JSON compliant: nan names the cause immediately.\n\nThere is currently no class attribute for this, although the plumbing already works, since dumps forwards **kwargs to json.dumps:\n\nDefaultJSONProvider exposes sort_keys, ensure_ascii and compact as class attributes, so an allow_nan attribute alongside them would fit the existing pattern and let applications choose, without changing the default for anyone. I could not find NaN mentioned in the DefaultJSONProvider or flask.json.dumps docstrings, so at minimum a documentation note seems worthwhile.\n\nHappy to send a PR for whichever you prefer, an allow_nan provider attribute or just the docs.\n\nEnvironment:\n\nPython 3.14\nFlask 3.1.3\nWerkzeug 3.1.8\n\nOpened a PR implementing the allow_nan attribute option as suggested #6116\n\nDuplicate of and others. Be sure to search first.",
+      "code": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.route(\"/stats\")\ndef stats():\n    values = []\n    mean = sum(values) / len(values) if values else float(\"nan\")\n    return jsonify({\"count\": len(values), \"mean\": mean})\n\nwith app.test_client() as c:\n    r = c.get(\"/stats\")\n    print(r.headers[\"Content-Type\"])      # application/json\n    print(r.get_data(as_text=True))       # {\"count\":0,\"mean\":NaN}\nimport json\njson.loads('{\"count\":0,\"mean\":NaN}')      # accepted, Python is permissive by default\njson.loads('{\"count\":0,\"mean\":NaN}',\n           parse_constant=lambda x: (_ for _ in ()).throw(ValueError(x)))\n# ValueError: NaN     <- what a strict parser, and JSON.parse in a browser, does\napp.json.dumps({\"a\": float(\"nan\")}, allow_nan=False)\n# ValueError: Out of range float values are not JSON compliant: nan",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "documentation": 1,
+          "docs": 1
+        },
+        "categories": {
+          "documentation": 2
+        },
+        "matches": [
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 1553,
+            "end": 1566,
+            "context": "r or flask.json.dumps docstrings, so at minimum a documentation note seems worthwhile. Happy to send a PR for wh"
+          },
+          {
+            "pattern": "docs",
+            "category": "documentation",
+            "explicit": false,
+            "text": "docs",
+            "source": "text",
+            "start": 1680,
+            "end": 1684,
+            "context": "efer, an allow_nan provider attribute or just the docs. Environment: Python 3.14 Flask 3.1.3 Werkzeug"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 336,
+        "sentences": 19,
+        "pos": {
+          "NOUN": 69,
+          "PUNCT": 48,
+          "VERB": 41,
+          "DET": 32,
+          "ADP": 25,
+          "PROPN": 22,
+          "ADJ": 19,
+          "CCONJ": 16,
+          "PRON": 15,
+          "AUX": 12,
+          "PART": 10,
+          "ADV": 10,
+          "SCONJ": 9,
+          "NUM": 5,
+          "SYM": 3
+        },
+        "lemmas": {
+          "noun": {
+            "json": 5,
+            "attribute": 5,
+            "application": 3,
+            "default": 3,
+            "server": 3,
+            "response": 2,
+            "class": 2,
+            "jsonify": 1,
+            "literal": 1,
+            "number": 1,
+            "parser": 1,
+            "browser": 1,
+            "set": 1,
+            "path": 1,
+            "ratio": 1,
+            "division": 1,
+            "input": 1,
+            "replication": 1,
+            "body": 1,
+            "failure": 1,
+            "surface": 1,
+            "client": 1,
+            "behaviour": 1,
+            "serialisation": 1,
+            "problem": 1,
+            "range": 1,
+            "float": 1,
+            "value": 1,
+            "compliant": 1,
+            "cause": 1,
+            "plumbing": 1,
+            "kwarg": 1,
+            "pattern": 1,
+            "docstring": 1,
+            "minimum": 1,
+            "documentation": 1,
+            "note": 1,
+            "provider": 1,
+            "doc": 1,
+            "environment": 1,
+            "option": 1
+          },
+          "adjective": {
+            "valid": 2,
+            "bare": 1,
+            "decimal": 1,
+            "strict": 1,
+            "true": 1,
+            "permissive": 1,
+            "ordinary": 1,
+            "average": 1,
+            "wrong": 1,
+            "json": 1,
+            "awkward": 1,
+            "compact": 1,
+            "worthwhile": 1,
+            "happy": 1,
+            "sure": 1
+          },
+          "verb": {
+            "emit": 1,
+            "serialise": 1,
+            "allow": 1,
+            "serve": 1,
+            "parse": 1,
+            "include": 1,
+            "inherit": 1,
+            "default": 1,
+            "touch": 1,
+            "apply": 1,
+            "meet": 1,
+            "produce": 1,
+            "look": 1,
+            "advertise": 1,
+            "make": 1,
+            "trace": 1,
+            "expect": 1,
+            "document": 1,
+            "raise": 1,
+            "show": 1,
+            "name": 1,
+            "work": 1,
+            "dump": 1,
+            "expose": 1,
+            "fit": 1,
+            "exist": 1,
+            "let": 1,
+            "choose": 1,
+            "change": 1,
+            "find": 1,
+            "mention": 1,
+            "send": 1,
+            "prefer": 1,
+            "open": 1,
+            "implement": 1,
+            "suggest": 1,
+            "search": 1
+          }
+        },
+        "noun_phrases": {
+          "application json": 2,
+          "class attribute": 2,
+          "bare literal": 1,
+          "valid json": 1,
+          "decimal number": 1,
+          "strict parser": 1,
+          "permissive default": 1,
+          "failure surface": 1,
+          "range float value": 1,
+          "json compliant": 1,
+          "existing pattern": 1,
+          "documentation note": 1,
+          "provider attribute": 1,
+          "attribute option": 1
+        },
+        "entities": [
+          {
+            "text": "NaN",
+            "label": "GPE",
+            "count": 2
+          },
+          {
+            "text": "Infinity",
+            "label": "NORP",
+            "count": 2
+          },
+          {
+            "text": "JSON",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "ValueError",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "NaN",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        },
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "yes",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "doc": 1,
+              "docstring": 1,
+              "documentation": 1
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0286,
+        "sentences": 21,
+        "positive_sentences": 6,
+        "negative_sentences": 3,
+        "neutral_sentences": 12
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6107",
+      "number": 6107,
+      "title": "Confusing docstring in Flask.get_send_file_max_age and Flask.send_static_file",
+      "url": "https://github.com/pallets/flask/issues/6107",
+      "author": "JeremyTan0",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-07-27T02:03:06Z",
+      "updated_at": "2026-08-11T00:11:27Z",
+      "closed_at": "2026-07-27T03:07:11Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Confusing docstring in Flask.get_send_file_max_age and Flask.send_static_file\n\nThis is a documentation issue rather than a functional bug.\n\nThe docstrings for the following methods:\n\nFlask.get_send_file_max_age\nFlask.send_static_file\n\ncontain the sentence:\n\n\"Note this is a duplicate of the same method in the Flask class.\"\n\nHowever, both methods are already defined within the Flask class itself. As written, the statement is confusing because it suggests the methods duplicate another implementation in the Flask class, even though they are the implementations in that class.\n\nUpdating or removing this sentence would improve the clarity and accuracy of the source code documentation.\n\nSteps to reproduce\n\nOpen src/flask/app.py.\nLocate the get_send_file_max_age and send_static_file methods.\nRead the docstrings for both methods.\n\nExpected behavior\n\nThe docstrings should accurately describe the methods without stating that they are duplicates of the same methods in the Flask class. The wording should be updated or removed to avoid confusion.\n\nEnvironment:\n\nPython version: N/A (documentation issue)\nFlask version: main branch",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "documentation": 3
+        },
+        "categories": {
+          "documentation": 3
+        },
+        "matches": [
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 89,
+            "end": 102,
+            "context": "ile_max_age and Flask.send_static_file This is a documentation issue rather than a functional bug. The docstrin"
+          },
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 672,
+            "end": 685,
+            "context": "prove the clarity and accuracy of the source code documentation. Steps to reproduce Open src/flask/app.py. Loca"
+          },
+          {
+            "pattern": "documentation",
+            "category": "documentation",
+            "explicit": false,
+            "text": "documentation",
+            "source": "text",
+            "start": 1084,
+            "end": 1097,
+            "context": "id confusion. Environment: Python version: N/A (documentation issue) Flask version: main branch"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 182,
+        "sentences": 20,
+        "pos": {
+          "NOUN": 48,
+          "DET": 27,
+          "VERB": 23,
+          "PUNCT": 22,
+          "ADP": 13,
+          "AUX": 10,
+          "PROPN": 7,
+          "PRON": 6,
+          "ADJ": 6,
+          "CCONJ": 5,
+          "ADV": 5,
+          "SCONJ": 4,
+          "SYM": 3,
+          "PART": 2,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "method": 8,
+            "class": 5,
+            "documentation": 3,
+            "docstring": 3,
+            "issue": 2,
+            "sentence": 2,
+            "duplicate": 2,
+            "implementation": 2,
+            "version": 2,
+            "bug": 1,
+            "statement": 1,
+            "clarity": 1,
+            "accuracy": 1,
+            "source": 1,
+            "code": 1,
+            "step": 1,
+            "src": 1,
+            "flask": 1,
+            "behavior": 1,
+            "wording": 1,
+            "confusion": 1,
+            "environment": 1,
+            "branch": 1
+          },
+          "adjective": {
+            "functional": 1,
+            "confusing": 1,
+            "open": 1,
+            "main": 1
+          },
+          "verb": {
+            "update": 2,
+            "remove": 2,
+            "confuse": 1,
+            "docstre": 1,
+            "follow": 1,
+            "contain": 1,
+            "note": 1,
+            "define": 1,
+            "write": 1,
+            "suggest": 1,
+            "duplicate": 1,
+            "improve": 1,
+            "reproduce": 1,
+            "locate": 1,
+            "read": 1,
+            "expect": 1,
+            "describe": 1,
+            "state": 1,
+            "avoid": 1
+          }
+        },
+        "noun_phrases": {
+          "flask class": 4,
+          "documentation issue": 2,
+          "confusing docstre": 1,
+          "functional bug": 1,
+          "following method": 1,
+          "source code documentation": 1,
+          "open src flask": 1,
+          "expected behavior": 1,
+          "python version": 1,
+          "flask version": 1,
+          "main branch": 1
+        },
+        "entities": [
+          {
+            "text": "Flask",
+            "label": "GPE",
+            "count": 4
+          },
+          {
+            "text": "Flask",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Flask",
+          "category": "framework",
+          "count": 5
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "yes",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {
+              "duplicate": 3
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "docstring": 3,
+              "documentation": 3
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0093,
+        "sentences": 20,
+        "positive_sentences": 2,
+        "negative_sentences": 3,
+        "neutral_sentences": 15
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#6093",
+      "number": 6093,
+      "title": "IPv6 addresses parsed incorrectly because of `.partition(\":\")`?",
+      "url": "https://github.com/pallets/flask/issues/6093",
+      "author": "lkk7",
+      "state": "closed",
+      "labels": [],
+      "created_at": "2026-07-13T22:07:38Z",
+      "updated_at": "2026-08-26T00:07:11Z",
+      "closed_at": "2026-08-11T19:48:42Z",
+      "comments_count": 4,
+      "bot_comments_ignored": 0,
+      "text": "IPv6 addresses parsed incorrectly because of .partition(\":\")?\n\nHi, I checked the code and saw that two places use .partition(\":\") on addresses, and IPv6 addresses contain \":\".\n\nThis breaks 1. session_transaction value setting, and 2. Flask.run() if SERVER_NAME is set. I've already prepared two tests that fail, you can use them to reproduce:\n\nIn test_testing.py\n\nAdd one case to test_run_from_config\n\nIs this known and intended? I could send the patches for these two places.\n\nHappy to review a human-written PR! We recently fixed some occurrences of this in Werkzeug as well.\n\nThose guys are quick... They already generated one. It's bad anyway. Can I submit my own? :)\nBTW, those are two a bit separate problems, would you prefer two PRs or one?\n\nYou can ignore the junk. One PR is fine, one commit or two is fine.\n\nadded",
+      "code": "def test_session_transaction_ipv6(app):\n    base_url = \"http://[::1]:8000/\"\n    client = app.test_client()\n\n    @app.get(\"/\")\n    def index():\n        return str(flask.session.get(\"value\"))\n\n    with client.session_transaction(base_url=base_url) as sess:\n        sess[\"value\"] = 42\n\n    assert client.get(\"/\", base_url=base_url).text == \"42\"\n(None, None, \"[::1]:8080\", \"::1\", 8080),",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 180,
+        "sentences": 19,
+        "pos": {
+          "PUNCT": 40,
+          "NOUN": 27,
+          "VERB": 21,
+          "PRON": 17,
+          "NUM": 15,
+          "AUX": 13,
+          "ADJ": 10,
+          "DET": 8,
+          "ADV": 7,
+          "ADP": 7,
+          "CCONJ": 6,
+          "PROPN": 3,
+          "SCONJ": 3,
+          "PART": 2,
+          "INTJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "address": 3,
+            "place": 2,
+            "code": 1,
+            "value": 1,
+            "setting": 1,
+            "test": 1,
+            "case": 1,
+            "patch": 1,
+            "human": 1,
+            "occurrence": 1,
+            "guy": 1,
+            "btw": 1,
+            "bit": 1,
+            "problem": 1,
+            "junk": 1,
+            "commit": 1
+          },
+          "adjective": {
+            "fine": 2,
+            "known": 1,
+            "intended": 1,
+            "happy": 1,
+            "quick": 1,
+            "bad": 1,
+            "separate": 1
+          },
+          "verb": {
+            "use": 2,
+            "add": 2,
+            "parse": 1,
+            "check": 1,
+            "see": 1,
+            "contain": 1,
+            "break": 1,
+            "set": 1,
+            "prepare": 1,
+            "fail": 1,
+            "reproduce": 1,
+            "send": 1,
+            "review": 1,
+            "write": 1,
+            "fix": 1,
+            "generate": 1,
+            "submit": 1,
+            "prefer": 1,
+            "ignore": 1
+          }
+        },
+        "noun_phrases": {
+          "value setting": 1,
+          "human write": 1,
+          "bit separate problem": 1
+        },
+        "entities": [
+          {
+            "text": "Werkzeug",
+            "label": "GPE",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 1
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0018,
+        "sentences": 21,
+        "positive_sentences": 4,
+        "negative_sentences": 4,
+        "neutral_sentences": 13
+      }
+    }
+  ]
+}

@@ -1,0 +1,847 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "kubernetes",
+    "repo": "kubernetes",
+    "label": "kind/cleanup",
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T00:32:18+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:05+00:00"
+  },
+  "totals": {
+    "documents": 15,
+    "debt_documents": 8,
+    "tokens": 21473,
+    "sentences": 1094,
+    "explicit_debt_documents": 3,
+    "classified_documents": 8,
+    "first_date": "2026-07-13",
+    "last_date": "2026-09-25"
+  },
+  "by_type": {
+    "issue": {
+      "documents": 15,
+      "debt_documents": 8
+    }
+  },
+  "classification": {
+    "code": {
+      "yes": 4,
+      "possible": 1,
+      "no": 10
+    },
+    "architecture": {
+      "yes": 0,
+      "possible": 2,
+      "no": 13
+    },
+    "tests": {
+      "yes": 7,
+      "possible": 2,
+      "no": 6
+    },
+    "documentation": {
+      "yes": 0,
+      "possible": 4,
+      "no": 11
+    },
+    "dependencies": {
+      "yes": 1,
+      "possible": 1,
+      "no": 13
+    }
+  },
+  "resolution": {
+    "with_debt": {
+      "documents": 8,
+      "closed": 3,
+      "median_days_to_close": 0.8
+    },
+    "without_debt": {
+      "documents": 7,
+      "closed": 3,
+      "median_days_to_close": 4.0
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "documents": 15,
+      "positive": 6,
+      "neutral": 8,
+      "negative": 1,
+      "mean_compound": 0.0389
+    },
+    "by_category": {
+      "code": {
+        "documents": 4,
+        "positive": 2,
+        "neutral": 1,
+        "negative": 1,
+        "mean_compound": 0.0249
+      },
+      "architecture": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "tests": {
+        "documents": 7,
+        "positive": 3,
+        "neutral": 3,
+        "negative": 1,
+        "mean_compound": 0.0376
+      },
+      "documentation": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "dependencies": {
+        "documents": 1,
+        "positive": 0,
+        "neutral": 1,
+        "negative": 0,
+        "mean_compound": 0.0451
+      }
+    }
+  },
+  "frequencies": {
+    "terms": {
+      "noun": [
+        {
+          "name": "test",
+          "count": 150,
+          "documents": 7
+        },
+        {
+          "name": "validation",
+          "count": 67,
+          "documents": 5
+        },
+        {
+          "name": "case",
+          "count": 58,
+          "documents": 3
+        },
+        {
+          "name": "value",
+          "count": 58,
+          "documents": 2
+        },
+        {
+          "name": "check",
+          "count": 46,
+          "documents": 3
+        },
+        {
+          "name": "api",
+          "count": 43,
+          "documents": 8
+        },
+        {
+          "name": "path",
+          "count": 43,
+          "documents": 4
+        },
+        {
+          "name": "change",
+          "count": 42,
+          "documents": 6
+        },
+        {
+          "name": "error",
+          "count": 36,
+          "documents": 6
+        },
+        {
+          "name": "issue",
+          "count": 34,
+          "documents": 9
+        },
+        {
+          "name": "rule",
+          "count": 33,
+          "documents": 3
+        },
+        {
+          "name": "resource",
+          "count": 32,
+          "documents": 4
+        },
+        {
+          "name": "fix",
+          "count": 31,
+          "documents": 5
+        },
+        {
+          "name": "quantity",
+          "count": 31,
+          "documents": 2
+        },
+        {
+          "name": "row",
+          "count": 31,
+          "documents": 2
+        },
+        {
+          "name": "work",
+          "count": 31,
+          "documents": 5
+        },
+        {
+          "name": "exponent",
+          "count": 30,
+          "documents": 1
+        },
+        {
+          "name": "master",
+          "count": 30,
+          "documents": 3
+        },
+        {
+          "name": "code",
+          "count": 26,
+          "documents": 8
+        },
+        {
+          "name": "pod",
+          "count": 26,
+          "documents": 5
+        }
+      ],
+      "adjective": [
+        {
+          "name": "handwritten",
+          "count": 22,
+          "documents": 3
+        },
+        {
+          "name": "negative",
+          "count": 20,
+          "documents": 1
+        },
+        {
+          "name": "new",
+          "count": 19,
+          "documents": 6
+        },
+        {
+          "name": "unchanged",
+          "count": 19,
+          "documents": 3
+        },
+        {
+          "name": "happy",
+          "count": 17,
+          "documents": 5
+        },
+        {
+          "name": "small",
+          "count": 15,
+          "documents": 4
+        },
+        {
+          "name": "old",
+          "count": 14,
+          "documents": 4
+        },
+        {
+          "name": "worth",
+          "count": 14,
+          "documents": 5
+        },
+        {
+          "name": "real",
+          "count": 13,
+          "documents": 4
+        },
+        {
+          "name": "separate",
+          "count": 13,
+          "documents": 3
+        },
+        {
+          "name": "current",
+          "count": 12,
+          "documents": 3
+        },
+        {
+          "name": "different",
+          "count": 12,
+          "documents": 3
+        },
+        {
+          "name": "open",
+          "count": 12,
+          "documents": 3
+        },
+        {
+          "name": "non",
+          "count": 10,
+          "documents": 4
+        },
+        {
+          "name": "safe",
+          "count": 10,
+          "documents": 2
+        },
+        {
+          "name": "unclaimed",
+          "count": 10,
+          "documents": 3
+        },
+        {
+          "name": "wrong",
+          "count": 10,
+          "documents": 3
+        },
+        {
+          "name": "byte",
+          "count": 9,
+          "documents": 1
+        },
+        {
+          "name": "declarative",
+          "count": 9,
+          "documents": 2
+        },
+        {
+          "name": "fractional",
+          "count": 9,
+          "documents": 1
+        }
+      ],
+      "verb": [
+        {
+          "name": "need",
+          "count": 46,
+          "documents": 9
+        },
+        {
+          "name": "add",
+          "count": 38,
+          "documents": 11
+        },
+        {
+          "name": "reject",
+          "count": 34,
+          "documents": 1
+        },
+        {
+          "name": "merge",
+          "count": 32,
+          "documents": 4
+        },
+        {
+          "name": "start",
+          "count": 31,
+          "documents": 7
+        },
+        {
+          "name": "leave",
+          "count": 29,
+          "documents": 5
+        },
+        {
+          "name": "want",
+          "count": 29,
+          "documents": 6
+        },
+        {
+          "name": "work",
+          "count": 28,
+          "documents": 4
+        },
+        {
+          "name": "store",
+          "count": 27,
+          "documents": 1
+        },
+        {
+          "name": "pass",
+          "count": 26,
+          "documents": 4
+        },
+        {
+          "name": "run",
+          "count": 26,
+          "documents": 9
+        },
+        {
+          "name": "check",
+          "count": 25,
+          "documents": 6
+        },
+        {
+          "name": "fail",
+          "count": 24,
+          "documents": 5
+        },
+        {
+          "name": "write",
+          "count": 23,
+          "documents": 5
+        },
+        {
+          "name": "cover",
+          "count": 20,
+          "documents": 4
+        },
+        {
+          "name": "drop",
+          "count": 20,
+          "documents": 7
+        },
+        {
+          "name": "return",
+          "count": 20,
+          "documents": 5
+        },
+        {
+          "name": "look",
+          "count": 19,
+          "documents": 5
+        },
+        {
+          "name": "remove",
+          "count": 19,
+          "documents": 9
+        },
+        {
+          "name": "accept",
+          "count": 18,
+          "documents": 6
+        }
+      ]
+    },
+    "noun_phrases": [
+      {
+        "name": "beta rule",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "declarative validation",
+        "count": 6,
+        "documents": 3
+      },
+      {
+        "name": "handwritten check",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "stored object",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "api type",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "byte quantity",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "regression coverage",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "api machinery",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "linked follow",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "merged fix",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "negative case",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "old object",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "unused image",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "accessor work",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "admission plugin",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "alpha promotion",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "api change",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "caller list",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "checked accessor",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "chosen behavior",
+        "count": 3,
+        "documents": 1
+      }
+    ],
+    "technologies": [
+      {
+        "name": "Kubernetes",
+        "category": "tool",
+        "count": 36,
+        "documents": 8
+      },
+      {
+        "name": "Claude",
+        "category": "tool",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "Linux",
+        "category": "platform",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "GitHub",
+        "category": "tool",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Git",
+        "category": "tool",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "entities": [
+      {
+        "name": "API [ORG]",
+        "text": "API",
+        "label": "ORG",
+        "count": 23,
+        "documents": 5
+      },
+      {
+        "name": "AI [GPE]",
+        "text": "AI",
+        "label": "GPE",
+        "count": 14,
+        "documents": 1
+      },
+      {
+        "name": "LimitRanger [ORG]",
+        "text": "LimitRanger",
+        "label": "ORG",
+        "count": 12,
+        "documents": 1
+      },
+      {
+        "name": "MilliValue [ORG]",
+        "text": "MilliValue",
+        "label": "ORG",
+        "count": 12,
+        "documents": 1
+      },
+      {
+        "name": "TODO [ORG]",
+        "text": "TODO",
+        "label": "ORG",
+        "count": 11,
+        "documents": 3
+      },
+      {
+        "name": "DRA [ORG]",
+        "text": "DRA",
+        "label": "ORG",
+        "count": 9,
+        "documents": 2
+      },
+      {
+        "name": "GC [ORG]",
+        "text": "GC",
+        "label": "ORG",
+        "count": 9,
+        "documents": 1
+      },
+      {
+        "name": "PVC [ORG]",
+        "text": "PVC",
+        "label": "ORG",
+        "count": 9,
+        "documents": 1
+      },
+      {
+        "name": "String [PERSON]",
+        "text": "String",
+        "label": "PERSON",
+        "count": 9,
+        "documents": 1
+      },
+      {
+        "name": "max [PERSON]",
+        "text": "max",
+        "label": "PERSON",
+        "count": 9,
+        "documents": 1
+      },
+      {
+        "name": "ParseQuantity [FAC]",
+        "text": "ParseQuantity",
+        "label": "FAC",
+        "count": 8,
+        "documents": 1
+      },
+      {
+        "name": "Quantity [NORP]",
+        "text": "Quantity",
+        "label": "NORP",
+        "count": 8,
+        "documents": 2
+      },
+      {
+        "name": "RuntimeClass [ORG]",
+        "text": "RuntimeClass",
+        "label": "ORG",
+        "count": 7,
+        "documents": 2
+      },
+      {
+        "name": "GC [GPE]",
+        "text": "GC",
+        "label": "GPE",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "ObjectMeta [ORG]",
+        "text": "ObjectMeta",
+        "label": "ORG",
+        "count": 6,
+        "documents": 3
+      },
+      {
+        "name": "PodTemplate [ORG]",
+        "text": "PodTemplate",
+        "label": "ORG",
+        "count": 6,
+        "documents": 1
+      },
+      {
+        "name": "CPU [ORG]",
+        "text": "CPU",
+        "label": "ORG",
+        "count": 5,
+        "documents": 2
+      },
+      {
+        "name": "Cmp [PERSON]",
+        "text": "Cmp",
+        "label": "PERSON",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "HPA [ORG]",
+        "text": "HPA",
+        "label": "ORG",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "Kubernetes [ORG]",
+        "text": "Kubernetes",
+        "label": "ORG",
+        "count": 5,
+        "documents": 3
+      }
+    ],
+    "regex_patterns": [
+      {
+        "name": "todo",
+        "category": "code",
+        "count": 29,
+        "documents": 3
+      },
+      {
+        "name": "cleanup",
+        "category": "general",
+        "count": 19,
+        "documents": 15
+      },
+      {
+        "name": "unit_test",
+        "category": "tests",
+        "count": 5,
+        "documents": 3
+      },
+      {
+        "name": "documentation",
+        "category": "documentation",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "duplication",
+        "category": "code",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "legacy",
+        "category": "general",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "test_coverage",
+        "category": "tests",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "architecture",
+        "category": "architecture",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "docs",
+        "category": "documentation",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "integration_test",
+        "category": "tests",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "refactor",
+        "category": "general",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "debt_categories": [
+      {
+        "name": "tests",
+        "yes": 7,
+        "possible": 2,
+        "no": 6
+      },
+      {
+        "name": "code",
+        "yes": 4,
+        "possible": 1,
+        "no": 10
+      },
+      {
+        "name": "dependencies",
+        "yes": 1,
+        "possible": 1,
+        "no": 13
+      },
+      {
+        "name": "documentation",
+        "yes": 0,
+        "possible": 4,
+        "no": 11
+      },
+      {
+        "name": "architecture",
+        "yes": 0,
+        "possible": 2,
+        "no": 13
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "month": "2026-07",
+      "documents": 4,
+      "debt_documents": 1,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 1,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0329
+    },
+    {
+      "month": "2026-08",
+      "documents": 7,
+      "debt_documents": 4,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 4,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.044
+    },
+    {
+      "month": "2026-09",
+      "documents": 4,
+      "debt_documents": 3,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 2,
+        "architecture": 0,
+        "tests": 2,
+        "documentation": 0,
+        "dependencies": 1
+      },
+      "mean_compound": 0.0359
+    }
+  ]
+}

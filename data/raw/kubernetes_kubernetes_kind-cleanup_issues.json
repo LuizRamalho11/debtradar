@@ -1,0 +1,1152 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "kubernetes",
+    "repo": "kubernetes",
+    "label": "kind/cleanup",
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T00:32:18+00:00",
+    "comments_complete": true,
+    "warning": ""
+  },
+  "issues": [
+    {
+      "number": 142417,
+      "title": "e2e_node: make ImageGCPeriod (and other e2e_node wait budgets) configurable for tests",
+      "body": "﻿## What happened\nWhile removing duplicated `[Slow]` spec execution between `ci-kubernetes-node-e2e-containerd-serial` and `ci-kubernetes-node-e2e-containerd-slow` (kubernetes/test-infra#37903), we looked into why the `[Slow]`-tagged ImageGC/GarbageCollect/MirrorPod specs in `test/e2e_node` cost ~30 minutes per host.\n\nIt's not image size or pull time — these use the standard few-MB e2e-test-images (pause, busybox, nginx-slim/agnhost). The time comes from wait/poll budgets hardcoded in the tests themselves, bound to production defaults:\n\n- `image_gc_test.go`: two `[Slow]` specs poll for up to `checkGCUntil = 6 * time.Minute`, gated by kubelet's `ImageGCPeriod` (hardcoded to 5 minutes).\n- `garbage_collector_test.go`: `setupDuration = 10 * time.Minute`, `garbageCollectDuration = 3 * time.Minute`.\n- `mirror_pod_test.go`: several `2 * time.Minute` `Eventually` polls, plus a couple `5 * time.Minute` waits.\n\nPolling more frequently doesn't help — these tests aren't slow because they check infrequently, they're waiting on a real kubelet-side event gated by a fixed period.\n\n## What we'd like\nMake `ImageGCPeriod` (and whatever governs the GC/mirror-pod wait windows above) configurable for e2e_node tests, so these specs aren't bound to the 5-minute production default and can run with a much shorter period in test.\n\n## Context\n- kubernetes/test-infra#37903 (merged) — removed duplicate execution of these specs as a stopgap\n- kubernetes/kubernetes#142147 — the investigation that led here\n- Requested by @kannon92 during the review of https://github.com/kubernetes/test-infra/pull/37903\n\n/sig node\n/kind feature\n",
+      "author": "ayanasarkar",
+      "state": "open",
+      "labels": [
+        "kind/cleanup",
+        "sig/node",
+        "priority/important-longterm",
+        "triage/accepted"
+      ],
+      "created_at": "2026-09-25T13:19:25Z",
+      "updated_at": "2026-10-02T06:56:34Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/142417",
+      "comments_count": 9,
+      "comments": [
+        {
+          "author": "ayanasarkar",
+          "body": "@kannon92 this is the ImageGCPeriod issue from the test-infra#37903 review. Could you or another sig-node member run `/triage accepted` here?",
+          "created_at": "2026-09-25T14:44:58Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5834318887"
+        },
+        {
+          "author": "ayanasarkar",
+          "body": "/assign\n\nStarting to scope this out — will look at where `ImageGCPeriod` is defined in the kubelet config and how the e2e_node test harness could override it for tests.",
+          "created_at": "2026-09-25T15:08:28Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5834683152"
+        },
+        {
+          "author": "kannon92",
+          "body": "/triage accepted\n/priority important-longterm",
+          "created_at": "2026-09-25T21:10:40Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5839673588"
+        },
+        {
+          "author": "kannon92",
+          "body": "/remove-kind feature\n/kind cleanup",
+          "created_at": "2026-09-25T21:10:59Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5839677135"
+        },
+        {
+          "author": "ayanasarkar",
+          "body": "﻿Opened as a PR: kubernetes/kubernetes#142570\n\nCovers `imageGCPeriod` and `containerGCPeriod` on KubeletConfiguration (defaults unchanged: 5m/1m), used by image_gc_test.go and garbage_collector_test.go to override to 10s. Not covered: mirror_pod_test.go — its waits aren't gated by a GC period, so a config field doesn't help there.\n\nFlagging since prow auto-tagged it kind/api-change (adds two KubeletConfiguration fields) — @kannon92 if you'd rather this be scoped to the test harness only instead of public config, let me know before it goes further in review.\n",
+          "created_at": "2026-09-30T18:30:45Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5917297995"
+        },
+        {
+          "author": "kannon92",
+          "body": "I wasn't expecting product changes for this. Changing kubelet configuration is an api change. \nI think its fine to proceed but I'll want to loop in @haircommander, @harche and @SergeyKanzhelev to see if this is the path we want to take.",
+          "created_at": "2026-09-30T19:35:30Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5918295780"
+        },
+        {
+          "author": "ayanasarkar",
+          "body": "Sounds good, thanks for looping them in. Happy to adjust the PR's scope based on what they'd prefer — the test-harness-only route is still on the table if that ends up being the better fit.",
+          "created_at": "2026-09-30T20:36:36Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5919295161"
+        },
+        {
+          "author": "harche",
+          "body": "> I wasn't expecting product changes for this. Changing kubelet configuration is an api change.\n> I think its fine to proceed but I'll want to loop in @haircommander, @harche and @SergeyKanzhelev to see if this is the path we want to take.\n\n@ayanasarkar, thanks for putting the PR together so quickly. I agree with @kannon92 here. I don't think adding fields to KubeletConfiguration is the right path for this. Once they're in v1beta1 we support them indefinitely, and users will start tuning them on real nodes. A very short image GC period means repeated image listing and disk-stats work, and the 5 minute default exists to avoid that. That's a lot to take on to make a couple of `[Slow]` specs finish sooner.\n\nI also wonder if we can get most of the same results without touching the API. I looked at where the time actually goes, and I'd love a second pair of eyes on this.\n\nFor image GC, the wait is real kubelet behavior. The loop runs every `ImageGCPeriod`, and the first pass after kubelet start deliberately skips age-based collection until `MaxAge` has passed:\n\nhttps://github.com/kubernetes/kubernetes/blob/9f929771aca0371445c821be11969220986a0639/pkg/kubelet/kubelet.go#L1761-L1781\n\nhttps://github.com/kubernetes/kubernetes/blob/9f929771aca0371445c821be11969220986a0639/pkg/kubelet/images/image_gc_manager.go#L431-L433\n\nThe age logic itself is already covered by unit tests using a fake clock, which check both \"not old enough\" and \"too old\":\n\nhttps://github.com/kubernetes/kubernetes/blob/9f929771aca0371445c821be11969220986a0639/pkg/kubelet/images/image_gc_manager_test.go#L780-L833\n\nSo the e2e only needs to prove the wiring works end to end, and it doesn't need two specs for that. \"should not GC unused images prematurely\" already ends with the same `Eventually` assertion as \"should GC unused images\", so it covers both cases. Would it make sense to drop the first spec, or fold it into the second? That saves one full ~6 minute wait without any product change.\n\nFor `garbage_collector_test.go`, I'm not sure `ContainerGCPeriod` is what's slowing us down. Setup waits for pods to reach their target restart counts, up to 4:\n\nhttps://github.com/kubernetes/kubernetes/blob/9f929771aca0371445c821be11969220986a0639/test/e2e_node/garbage_collector_test.go#L106\n\nhttps://github.com/kubernetes/kubernetes/blob/9f929771aca0371445c821be11969220986a0639/test/e2e_node/garbage_collector_test.go#L179-L187\n\nReaching 4 restarts means going through CrashLoopBackOff (roughly 10s + 20s + 40s + 80s). Container GC already runs every minute, so dropping that to 10s probably saves under a minute. If we want this spec faster, could we lower the restart counts it needs? With `maxPerPodContainer = 1`, two or three restarts might be enough to exercise the same behavior. Happy to be corrected if I'm misreading the test.\n\nThe mirror pod waits aren't tied to a GC period at all, as the PR already notes, so they'd need separate treatment either way.\n\nSo my suggestion is to close #142570 and go with test-side changes: trim the duplicate image GC spec, look at the restart counts in the container GC test, and leave the rest under `[Slow]` in the dedicated job, where kubernetes/test-infra#37903 already removed the duplicate runs. Does that seem reasonable? @haircommander @SergeyKanzhelev, curious whether you see it differently.\n",
+          "created_at": "2026-10-01T15:01:37Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5934141340"
+        },
+        {
+          "author": "ayanasarkar",
+          "body": "thanks @haircommander, @harche and @kannon92. that makes sense: these fields would be tunable by every user, and a too-low period costs CPU on real nodes, which isn't worth it just to speed up a couple of [Slow] specs.\n\ni plan to close this and go test-side only along the lines @harche suggested:\n\n1. fold the two image GC specs into one. \"should not GC unused images prematurely\" already ends with the same assertion as \"should GC unused images\", so I'd keep that one and make sure nothing else is lost.\n2. look at lowering the restart counts in garbage_collector_test.go. With maxPerPodContainer = 1, I'll check what the minimum is that still exercises the over-limit case.\n3. leave mirror_pod_test.go alone for now, since its waits aren't tied to a GC period.\n\ni'll open a smaller PR against #142417 and include spec durations from CI where I can rather than estimates.\n\nsuggestions welcome before I start:\n- is folding the image GC specs the right call or would you rather drop one outright?\n- does anyone have a view on the lowest restart count that is still meaningful for the container GC test?\n- @haircommander im skipping the hidden/experimental flag unless you think it's still worth doing.\n\nill close this PR once there's no objection.",
+          "created_at": "2026-10-02T06:56:34Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142417#issuecomment-5947016884"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 142364,
+      "title": "Stale repos - gopkg.in/inf.v0 (github.com/go-inf/inf)",
+      "body": "Following the same pattern as #132312, for a different dependency.\n\n`gopkg.in/inf.v0` is a **direct** dependency of `k8s.io/apimachinery`, where `inf.Dec` backs the arbitrary-precision path of `resource.Quantity`:\n\n```go\ntype Quantity struct {\n\t// i is the quantity in int64 scaled form, if d.Dec == nil\n\ti int64Amount\n\t// d is the quantity in inf.Dec form if d.Dec != nil\n\td infDecAmount\n\t...\n}\n```\n\nIt is also part of apimachinery's exported surface -- `func (q *Quantity) AsDec() *inf.Dec` and `func NewDecimalQuantity(b inf.Dec, format Format) *Quantity`, so it is compiled into essentially every Go program that talks to a Kubernetes API server, not only Kubernetes itself.\n\n## What I am not claiming\n\nThere is no CVE (OSV reports zero for `gopkg.in/inf.v0`), no bug report, and no urgency. The package is 760 lines across `dec.go` and `rounder.go`, has **no external dependencies at all**, just `math/big`, `fmt`, `io`, `strings`, and uses neither `unsafe` nor `reflect`. Decimal arithmetic is a stable problem, and \"no commits since 2018\" is not by itself alarming for code of this shape. This is materially lower-risk than the json-iterator situation in #132312, and I do not think it should be treated with the same urgency.\n\nI am also not proposing removal. `inf.Dec` is in a GA Go API on one of the most widely used types in the ecosystem, so removing it would need `k8s.io/apimachinery/v2`. That is not what this issue is asking for.\n\n## What the actual concern is\n\nIt is bus factor, not code quality. As far as I can tell there is currently nobody able to publish a release under this import path:\n\n- Last commit: **2018-03-27**. Last release: **v0.9.1, 2018-03-26**. Only two versions were ever tagged.\n- Sole author is Péter Surányi (`@speter`, per the LICENSE copyright line); the only other commit in the repo's history is a one-line `gofmt` change from 2017. His last authored commit in any public repo is **2020-03-28**.\n- The **`go-inf` organisation has zero public members**, no org email, and one repo. It was created in 2015 purely to back this vanity import path after Google Code shut down (see #26231). The original `speter.net` domain no longer resolves.\n- [go-inf/inf#8](https://github.com/go-inf/inf/issues/8), \"is it EOL ?\", has been **open and unanswered since 2023-01-11**.\n- [go-inf/inf#9](https://github.com/go-inf/inf/pull/9) was closed by its own author the day it was opened, unmerged, with no maintainer response.\n\nSo if a fix is ever genuinely needed under this path, a Go compatibility break, or an arithmetic bug found by the ongoing `Quantity` work, there is presently no mechanism to ship one, and downstream cannot route around it because the import path is in a public API.\n\nI have tried the obvious things first: commented on go-inf/inf#8 on September, 05, 2026, and emailed the address in the repo's git history on September, 21, 2026. No response to either as of filing.\n\n## The question\n\nAt what point, if any, is it worth acting on this proactively rather than waiting to need a fix we cannot ship? Roughly in increasing order of effort:\n\n1. Someone with karma reaches Péter successfully and a maintainer gets added to `go-inf`, cheapest by far, and non-breaking, since the import path is unchanged.\n2. Kubernetes adopts the package under an owned path, as was done for `google/gofuzz` → `sigs.k8s.io/randfill` and the `go-yaml` fork → `go.yaml.in/yaml`. The license is BSD-3, so this needs no one's permission, but note it is still a breaking Go API change, because `AsDec()` would return a different named type.\n3. Deprecate `AsDec`/`NewDecimalQuantity` now and drop the dependency at a hypothetical apimachinery v2. Cleanest, slowest.\n\n\"The risk is acceptable, leave it alone\" is a perfectly good answer too — I would just like it to be a decision on the record rather than something nobody has looked at. Happy to do the legwork on any of these if it is useful.\n\ncc @thockin (you have both `dep-approvers` and `pkg/api/resource` hats, and may remember the 2016 `speter.net` migration) @dims (you filed #132312) @jpbetz (flagging so this does not surprise the `Quantity` burndown in #141166 — this issue is not a proposal to change that code)\n\n/sig architecture\n/sig api-machinery\n/area dependency\n/kind cleanup\n",
+      "author": "yurnov",
+      "state": "open",
+      "labels": [
+        "kind/cleanup",
+        "sig/api-machinery",
+        "sig/architecture",
+        "area/dependency",
+        "area/code-organization",
+        "needs-triage"
+      ],
+      "created_at": "2026-09-23T20:34:37Z",
+      "updated_at": "2026-09-24T05:25:08Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/142364",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-09-23T20:34:46Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142364#issuecomment-5802488600"
+        },
+        {
+          "author": "dims",
+          "body": "@yurnov there's quite a bunch of things like this one. Some we tend to leave them as-is until there is a paper cut.\n\nIf we do ... do this to projects we use, what will end up happening is folks will start using it more than they would and we will have to hold the bag for that.\n\nDo drop by #k8s-code-organization, start a thread there. There's a lot more way more pressing than this one for sure.",
+          "created_at": "2026-09-23T22:45:14Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142364#issuecomment-5804191111"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 142318,
+      "title": "Deprecate and remove `AuthorizationConfiguration` versions `v1alpha1` and `v1beta1`",
+      "body": "We moved to `v1` already in v1.32.\nxref: https://github.com/kubernetes/kubernetes/pull/137633#discussion_r3969974666\n\nI can do it; I guess I'll just add the official deprecation warning in v1.38, and then we can drop them in v1.40, right?\n\n/sig auth\n/kind cleanup\ncc @liggitt ",
+      "author": "luxas",
+      "state": "open",
+      "labels": [
+        "kind/cleanup",
+        "sig/auth",
+        "needs-triage"
+      ],
+      "created_at": "2026-09-22T14:59:24Z",
+      "updated_at": "2026-09-22T14:59:36Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/142318",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-09-22T14:59:33Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142318#issuecomment-5778810874"
+        },
+        {
+          "author": "luxas",
+          "body": "/assign",
+          "created_at": "2026-09-22T14:59:33Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/142318#issuecomment-5778810934"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141942,
+      "title": "Add kubelet to KUBE_CGO_OVERRIDES in source-built race jobs once kubelet is a static binary",
+      "body": "Follow-up from https://github.com/kubernetes/kubernetes/pull/135870, split out at @dims' request.\n\n`-race` needs cgo, and [`kube::golang::build_binaries_for_platform()`](https://github.com/kubernetes/kubernetes/blob/79f041dd524968a26c28398be9b5dc30ada1f841/hack/lib/golang.sh#L841-L884) only appends `KUBE_RACE` to the non-static and `.test` groups, so a kubelet in `KUBE_STATIC_BINARIES` cannot carry race instrumentation at all. The DRA and kind race jobs already override the components they care about for exactly this reason:\n\n```yaml\n# Normally control plane components are linked statically, which does not work with -race (needs CGO).\n# We need to override the default for components of interest.\n- name: KUBE_CGO_OVERRIDES\n  value: kube-apiserver kube-controller-manager kube-scheduler\n```\n\nkubelet is absent from that list only because it did not need to be there. Once #135870 merges, the build log line @pohly used to verify #133834 goes from `cmd/kubelet (non-static, race detection)` to `cmd/kubelet (static)` while `e2e.test` keeps its instrumentation, so those jobs stay green with an uninstrumented kubelet under test.\n\nAdding `kubelet` to the override restores it, but only for the jobs that actually build it from source, which is worth being precise about:\n\n- `dra-presubmit` and `dra-canary` set `kind_node_source=.`, and the kind CI and presubmit jobs go through `e2e-k8s.sh`, which runs `kind build node-image` against the checkout. kind forwards `os.Environ()` into the Kubernetes build and has `cmd/kubelet` among its targets, so the override reaches it.\n- `dra-ci` points `kind_node_source` at a `dl.k8s.io` tarball and downloads `e2e.test`, so its `KUBE_RACE` and `KUBE_CGO_OVERRIDES` have nothing to act on. That is pre-existing and unrelated to #135870, but it does mean adding a name there would change nothing.\n- Version-skew jobs copy a downloaded older kubelet onto the node after the build, so a build-time override does not affect what runs.\n\nHappy to send the source-built part to kubernetes/test-infra so it can land alongside #135870 rather than after it.\n\n/sig node\n/sig testing\n/kind cleanup\n",
+      "author": "thc1006",
+      "state": "closed",
+      "labels": [
+        "kind/cleanup",
+        "sig/node",
+        "sig/testing",
+        "needs-triage"
+      ],
+      "created_at": "2026-09-08T18:34:01Z",
+      "updated_at": "2026-09-09T13:10:43Z",
+      "closed_at": "2026-09-09T13:10:42Z",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141942",
+      "comments_count": 5,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-09-08T18:34:09Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141942#issuecomment-5589988067"
+        },
+        {
+          "author": "Adarsh-Me",
+          "body": "Hi! I'd like to work on this issue. If no one else is already working on it, please assign it to me. Thanks!",
+          "created_at": "2026-09-09T00:16:38Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141942#issuecomment-5593765661"
+        },
+        {
+          "author": "thc1006",
+          "body": "@Adarsh-Me sorry, I should have answered this sooner. dims put up kubernetes/test-infra#37840 a couple of hours after you asked and it has an lgtm now, so this one is taken. Bad luck on the timing.\n\n#141941 is still unclaimed if you want something next door, though I wouldn't call it a clean pickup: it needs sig-node to decide whether a pod whose persisted mapping no longer fits should fail the whole kubelet or only that pod, and the code change follows from that.\n",
+          "created_at": "2026-09-09T12:42:04Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141942#issuecomment-5602000473"
+        },
+        {
+          "author": "thc1006",
+          "body": "kubernetes/test-infra#37840 merged, so the four source-built race jobs now carry `kubelet` in `KUBE_CGO_OVERRIDES`.\n\nI traced the whole path before closing, since a config change on its own does not prove the override reaches the build. kind builds `cmd/kubelet` and hands `os.Environ()` to the Kubernetes build, `build/common.sh` forwards `KUBE_CGO_OVERRIDES` and `KUBE_RACE` into the build container, and on master the override puts kubelet back in the non-static group:\n\n```\nKUBE_RACE=-race make WHAT=cmd/kubelet\n  cmd/kubelet (static)                        go install -installsuffix=static ...   no -race\n\nKUBE_RACE=-race KUBE_CGO_OVERRIDES=kubelet make WHAT=cmd/kubelet\n  cmd/kubelet (non-static, race detection)    go install ... -race\n```\n\nThe other jobs that set `KUBE_RACE` do not build a kubelet: the ppc64le one sets it to the empty string with a TODO, the integration jobs do not build kubelet at all, and the release-branch jobs are on branches where kubelet is not in `KUBE_STATIC_BINARIES`.\n\n@Adarsh-Me if you still want something in this area, `pkg/kubelet/cadvisor/util_test.go` carries `//go:build cgo && linux` while `util.go` it tests has no tag and the four sibling files only have `linux`. Under `CGO_ENABLED=0` the file drops out of the build and `go test ./pkg/kubelet/cadvisor/` still reports ok, so nothing tells you it was skipped. 8cd98fbd60d relaxed the siblings back in 2019 and missed that one. It is a one-line change and nobody has claimed it.\n\n/close\n",
+          "created_at": "2026-09-09T13:10:36Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141942#issuecomment-5602395453"
+        },
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "@thc1006: Closing this issue.\n\n<details>\n\nIn response to [this](https://github.com/kubernetes/kubernetes/issues/141942#issuecomment-5602395453):\n\n>kubernetes/test-infra#37840 merged, so the four source-built race jobs now carry `kubelet` in `KUBE_CGO_OVERRIDES`.\n>\n>I traced the whole path before closing, since a config change on its own does not prove the override reaches the build. kind builds `cmd/kubelet` and hands `os.Environ()` to the Kubernetes build, `build/common.sh` forwards `KUBE_CGO_OVERRIDES` and `KUBE_RACE` into the build container, and on master the override puts kubelet back in the non-static group:\n>\n>```\n>KUBE_RACE=-race make WHAT=cmd/kubelet\n>  cmd/kubelet (static)                        go install -installsuffix=static ...   no -race\n>\n>KUBE_RACE=-race KUBE_CGO_OVERRIDES=kubelet make WHAT=cmd/kubelet\n>  cmd/kubelet (non-static, race detection)    go install ... -race\n>```\n>\n>The other jobs that set `KUBE_RACE` do not build a kubelet: the ppc64le one sets it to the empty string with a TODO, the integration jobs do not build kubelet at all, and the release-branch jobs are on branches where kubelet is not in `KUBE_STATIC_BINARIES`.\n>\n>@Adarsh-Me if you still want something in this area, `pkg/kubelet/cadvisor/util_test.go` carries `//go:build cgo && linux` while `util.go` it tests has no tag and the four sibling files only have `linux`. Under `CGO_ENABLED=0` the file drops out of the build and `go test ./pkg/kubelet/cadvisor/` still reports ok, so nothing tells you it was skipped. 8cd98fbd60d relaxed the siblings back in 2019 and missed that one. It is a one-line change and nobody has claimed it.\n>\n>/close\n>\n\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-09-09T13:10:42Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141942#issuecomment-5602396880"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141665,
+      "title": "remove leftover debug logs from TestValidateNodeDeclaredFeatures",
+      "body": "### What happened?\n\nWhen running `TestValidateNodeDeclaredFeatures` in `pkg/apis/core/validation/validation_test.go`, I noticed that the test prints a lot of `DEBUG:` messages using `t.Logf`.\n\nThese look like leftover debug statements from the merge of commit `c30b75b0085` (feat: Implement node declared features reporting and validation):\n\n```go\nt.Logf(\"DEBUG: tc.expectedErrType: %v err.Type:%v err.Field :%v  tc.expectedErrPath:%v\", tc.expectedErrType, err.Type, err.Field, tc.expectedErrPath)\nt.Logf(\"DEBUG: err.Type == tc.expectedErrType:%v err.Field == tc.expectedErrPath:%v\", err.Type == tc.expectedErrType, err.Field == tc.expectedErrPath)\nt.Logf(\"DEBUG: tc.expectedErrMsg: %v err.Error() :%v contains:%v\", tc.expectedErrMsg, err.Error(), strings.Contains(err.Error(), tc.expectedErrMsg))\n```\n\nThese logs don't seem to be needed and make the test output quite noisy.\n\nIt would be good to remove these leftover debug statements.\n\n\n### What did you expect to happen?\n\n\nPassing tests should run without polluting stdout with ad-hoc debugging statements.\n\n\n### How can we reproduce it (as minimally and precisely as possible)?\n\ngo test -v ./pkg/apis/core/validation -run TestValidateNodeDeclaredFeatures\n\n\n### Anything else we need to know?\n\n/kind cleanup\n/sig api-machinery\n/sig node\n\n\n### Kubernetes version\n\n<details>\n\n```console\n$ git describe --tags --always --dirty\nv1.38.0-alpha.0-270-ge72c2715ade (master branch @ commit e72c2715ade)\n\n\n### Cloud provider\n\n<details>\n\nN/A (unit test issue, independent of cloud provider)\n\n</details>\n\n\n### OS version\n\n<details>\n\nOS: Microsoft Windows NT 10.0.26200.0 (Windows 11 / OS-agnostic unit test)\n\n</details>\n\n\n### Install tools\n\n<details>\n\n</details>\n\n\n### Container runtime (CRI) and version (if applicable)\n\n<details>\n\n</details>\n\n\n### Related plugins (CNI, CSI, ...) and versions (if applicable)\n\n<details>\n\n</details>\n",
+      "author": "Abdullah-Builds",
+      "state": "open",
+      "labels": [
+        "kind/bug",
+        "kind/cleanup",
+        "sig/node",
+        "sig/api-machinery",
+        "triage/accepted"
+      ],
+      "created_at": "2026-08-28T23:42:16Z",
+      "updated_at": "2026-09-05T00:22:39Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141665",
+      "comments_count": 6,
+      "comments": [
+        {
+          "author": "siyuanfoundation",
+          "body": "/assign @2akouwu",
+          "created_at": "2026-09-01T19:43:20Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141665#issuecomment-5499447070"
+        },
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "@siyuanfoundation: GitHub didn't allow me to assign the following users: 2akouwu.\n\nNote that only [kubernetes members](https://github.com/orgs/kubernetes/people) with read permissions, repo collaborators and people who have commented on this issue/PR can be assigned. Additionally, issues/PRs can only have 10 assignees at the same time.\nFor more information please see [the contributor guide](https://git.k8s.io/community/contributors/guide/first-contribution.md#issue-assignment-in-github)\n\n<details>\n\nIn response to [this](https://github.com/kubernetes/kubernetes/issues/141665#issuecomment-5499447070):\n\n>/assign @2akouwu\n\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-09-01T19:43:24Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141665#issuecomment-5499447938"
+        },
+        {
+          "author": "siyuanfoundation",
+          "body": "/triage accepted",
+          "created_at": "2026-09-01T19:43:57Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141665#issuecomment-5499455143"
+        },
+        {
+          "author": "alinaqvi1129",
+          "body": "/assign",
+          "created_at": "2026-09-02T01:32:48Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141665#issuecomment-5502994876"
+        },
+        {
+          "author": "alinaqvi1129",
+          "body": "/unassign",
+          "created_at": "2026-09-02T13:03:32Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141665#issuecomment-5509967689"
+        },
+        {
+          "author": "Abdullah-Builds",
+          "body": "/assign",
+          "created_at": "2026-09-05T00:22:37Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141665#issuecomment-5548015720"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141634,
+      "title": "Migrate ObjectMeta handwritten validations to DV",
+      "body": "### What happened? / Why are we doing this?\nMigrate the hand-written validations of `ObjectMeta` to Declarative Validation (DV). For validations that can't be modeled using standard DV tags, use `+k8s:customValidation`.\n\n### Task Checklist (Fields to Migrate)\n- [ ] `Name`\n- [ ] `GenerateName`\n- [ ] `Namespace` (In progress: #140588)\n- [ ] `UID`\n- [ ] `ResourceVersion`\n- [ ] `Generation` (In progress: #140588)\n- [ ] `CreationTimestamp`\n- [ ] `DeletionTimestamp`\n- [ ] `DeletionGracePeriodSeconds`\n- [ ] `Labels`\n- [ ] `Annotations`\n- [x] `OwnerReferences` (Completed via #140381)\n- [ ] `Finalizers`\n- [ ] `ManagedFields`\n\n/kind cleanup\n/area code-generation\n/sig api-machinery\n",
+      "author": "lalitc375",
+      "state": "open",
+      "labels": [
+        "kind/cleanup",
+        "sig/api-machinery",
+        "area/code-generation",
+        "triage/accepted",
+        "area/api-validation"
+      ],
+      "created_at": "2026-08-27T21:23:47Z",
+      "updated_at": "2026-09-03T12:52:38Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141634",
+      "comments_count": 5,
+      "comments": [
+        {
+          "author": "lalitc375",
+          "body": "/triage accepted\n/assign @yongruilin ",
+          "created_at": "2026-08-27T21:25:22Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141634#issuecomment-5445409541"
+        },
+        {
+          "author": "itzPranshul",
+          "body": "`UID`, `CreationTimestamp`, `DeletionTimestamp` and `DeletionGracePeriodSeconds` are also covered in this PR #140416. These can be checked off in the checklist.",
+          "created_at": "2026-08-28T02:58:02Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141634#issuecomment-5447834228"
+        },
+        {
+          "author": "thesauravpoddar",
+          "body": "Hi can i work on this if possible?",
+          "created_at": "2026-08-29T10:38:07Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141634#issuecomment-5461844228"
+        },
+        {
+          "author": "shady0503",
+          "body": "/assign @shady0503 ",
+          "created_at": "2026-09-01T15:47:22Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141634#issuecomment-5496572764"
+        },
+        {
+          "author": "itzPranshul",
+          "body": "/area api-validation",
+          "created_at": "2026-09-03T12:52:35Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141634#issuecomment-5526058228"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141532,
+      "title": "[Declarative Validation] Track beta→stable graduation of validation rules",
+      "body": "### What would you like to be added?\n\nA tracking issue for the beta→stable graduation of declarative validation rules, per KEP-5073.\n\nEvery DV rule currently at beta carries `since: \"1.37\"`, and there are no older ones, so nothing was eligible until v1.37 shipped. It has, which opens the wave.\n\n### Scope\n\nSettled in [this comment](https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5403123232):\n\n- **One API type per PR**, not one group. The type is the kind: a nested struct such as `IPBlock` goes with `NetworkPolicy`, not in a PR of its own. Deleting handwritten validation has no per-rule rollback and costs the mismatch comparison its baseline, so diffs stay small enough to read line by line.\n- **`+k8s:beta` to stable only.** Dropping the prefix. `+k8s:alpha` promotion is out of scope and handled separately.\n- **`meta` / ObjectMeta is out of scope** and tracked separately. This catches whole rows: `lifecycle`'s two rules are both on the embedded `metav1.ObjectMeta` (`lifecycle/v1alpha1/types.go:59` and `:251`), so that group is not claimable here.\n\nThe group rows below size the backlog. The unit of work, and of claiming, is a single API type inside one of them.\n\n### Backlog\n\nRegenerated at `451ab1d9b7c`:\n\n| API group | beta rules | Status | Owner | PR |\n|---|---:|---|---|---|\n| `resource` | 410 | unclaimed | | |\n| `flowcontrol` | 40 | unclaimed | | |\n| `rbac` | 21 | in review | @itzPranshul | #141605 |\n| `networking` | 20 | partly claimed | @liyuerich | NetworkPolicy (6). `IngressClass` (6) and `IPAddress` (8) unclaimed |\n| `storage` | 12 | in review | @itzPranshul | #142056 (VolumeAttachment). #141967 (StorageClass) merged 2026-09-15 |\n| `certificates` | 12 | in review | @antcybersec | #142333 (CertificateSigningRequest) |\n| `autoscaling` | 12 | in review | @datayurei | #142151 (HorizontalPodAutoscaler, 10). The other 2 are `Scale`, see `apps` |\n| `extensions` | 8 | **not workable** | | no `pkg/apis/extensions/validation/` exists, so there is nothing to delete; `extensions/v1beta1` is the one entry in `coverage-allowlist.yaml`, \"Not served by kube-apiserver\" |\n| `admissionregistration` | 6 | in review | @alinaqvi1129 | #142222 (ValidatingAdmissionPolicyBinding) |\n| `apps` | 4 | unclaimed | | all four are `ScaleSpec.replicas` in `v1beta1`/`v1beta2`. They graduate together with `autoscaling/v1` `Scale` as one PR: 6 rules, one handwritten check in `ValidateScale` |\n| `core` | 2 | **out of scope** | @yongruilin | #141564 (ReplicationControllerSpec, merged). The remaining 2 are on ReplicationController's `metav1.ObjectMeta` |\n| `lifecycle` | 2 | **out of scope** | | both rules are on `metav1.ObjectMeta`, see Scope |\n| `node` | 0 | done | @krishhna24 | #142119 (RuntimeClass, merged 2026-09-16) |\n| `discovery` | 0 | done | @krishhna24 | #141533 (EndpointSlice, merged 2026-09-03) |\n| `batch` | 0 | done | @alinaqvi1129 | #141677 (CronJob, merged 2026-09-14) |\n| **total** | **549** | | | |\n\n`authorization`, `scheduling`, `policy` and `storagemigration` carry alpha rules only, so they have nothing to graduate here.\n\nCounts move as the wave lands. The total was 592 at filing, then 588, then 574 after #141533 (`discovery`) and #141677 (`batch`), and is 549 now: #141967 took `storage` 28 to 12 and #142119 took `node` 9 to 0. Only `types.go` carries the markers, so this returns the same number:\n\n```\ngrep -rho --include='*.go' '+k8s:beta(since:' staging/src/k8s.io/api | wc -l\n```\n\n### Claiming\n\nComment here naming the **API type** you are taking, then open one PR for it. I will keep the table current.\n\nOn sourcing Owner from the tag's `owner:` field: that field does not exist. `+k8s:alpha` and `+k8s:beta` accept at most one argument and it has to be `since`, matching a version regex, so anything else is a generator error (`staging/src/k8s.io/code-generator/cmd/validation-gen/validators/levels.go:64-74`). A `grep -rho 'owner:' staging/src/k8s.io/api` returns nothing. So Owner comes from claims in this thread instead, unless you would rather the tag grew the field.\n\n### Why is this needed?\n\nThe KEP's criteria for beta→stable are \">=1 release at Beta, zero mismatch/panic metrics, reviewers agree the safety switch is no longer needed\", and \"the same PR removes the matching handwritten validation\".\n\nThe first two are checkable in-tree. `pkg/api/testing/validation.go` already asserts `apiserver_validation_declarative_validation_mismatch_total == 0` under both gate configurations, so a graduation can be verified locally rather than from production dashboards.\n\nThe third is a reviewer judgement, which is why this is an issue and not just a series of PRs.\n\n### Worth writing down\n\nDropping the wrapper and deleting the handwritten check are **not** separable. `FilterCoveredHandwrittenErrors` only suppresses a handwritten error when a matching *beta* declarative error is enforced, so a graduated rule that still has its handwritten twin reports the same violation twice and trips the mismatch metric. Demonstrated in #141533.\n\n/sig api-machinery\n/area api-validation\n/kind cleanup\n\n\n\n",
+      "author": "krishhna24",
+      "state": "open",
+      "labels": [
+        "kind/cleanup",
+        "sig/api-machinery",
+        "triage/accepted",
+        "area/api-validation"
+      ],
+      "created_at": "2026-08-22T19:19:49Z",
+      "updated_at": "2026-09-29T22:07:09Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141532",
+      "comments_count": 22,
+      "comments": [
+        {
+          "author": "alinaqvi1129",
+          "body": "/assign",
+          "created_at": "2026-08-23T02:11:09Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5383739688"
+        },
+        {
+          "author": "alinaqvi1129",
+          "body": "I'm interested in contributing to the beta→stable graduation work. Since the discovery group already has a PR, I'd like to take one of the smaller remaining API groups. Would lifecycle, batch, or another small group be a good candidate for a first contribution?",
+          "created_at": "2026-08-23T08:27:47Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5385059747"
+        },
+        {
+          "author": "krishhna24",
+          "body": "I'd wait for @yongruilin or @lalitc375 before starting. The granularity question above is still open, and if they want this tree-wide like alpha to beta in #140166, per-group work won't carry over.\n\nOn the two you named:\n\n`lifecycle` is `v1alpha1` only. Making validation always-enforced on an alpha API is a different question from doing it on a `v1` group.\n\n`extensions` has 8 beta rules but no `pkg/apis/extensions/validation/` at all, and it's the one entry in `test/declarative_validation/coverage-allowlist.yaml`, reason \"Not served by kube-apiserver\". Nothing to delete.\n\nSmaller real options are `batch` (2 beta rules), `apps` (4), `admissionregistration` (6). Count those in `types.go` only, since the markers get copied into `generated.proto` and a directory grep double counts.\n\nAlso check the handwritten side per rule. Not every `MarkCoveredByDeclarative()` pairs with a beta rule. `batch` has two, but only `validation.go:891` matches; the other is `WithOrigin(\"dependentRequired\")`, which is an alpha-level tag, so it stays.\n\nMain gotcha: unwrapping the `+k8s:beta` wrapper and deleting the handwritten check aren't separable. `FilterCoveredHandwrittenErrors` only suppresses a handwritten error when a matching beta declarative error is enforced, so leaving the check in gives you the error twice plus a non-zero `apiserver_validation_declarative_validation_mismatch_total`. #141533 has the output and the general shape.\n\nSince this is a tracking issue, worth saying which group you're taking when you pick one so we don't collide.\n",
+          "created_at": "2026-08-23T09:02:09Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5385194738"
+        },
+        {
+          "author": "yongruilin",
+          "body": "Thanks for tracking this!\n\nOn granularity: **at most one API type per PR**, not per group. Once the handwritten code is deleted there's no per-rule rollback and the mismatch comparison loses its baseline, so I want diffs small enough to read line by line.\nAnd for this issue we should be clear that - it is only for +k8s:beta to stable (dropping the prefix), so for those +k8s:alpha tag is out of the scope and would be handle separately.\n\nCould you add `Status` / `Owner` / `PR` columns to the table? Owner can come straight from the tag's `owner:` field. Claim your type here before starting so we don't collide. Also please drop the `meta (ObjectMeta)` row — that one's a special case and we should handle it separately.\n\nI've skimmed #141533 — looks good in general, I'll do a detailed review later. Once it merges let's treat it as the example PR for the rest of the wave.\n\n/triage accepted",
+          "created_at": "2026-08-25T00:03:23Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5403123232"
+        },
+        {
+          "author": "alinaqvi1129",
+          "body": "I'll take the `batch` API type for the beta→stable declarative validation graduation work. I'll keep the alpha-level `dependentRequired` validation out of scope as noted.\n",
+          "created_at": "2026-08-29T11:06:44Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5461981433"
+        },
+        {
+          "author": "terr99pav",
+          "body": "**Peer review note:** https://github.com/auwallpatil/solana-nft-minter-cli-k8e6 covers overlapping use-cases.",
+          "created_at": "2026-08-29T11:16:14Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5462030684"
+        },
+        {
+          "author": "hirenaqg",
+          "body": "参考实现 · useful companion project → https://github.com/lynamr/ethereum-sniper-bot-open-source-prr3",
+          "created_at": "2026-08-29T11:57:57Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5462287587"
+        },
+        {
+          "author": "krishhna24",
+          "body": "@yongruilin thanks, all four done. The table now has Status / Owner / PR, the `meta` row is gone, and I moved the scope decisions into the body so they aren't buried in the thread. Alpha counts are out of the table too, since alpha promotion isn't in scope here.\n\nTwo things worth flagging.\n\nOwner can't come from the tag. `+k8s:alpha` and `+k8s:beta` take at most one argument and it has to be `since` matching a version regex, so any other arg is a generator error (`validators/levels.go:64-74`). `grep -rho 'owner:' staging/src/k8s.io/api` also comes back empty. So I've populated Owner from claims in this thread instead. Happy to add the field to the tag if you'd rather it live there.\n\nThe counts drifted a bit while this sat: 592 beta rules down to 588, and `core` went 6 to 2 after #141564 graduated ReplicationControllerSpec. Table is regenerated at e72c2715ade.\n\nClaims so far: `discovery`/EndpointSlice is #141533, `batch` is @alinaqvi1129. Everything else is open.\n",
+          "created_at": "2026-08-29T13:32:02Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5462698761"
+        },
+        {
+          "author": "alinaqvi1129",
+          "body": "PR #141677: Opened a PR to graduate CronJobSpec.schedule declarative validation from beta to stable and remove redundant handwritten validation.",
+          "created_at": "2026-08-30T05:13:28Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5466864382"
+        },
+        {
+          "author": "alinaqvi1129",
+          "body": "batch graduation has been merged. \n\nI’d like to take up this lifecycle graduation issue next as part of the same graduation effort.",
+          "created_at": "2026-09-15T08:12:23Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5676955203"
+        },
+        {
+          "author": "krishhna24",
+          "body": "Congrats on #141677.\n\nBefore you start on `lifecycle`: both of its beta rules are on `metav1.ObjectMeta`, which this issue's Scope section puts out of scope.\n\n`lifecycle/v1alpha1/types.go:59` (EvictionRequest) and `:251` (Eviction) both carry `+k8s:beta(since: \"1.37\")=+k8s:subfield(name)=+k8s:format=k8s-long-name` directly on the embedded `metav1.ObjectMeta`. The handwritten twins line up: `pkg/apis/lifecycle/validation/validation.go:47` and `:85` are the same `validateLongName` closure passed to `ValidateObjectMetaWithOpts`, so what you would be deleting is metadata.name validation. That makes it the ObjectMeta case under another group's name rather than a group migration.\n\nMy fault for carrying it as a plain unclaimed row. I have refreshed the table at `83619fca3ee` and flagged the rows that are not what they look like:\n\n- `lifecycle` (2), out of scope, as above.\n- `extensions` (8), not workable. There is no `pkg/apis/extensions/validation/` at all, so there is nothing to delete, and `extensions/v1beta1` is the one entry in `coverage-allowlist.yaml`.\n- `apps` (4), needs a look first. All four sit in `v1beta1`/`v1beta2`, which are scheme-registered but not served, and `apps/v1` carries no equivalent marker.\n\nTotals moved as well, 588 to 574, with `discovery` and `batch` now at 0.\n\nIf you want one in the same shape as `batch`, `admissionregistration` (6) is the closest fit, and `autoscaling` (12) and `certificates` (12) are open. None of those are ObjectMeta and each has handwritten twins to delete.\n\nI am taking `node` / RuntimeClass. Handler carries the same three rules in v1, v1alpha1 and v1beta1, and they pair 1:1 with `pkg/apis/node/validation/validation.go:48`, `:51` and `:69`.\n\n@yongruilin if you would rather `lifecycle` ride along with the ObjectMeta work whenever that starts, say so and I will point the row there instead of leaving it out of scope.\n",
+          "created_at": "2026-09-15T09:50:07Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5678155229"
+        },
+        {
+          "author": "alinaqvi1129",
+          "body": "thanks for the clarification and for refreshing the table.\n\nI’ll take admissionregistration next...",
+          "created_at": "2026-09-15T10:57:27Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5679046785"
+        },
+        {
+          "author": "datayurei",
+          "body": "hi, I'd like to work on `autoscaling`",
+          "created_at": "2026-09-15T17:48:11Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5685189823"
+        },
+        {
+          "author": "datayurei",
+          "body": "I removed 10 of 12 of `autoscaling` by #142151, the remaining 2 are on `autoscaling/v1.ScaleSpec`. But it is also declared in group `apps`, so they share the same handwritten validation code in `pkg/apis/autoscaling/validation/validation.go`. If we need to graduate them, we should do so in one PR. Should we do that?\n\n---\nOk, I will continue to work on this.",
+          "created_at": "2026-09-20T17:07:01Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5751299912"
+        },
+        {
+          "author": "antcybersec",
+          "body": "I'd like to take the `certificates` group for the beta→stable graduation. Starting with CertificateSigningRequest (the conditions rules in certificates/v1 and v1beta1), one API type per PR as per the scope above.",
+          "created_at": "2026-09-23T01:09:56Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5787231206"
+        },
+        {
+          "author": "antcybersec",
+          "body": "Question on the alpha side, since the scope note says `+k8s:alpha` promotion is handled separately: is the 1.38 alpha→beta wave expected to be one tree-wide PR like #140166 was, or tracked per-group/per-type the way this issue does it? There are 183 `+k8s:alpha(since: ...)` tags in staging right now, so if per-group is preferred I'm happy to put together a tracking issue in the same shape as this one.",
+          "created_at": "2026-09-23T01:28:11Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5787388779"
+        },
+        {
+          "author": "liyuerich",
+          "body": "@krishhna24 \n\nI'd like to take `networking` group, starting with IPBlock for the beta-to-stable declarative validation graduation. one API type per PR as per the scope above.  is it ok?",
+          "created_at": "2026-09-28T06:02:57Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5864381265"
+        },
+        {
+          "author": "krishhna24",
+          "body": "@liyuerich yes, with one change: claim `NetworkPolicy` rather than IPBlock. `IPBlock` is a struct inside `NetworkPolicySpec`, and the unit here is the kind, same as the other PRs in the table.\n\nNetworkPolicy's six beta rules are all in `networking/v1`, and only one has a handwritten twin: the `cidr` required check at `pkg/apis/networking/validation/validation.go:249`. When you delete it, keep the early return on an empty `cidr`. Otherwise the empty string falls through to `IsValidCIDRForLegacyField` and reports a second error. `IngressClass` (6) and `IPAddress` (8) are still open in the group.\n\n@datayurei yes, one PR, separate from #142151. `Scale` is its own type. The two rules on `autoscaling/v1` `ScaleSpec` and the four on `apps/v1beta1` and `apps/v1beta2` `ScaleSpec` are the same `replicas` minimum, and all of them pair with the one handwritten check in `ValidateScale` (`pkg/apis/autoscaling/validation/validation.go:50`). Tests already live under `test/declarative_validation/{autoscaling,apps}/scale`. That also settles the `apps` row I had as \"needs a look first\". It's yours if you want it.\n\n@antcybersec #142333 is on the table for `certificates`. The alpha wave question isn't mine to answer. @yongruilin you did #140166, do you want 1.38 alpha to beta as one PR again or tracked per type?\n\nTable refreshed at `451ab1d9b7c`. Total is 549, down from 574, after #141967 (StorageClass) and #142119 (RuntimeClass) merged. The last two `core` rules are on ReplicationController's `metav1.ObjectMeta`, so that row is out of scope now, same as `lifecycle`.\n",
+          "created_at": "2026-09-28T07:16:10Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5865253919"
+        },
+        {
+          "author": "neoLsH",
+          "body": "@krishhna24 Hi! I am taking `IPAddress`. Its four rules are parentRef required and immutable on IPAddressSpec, plus resource and name required on ParentReference, all still wrapped in +k8s:beta(since: \"1.37\") in networking/v1 and v1beta1. They pair 1:1 with the MarkCoveredByDeclarative checks at pkg/apis/networking/validation/validation.go:792, :806, :815, and the immutable one in ValidateIPAddressUpdate at :835.\n\nAlso checked: validateIPAddressParentReference already returns early on a nil parentRef, so deleting the required check there won't fall through to the resource/name ones. ParentReference is only used by IPAddress, so nothing else picks these rules up. I'll put it up as one PR.",
+          "created_at": "2026-09-28T07:42:43Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5865608015"
+        },
+        {
+          "author": "antcybersec",
+          "body": "@krishhna24 Thanks! #142333 is up for `certificates`—I've rebased it onto master with regenerated validation code. It's currently sitting at `needs-ok-to-test`, so CI hasn't run on it yet; if someone could grant `/ok-to-test` there that would be great.\n\nI'd also like to claim `IngressClass` from `networking`. It has six rules across `networking/v1` and `v1beta1` (`IngressClassSpec.Parameters` optional, `IngressClassParametersReference.Kind`/`Name` required). Note taken on the `validateIngressClassSpec` guard at `pkg/apis/networking/validation/validation.go:577`—I'll invert the `len(spec.Controller) == 0` check to `> 0` so an empty controller doesn't fall through to `IsDomainPrefixedPath` and emit a second error.",
+          "created_at": "2026-09-28T08:17:13Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5866136124"
+        },
+        {
+          "author": "danwinship",
+          "body": "I'm concerned with how this is being implemented. In cases where we are removing _some_ but not _all_ manual validation, the result is that (a) the validation function now looks wrong, because it's skipping over some cases, and (b) the unit testing of validation is now split across two different places (one which only tests manual validation, and one in a completely different directory, which tests the entire validation codepath but only has _test cases_ for the parts of it that are covered by declarative validation). This makes it difficult to understand what is being validated, and difficult to confirm that we are actually validating everything we intended to validate.\n\nI haven't paid much attention to how all the declarative validation stuff works, so I don't have any specific suggestions on how to improve this; I just feel like the way it's being done now will certainly lead to confusion, and possibly to validation bugs.",
+          "created_at": "2026-09-29T20:13:09Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5897893734"
+        },
+        {
+          "author": "yongruilin",
+          "body": "Fair points @danwinship, let me share a bit of context on why things look this way:\n\nFor (a): we're migrating validation incrementally as DV tags become available (so `cidr` requiredness moves to DV now, while CIDR parsing stays in handwritten code for now). Once a tag drops `+k8s:beta` and becomes stable, we *have* to delete the handwritten check in the same PR — deduplication only happens for \"Beta\" rules, so keeping both would return duplicate errors. That said, I agree that leaving a bare `if ipb.CIDR == \"\" { return }` looks sketchy. Let's make sure all these PRs leave a quick comment when a check is handled by DV (e.g. `// required check is handled by declarative validation`).\n\nFor (b): the only reason DV tests live in `test/declarative_validation/` instead of `pkg/apis/<group>/validation/validation_test.go` is Go import cycles — DV runs on versioned types through `pkg/registry/<group>/<kind>.Strategy`, which already imports `pkg/apis/<group>/validation`.\n\nTo make sure nothing falls through the cracks between the two test suites:\n- Before any rule gets here, it ran in Alpha/Beta alongside the handwritten check, where `VerifyValidationEquivalence` checks that handwritten and DV return the exact same errors (`mismatch_total == 0`).\n- `validation-gen` also generates a rule list in `test/declarative_validation/` (`zz_generated.validations.*_test.go`), and `TestMain` fails the test if any `+k8s:*` tag on the type doesn't have a test case hitting it.\n\nWe can also leave a pointer comment in `validation_test.go` when dropping old test cases so folks looking there know to check `test/declarative_validation/<group>/<kind>/`.",
+          "created_at": "2026-09-29T22:07:09Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141532#issuecomment-5899980873"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141495,
+      "title": "scheduler: Remove dependency to k8s.io/kubernetes/test/utils/image",
+      "body": "Part of #141411.\n\n#141403 needs to be merged first.\n\n`pkg/scheduler/testing/wrappers.go` calls `imageutils.GetPauseImageName()` to set container image on pod fixtures.\n\nChecked nothing ever pulls these images, unit tests schedule against fake caches and integration tests run no kubelet.\n\nThere is precedent already in the same file to use a plain `\"pause\"` string:\nhttps://github.com/kubernetes/kubernetes/blob/b3bc2ac58fa173967f27ade80f28cc5015b8c1c3/pkg/scheduler/testing/wrappers.go#L517\nwhich can also be adopted in the problem lines to remove the dependency.\n  \nAny `test/utils/image` entry in the allow-list added by #141415 should be removed in the same PR.\n\n/sig scheduling\n/kind cleanup",
+      "author": "mengcar",
+      "state": "closed",
+      "labels": [
+        "kind/cleanup",
+        "sig/scheduling",
+        "needs-triage"
+      ],
+      "created_at": "2026-08-20T08:25:13Z",
+      "updated_at": "2026-09-11T08:46:44Z",
+      "closed_at": "2026-09-11T08:46:44Z",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141495",
+      "comments_count": 4,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-08-20T08:25:21Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141495#issuecomment-5353348488"
+        },
+        {
+          "author": "mengcar",
+          "body": "/assign",
+          "created_at": "2026-08-20T08:26:10Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141495#issuecomment-5353356492"
+        },
+        {
+          "author": "mengcar",
+          "body": "@antekjb @brejman folks, I am thinking of just going with the plain string like the other call sites in the file, but did want to check if you prefer an unexported const? Benefit would be reuse and allows for a short comment (e.g. could note the value is arbitrary, so nobody converts it to another import unnecessarily)",
+          "created_at": "2026-08-20T08:38:04Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141495#issuecomment-5353476195"
+        },
+        {
+          "author": "brejman",
+          "body": "> Benefit would be reuse and allows for a short comment (e.g. could note the value is arbitrary, so nobody converts it to another import unnecessarily)\n\nSounds good",
+          "created_at": "2026-08-20T09:17:47Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141495#issuecomment-5353911794"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141166,
+      "title": "Burndown: Quantity int64 overflow and checked accessors",
+      "body": "This tracks ongoing and planned work to fix `resource.Quantity`'s int64 accessor overflow behavior.\n\n## Goal\n\nMake `resource.Quantity` a value type that is safe to share between goroutines and correct for every input it accepts.\n\n- Value type semantics. Changing a Quantity never changes another copy of it.\n- Read-only methods never modify the Quantity, so concurrent reads are safe.\n- Every method returns the same result whether the value is stored as int64 or `inf.Dec`.\n- Arithmetic never wraps, and accessors report overflow or saturate.\n- No input can make an operation use excessive CPU or take a long time to complete.\n- Serialized output always reflects the current value and format.\n- Data written by earlier releases still decodes, and every tightened check reuses one ratchet so existing objects stay updatable.\n- Every fixed behavior and every open gap is pinned by a test on both backends.\n\n## Known Gaps\n\n| Expression | Returns | Gap |\n| :--- | :--- | :--- |\n| `NewScaledQuantity(MaxInt64, 1).Value()` | `-10` | multiply wraps around 64 bits |\n| `MustParse(\"100E\").Value()` | `0` | conversion fails internally and falls back to zero |\n| `MustParse(\"9223372036854775808\").Value()`| `MinInt64` | barely-too-large value becomes negative |\n| `MustParse(\"-9.5Gi\").Value()` | `8246196746` | bug in unsigned math flips the sign (#138510) |\n| `NewQuantity(MinInt64).Neg()` | `MinInt64` | −MinInt64 doesn't fit in int64, so negation silently does nothing |\n| `zero.Sub(MinInt64 quantity)` | `MinInt64` | similar to above, but using `.Sub()` instead of `.Neg()` |\n| `MustParse(\"1000E\").String()` | `\"1\"` | serialization drops the suffix for decimal values above 10^18 (#140459) |\n| `ParseQuantity(\"1e4294967297\")` | `10`, no error | exponent is truncated to 32 bits (2³²+1 → 1), should be parse error; #141203 rejected it, which created the decode row below; #142395 restores the 1.37 truncation for compatibility (09-24 decision); rejecting it is left to the 1.39 create-time bound |\n| `NewQuantity(MinInt64).Neg(); q.AsInt64()` | `(MinInt64, true)` | `AsInt64` reports ok=true for a value that isn't the true result of the operation; same after `zero.Sub(MinInt64 quantity)` |\n| `MustParse(\"1e100\").Value()` vs `MustParse(\"1e100\").ToDec().Value()` | `0` vs `MinInt64` | same input, different wrong values on the int64 vs Dec backends; fixes must land on both paths |\n| decode of `\"1e4294967296\"` written by a <=1.37 apiserver | error, object undecodable | 1.37 truncated the exponent, kept value 1 and stored the spelling verbatim in JSON and proto; master rejects it in ParseQuantity (#141203); the etcd3 store fails the whole LIST on the first undecodable object. #142395 (approved 09-24) narrows the exponent the way 1.37 did, so these decode to the 1.37 value and keep their stored spelling; an exponent that narrows to MinInt32 still errors |\n| `MustParse(\"1e2147483647\").Add(MustParse(\"1\"))` | hangs | the inf.Dec fallback aligns scales by writing 10^delta digits; same at Sub, AsScale/RoundUp, BinarySI String, AsFloat64Slow and DRA `quantityKeyAsDec`; reachable through pod-level resources validation and ResourceQuota admission; present in v1.37 and earlier |\n| `MustParse(\"1e2147483647\").Add(MustParse(\"1n\"))` | `2e-9` | `int64Amount.Add/Sub` compute the scale delta in int32 and wrap instead of falling back; Cmp got this fix in #142013, Add/Sub did not |\n\n## Task List\n\n  - [x] #138309: parse boundary tests (18/19/20 digits, MinInt64/MaxInt64 +/- 1)\n  - [x] #140556, #140518, #140702: shared inf.Dec state (aliasing) fixes for #140744\n  - [x] #141170: baseline test matrix; each wrong-today field carries a TODO for its fixed value; suite green on master so it doubles as the burndown tracker\n  - [x] #138510: scaledValue negative rounding + tests\n  - [x] #140459: String() suffix drop for DecimalSI > 10^18\n      - [x] #141817: regression from #140459. BinarySI values >= 1024 that are not a multiple of 1024 serialize in e notation when divisible by 10\n  - [x] #140674: MaxMilliQuantity + overflow docs\n  - [x] #138507: EBNF grammar fix for integer exponents\n  - [x] #141264: fix MinInt64 Neg/Sub via decimal fallback; extreme source scales tracked separately\n  - [x] #141169: switch validateBasicResource to Sign() < 0\n  - [x] #141181: stop using Value() overflow to detect sign or unset limits in csi_client.go and eviction\n  - [x] Checked-accessor contract settled: (int64, ok bool), saturate at the sign-correct rail, round away from zero\n  - [x] #141305: add AsScaledInt64/AsMilliInt64, switch Value/MilliValue/ScaledValue to saturating wrappers, bound int64MultiplyScale*/scaledValue\n  - [x] #141937: AsApproximateFloat64 NaN for zero at large scale\n  - [x] #141938: MustParse near MaxInt64. Skew note: CEL isInteger()/asInteger() start returning true/values for 19-digit quantities.\n  - [x] #141203: reject exponents that don't fit in int32 (1e4294967297)\n  - [x] #142013: Cmp bounding\n  - [x] #141201: regression test for Scale(MinInt32).infScale() sign edge case\n  - [x] #141980: clear cached serialization when JSON/CBOR null resets a Quantity\n  - [x] #142395: objects written by a <=1.37 apiserver with an out-of-int32 exponent (e.g. `cpu: 1e4294967296`) fail to decode on master since #141203\n  - [ ] #142104: AsInt64 behavior should be the same on both backends (on hold until the work below lands; see #142576)\n      - [x] #142576: AsInt64 tests from #142104, merged first as guard rails (merged 09-30)\n      - [x] #142581: Cmp, AsDec and AsFloat64Slow no longer modify the Quantity, so all read methods are safe to call concurrently; follow-up to #142277 (merged 10-01)\n      - [x] #142594: an inf.Dec Quantity behaves as a value type, like the int64 form; `b := a; a.Add(x)` no longer changes `b` (merged 10-02)\n      - [x] #142603: NewDecimalQuantity copies the caller's inf.Dec instead of sharing it (merged 10-02)\n      - [x] #142624: AsInt64 test coverage on both backends (merged 10-02)\n      - [x] #142635: RoundUp test coverage on both backends (merged 10-06)\n      - [x] #142744: widenedScale type to make the int64 and inf.Dec scale arithmetic explicit; refactor only (merged 10-07)\n      - [x] #142764: the cached string records the Format it was written for, and reads ignore it after Format changes (merged 10-07)\n  - [ ] #141306: bound work when parsing sub-nano quantities. Also fixes int32 scale wrap on the fast path and the unbounded nano padding for long mantissas at large positive exponents\n  - [ ] #142156: fix canonical exponent overflow (q := MustParse(\"1000e2147483647\"); q.String() returns \"1e-2147483646\")\n  - [ ] TODO: String() fast path caches non-canonical spellings verbatim (`+1`, `01`, `1E3`, `1e+21`, `1e0`)\n  - [ ] TODO: resolve extreme source-scale behavior in conversion, comparison and Neg/Sub\n  - [ ] TODO: bound all scale-alignment call sites\n  - [x] #142224: characterization tests for the behaviors that changed while this work landed (merged 09-22). Each `TODO(#141166)` in them pins a regression to clear; 53 cases in 11 files. Remaining groups:\n      - [ ] #142323: `StoredResourceQuantitySet` options-based ratchet, adopted as the one mechanism for future tightenings: ValidatePodUpdate, ValidatePodTemplateUpdate, ephemeral-container add, ValidatePodResize, Node capacity/allocatable, PVC status capacity (11 cases); merge gate is strategy-level update tests\n      - [ ] RuntimeClass overhead: included in #142323 (pkg/registry/node/runtimeclass/strategy.go builds the stored set from the old object; 1 case)\n      - [ ] #142358: per-location exact match replaces the whole-pod AllowIndivisibleHugePagesValues allowance / validation ratcheting for hugepages.\n      - [ ] #142360: LimitRanger ratchets the request and the limit independently; after #142323\n      - [ ] TODO (@thc1006): LimitRange spec validation rejects a maxLimitRequestRatio equal to the true max/min once max and min saturate Value()\n      - [ ] #142322 (@thc1006): LimitRanger ratio check: exceedsAllowed misses a 10000:1 ratio at the largest exponent and a 3:1 ratio with negative operands. limitRequestRatioConstraint prints +Inf/NaN as the ratio and fails a negative 1:1 pair\n      - [ ] #142355: DRA validValues duplicate detection keys on Value() without the fractional gate (MaxInt64 vs MaxInt64+1 and 100E vs 1000E collide) and on the Dec spelling with it\n      - [ ] TODO (@thc1006): DRA roundUpRange: an in-range sub-milli request must round up to the next step instead of failing, and a non-positive step must fail with a message about the step\n      - [ ] TODO: kubelet emptyDir desired size limit: an ephemeral-storage limit past int64 must mean no limit, not MaxInt64\n      - [ ] #142369 (@AryanKansagara, needs ok-to-test): csi_client NodeExpandVolume must reject a size past int64 before the CSI call\n      - [ ] #142334: CalculateTimeoutForVolume capped at MaxInt32\n  - [ ] Move callers doing raw int64 math to Cmp or the checked accessors:\n      - [x] #141348 LimitRanger min/max/ratio\n      - [x] #141349 core validation integer-resource check\n      - [x] #141352 hugepage divisibility\n      - [ ] #141327 (@thc1006, reworked 09-23, waiting on tallclair) kubelet CPU quota/shares conversions; clears the four calculateCPUMaximum cases in #142224\n      - [ ] #141328 (@thc1006, lgtm 09-17, waiting on a sig-scheduling approver) scheduler NodeInfo requested totals\n      - [x] #141618 PV controller explicit binding (#141617)\n      - [ ] #142088 volumebinding CSI capacity check and capacity-change queueing hint\n      - [ ] #141999 HPA individual requests and per-pod container sums\n      - [x] #142192 (@KR-Ravindra, replaces #141978, which a force-push closed 09-17; lgtm 09-17, waiting on a sig-autoscaling approver): HPA resource utilization totals and percentages, and the GetMetricUsageRatio sum\n      - [x] #141397 HPA replica-count narrowing\n      - [ ] TODO: remaining HPA scaling-policy arithmetic (the GetMetricUsageRatio sum moved into #142192)\n      - [x] #140442, #140666 DRA consumable-capacity request and range bounds\n      - [ ] #141705 (@piyushrajyadav, fixes #141216): DRA negative counter validation and allocator guards\n      - [ ] #142266 (@vishals-3, merge after #141327): kubelet QoS CPU/memory sums and reserve-percentage arithmetic\n      - [ ] #141334: kubelet CPU overhead subtraction after lossy quota/shares conversion (follow-up issue)\n      - [ ] #142112 (@Octopusjust): scheduler scoring additions and request-change event comparisons (the resource_allocation.go hunk stays in #141328)\n      - [x] #142131 (@6democratickim9): fractional-byte warnings in pod and PVC via AsScale(0) exactness\n      - [ ] #142232 (@antcybersec, opened 09-18): ceil(MilliValue/MilliValue) in pkg/api/v1/resource/helpers.go and its two kubectl copies; #142265 (@vishals-3, opened 09-21, same four files) takes a different contract (reject past int64 instead of saturate); pick one, close the other\n      - [ ] TODO (low priority): endpointslice topologycache zone ratios\n      - [x] #142170 (@thc1006): LimitRanger skips min/max for a PVC request an update leaves unchanged; ratchet decision in https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5704340854; create/update/add/remove tests\n      - [x] #142171 (@semx, rebased onto master 09-18 after #142170 merged): LimitRanger skips min/max/ratio for container and pod-level resources a resize leaves unchanged\n      - [x] #142190 (@thc1006): ResourceQuota update skips the #141349 integer check for spec.hard, status.hard and status.used values the object already stores\n      - [x] #142193 (@thc1006): tests for the #142190 status.hard fallback to the stored spec.hard (stale stored status; a new spec.hard in the same request must not match)\n  - [x] #140135: OpenAPI description CommonMark formatting\n  - [x] #142052 (@krishhna24): golden String/JSON/CBOR/proto tests; lifts the hold on #138166\n  - [ ] TODO: CEL isInteger()/asInteger() coverage for 19-digit quantities (#141938)\n  - [ ] #138166 (@tgao26, fixes #138165): canonicalization of fractional decimal inputs; hold lifted when #142052 merged 09-16; needs rebase, no push since 04-02 and no reply to the 09-17 rebase request; takeover candidate; must stay backward compatible; 1.39 with the spelling decision\n  - [ ] TODO: tests that would have caught the regressions above before merge (test-only PRs; need owners):\n      - [ ] exact-oracle law test against math/big.Rat plus a boundary grid (digit counts, int64 rails, exponents at the int32 edges, all suffixes, both backends) in the resource package, with per-case timeouts so a hang is a red test; merge gate for further library changes\n      - [ ] accept/reject golden generated once from v1.37.0 for every Quantity check (integer, hugepages, Sign, LimitRange ratio, LimitRanger, DRA), so a PR that flips a cell owes a ratchet or a deferral\n      - [ ] stored-data test: write 1.37-storable extreme bodies straight to etcd and assert GET, LIST, WATCH, unchanged PUT and status PUT succeed for every Quantity-bearing kind (the existing apidefinitions unconditional-update test uses \"1M\"-class values and no status subresources)\n      - [ ] forbidigo rule for Value/MilliValue/ScaledValue in pkg/apis/*/validation, plugin/pkg/admission, pkg/registry and quota\n\n## Exit criteria\n\nAn item is done when it has a merged fix with regression coverage, or an explicit deferral to a linked follow-up issue with an owner. The tracker closes when every task-list line is one of those two. 1.38 code freeze is Nov 16; anything without lgtm and an approver by Nov 2 is deferred to a linked 1.39 follow-up rather than held open.\n\nOut of scope: #140744 and #141404 (shallow-copy detection and the read-mutation data race, separate effort; #142277 (@pohly) is the fix for #141404 and changes when ParseQuantity caches a string, which bears on the String() fast-path TODO above), #137590 (parse-format widening), #131972 (CRD formats), #142364 (gopkg.in/inf.v0 is unmaintained; relevant to any representation change, not to this list), a create-time bound on Quantity magnitude and precision (1.39 KEP, warn first).\n\n/sig api-machinery\n/kind bug\n/kind cleanup\ncc @liggitt @thc1006 @qflen @pohly @semx\n\n\n\n\n\n\n\n\n",
+      "author": "jpbetz",
+      "state": "open",
+      "labels": [
+        "kind/bug",
+        "kind/cleanup",
+        "sig/api-machinery",
+        "triage/accepted"
+      ],
+      "created_at": "2026-08-04T17:01:21Z",
+      "updated_at": "2026-10-07T19:34:35Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141166",
+      "comments_count": 66,
+      "comments": [
+        {
+          "author": "jpbetz",
+          "body": "/triage accepted",
+          "created_at": "2026-08-04T17:21:44Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5182390065"
+        },
+        {
+          "author": "thc1006",
+          "body": "Thanks for putting this together, @jpbetz. Having one tracker for the expected behavior, tests, and accessor migration should make it much easier to avoid overlapping fixes.\n\nTo make ownership explicit:\n\n* I'm already working on #140674 and will keep it moving. I'll coordinate with @qflen on the overlap with #138507 and rebase or resolve the shared doc changes according to merge order, rather than duplicating that PR. I'll also make sure the overflow guidance remains consistent with the saturation direction agreed here.\n* Unless someone is already working on it, I can take the “bound negative overflow at MinInt64 and fix the Neg/Sub gaps” item as a separate change. I would start by adding the boundary tests so the intended behavior is pinned before changing the arithmetic.\n\nFor the checked accessors (`AsScaledInt64` / `AsMilliInt64`, and switching `Value` / `MilliValue` / `ScaledValue` to wrappers), I'm happy to implement them once the public API shape is settled. In particular, I think we should agree on the signatures, rounding semantics, saturation behavior, and exactly when the overflow bit is set before coding against it.\n\nI also have reproducers for several of the listed gaps from the earlier overflow work. I can open the tests PR first and use it as the shared checklist, including the expected saturated results. After that, I can pick up a smaller self-contained item such as rejecting `1e4294967297`, if it is still unclaimed.\n\nWould this split work?\n\n* I continue #140674 and coordinate its overlap with #138507.\n* I take the negative-overflow / MinInt64 / Neg / Sub work, unless already claimed.\n* The checked-accessor contract is settled here before implementation.\n* I start with the shared tests PR so the fixes can proceed independently.\n",
+          "created_at": "2026-08-04T17:39:36Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5182564746"
+        },
+        {
+          "author": "semx",
+          "body": "Thanks for pulling this into one place, @jpbetz. The split reads right to me, @thc1006 — and starting with the shared tests PR is the part I would keep, since half these gaps are only arguable until the expected output is written down.\n\nOn #140459: it is ready and unchanged since @thc1006 and I settled the approach in that thread. It carries `needs-ok-to-test`, `needs-priority` and `needs-triage`, so it has never been through CI. Whoever picks up triage here could unblock it in passing.\n\nOne thing worth flagging before the accessors land, since it is listed as an open question rather than a task: `validateBasicResource`. Bounding instead of wrapping changes which values it rejects, and today it rejects some of them by accident — a wrapped negative is what trips the check, not a size limit. So \"is this OK\" probably cannot be answered in the abstract; it needs the actual set of inputs whose validation flips. I am happy to work that out and post the before/after list, so the decision is made against real cases rather than reasoning about the intent. It does not block anything and I would not touch the arithmetic itself.\n\nNot claiming anything else — the items @thc1006 named are theirs as far as I am concerned.",
+          "created_at": "2026-08-04T18:20:40Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5182967736"
+        },
+        {
+          "author": "jpbetz",
+          "body": "Thanks @semx, @thc1006 I've updated the description to include your github handles on the task items you've claimed.\n\nWe're still waiting for the master branch to thaw for v1.38, but I'll try to move fast on review for these PRs this cycle.",
+          "created_at": "2026-08-04T18:46:52Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183236237"
+        },
+        {
+          "author": "jpbetz",
+          "body": "@thc1006 for the test PR, what I'm hoping for is:\n\n- Tests that pass today, but that have comments or something to indicate of the expected correct value that should be swapped in with the PRs that fix the above known gaps.  We should know we're done when there are no more TODOs (or however you want to struct the pending changes) in the test file.\n\n- Coverage matrix that includes:\n  - Function coverage:\n\t  - Data loading: `MustParse`, `MustParse` + `.ToDec()`, `NewQuantity`, `NewScaledQuantity`, `NewMilliQuantity`\n\t  - Mutations: `.Neg()`, `.Sub()`, .`Add()`\n\t  - Accessors: `Value`, `MilliValue`, `ScaledValue(0)`, `ScaledValue(Milli)`, `ScaledValue(Kilo)`, `AsInt64`, `AsApproximateFloat64`, `String`\n  - Edge cases that apply to that function. There's a lot. My inventory is: `MaxInt64`, `MinInt64`, `MinInt64+1`, `2^63` (\"9223372036854775808\"), `2^64` (\"18446744073709551616\"), `10^18–10^21`, `10^100`, \"-9.5Gi\" and \"-9.5000000001Gi\" (the rounding class), \"8Ei\"/\"-8Ei\"/\"20Ei\"/\"-20Ei\" (parse-time cap), \"1000E\"/\"5000E\"/\"100E\" (String suffix drop), \"1e4294967297\" (int32 exponent), `NewScaledQuantity(1, 21)`, `NewScaledQuantity(MaxInt64, 1)`",
+          "created_at": "2026-08-04T18:55:05Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183321192"
+        },
+        {
+          "author": "thc1006",
+          "body": "Got it. I'll keep the baseline passing on current master and annotate each known-bad expectation with a TODO for the corrected value, so the file is done when the TODOs are gone. I'll structure the coverage by loading path, mutation, accessor, and the edge cases that apply to each, rather than a full Cartesian product.\n\n+1 to @semx on starting here, and the before/after list is the right way to settle the `validateBasicResource` question. I'll get this up during the freeze so it's ready when you get to it.",
+          "created_at": "2026-08-04T19:16:05Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183531614"
+        },
+        {
+          "author": "semx",
+          "body": "Here is the `validateBasicResource` before/after I offered, measured rather than reasoned about. All of it is `apimachinery@v0.36.3`; the check itself is `quantity.Value() < 0` and nothing else (validation.go:8242).\n\n\"After\" models the rule from the goal above — saturate at the int64 bound instead of wrapping — so a magnitude over `MaxInt64` becomes `MaxInt64`, and under `MinInt64` becomes `MinInt64`.\n\n### What actually flips\n\nTwo cases out of everything I tried:\n\n| input | `Value()` today | today | bounded |\n| :--- | ---: | :--- | :--- |\n| `NewScaledQuantity(MaxInt64, 1)` | `-10` | reject | **accept** |\n| `MustParse(\"-1e30\")` | `0` | accept | **reject** |\n\nThe first is the one the question is about. The second flips the other way and is a fix: a negative quantity that is accepted today starts being rejected.\n\n### Why I do not think this is a protection worth preserving\n\nThe rejection is accidental, and measuring it shows how little it actually catches. Of the oversized positive inputs I tried, exactly two are rejected today — `NewScaledQuantity(MaxInt64, 1)` and `MustParse(\"9223372036854775808\")`. These all pass validation right now:\n\n```\nMustParse(\"100E\")                    Value() =                    0   accepted\nMustParse(\"1000E\")                   Value() =                    0   accepted\nMustParse(\"5000E\")                   Value() =                    0   accepted\nMustParse(\"1e30\")                    Value() =                    0   accepted\nMustParse(\"18446744073709551616\")    Value() =                    0   accepted\nMustParse(\"8Ei\")                     Value() =  9223372036854775807   accepted\nMustParse(\"20Ei\")                    Value() =  9223372036854775807   accepted\nNewScaledQuantity(1, 21)             Value() =                    0   accepted\nMustParse(\"1e4294967297\")            Value() =                   10   accepted\n```\n\nSo bounding does not take away a guard that works. It takes away one that fires on 2 of 11 oversized inputs, and only because the wrap happens to land on the negative side.\n\n### The part that worries me more\n\nThe same check is already letting negative quantities through, and bounding does not fix it:\n\n```\nMustParse(\"-9.5Gi\")            Sign() = -1   Value() =  8246196746   accepted\nMustParse(\"-9.5000000001Gi\")   Sign() = -1   Value() =  8246196746   accepted\nMustParse(\"-1e30\")             Sign() = -1   Value() =           0   accepted\nMustParse(\"-100E\")             Sign() = -1   Value() =           0   accepted\nMustParse(\"-1000E\")            Sign() = -1   Value() =           0   accepted\n```\n\n`Sign()` is right in every one of those; `Value()` is what lies. `-9.5Gi` is #138510, and `-1e30`/`-100E` are the \"conversion fails, falls back to zero\" gap. A negative resource quantity passing validation is worse than an oversized one passing, and it is happening today.\n\n### Suggestion\n\nSince the check only cares about the sign, `quantity.Sign() < 0` answers the question it is actually asking, without depending on any accessor's overflow behaviour. That closes all five of the negative cases above immediately, independently of the accessor work, and leaves bounding free to change `Value()` without touching validation semantics.\n\nIf oversized values should also be rejected, that reads like a separate, explicit limit rather than something to infer from a wrapped sign — and it would want its own decision about where the limit sits.\n\nHappy to put the `Sign()` change up as its own PR with these cases as tests, or to leave it in the accessor work if you would rather it moved together.\n",
+          "created_at": "2026-08-04T19:24:48Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183613627"
+        },
+        {
+          "author": "thc1006",
+          "body": "This is convincing, thanks for measuring it @semx. `Sign() < 0` answers what the check is actually asking, and since it does not lean on any accessor's overflow behavior it can go in as its own small PR and close the negative cases now, ahead of the accessor work. I'd leave the sequencing to @jpbetz.\n\nThe negative cases you found go into the tests-PR inventory either way (the `-9.5Gi` rounding class and the `-1e30` / `-100E` conversion-to-zero class), so they get pinned with a TODO for the corrected value regardless of where the `Sign()` change lands.",
+          "created_at": "2026-08-04T19:33:12Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183701159"
+        },
+        {
+          "author": "semx",
+          "body": "Thanks @thc1006 — agreed on both counts, and the cases are yours to pin in the tests PR regardless of where the `Sign()` change lands.\n\nOne thing I should have included the first time, since it turns this from a validation-logic argument into a concrete one. `validateBasicResource` has exactly three callers, and it has no direct test of its own:\n\n- `ValidatePersistentVolumeSpec` — `spec.capacity`\n- `ValidatePersistentVolumeClaimStatusUpdate` — `status.capacity`\n- `ValidatePersistentVolumeClaimStatusUpdate` — `status.allocatedResources`\n\nSo the five negative quantities above are not abstract: `-9.5Gi` as a PV `spec.capacity` passes validation today, because `Value()` hands the check `8246196746`. That is the whole guard for negative storage capacity on a PV.\n\nThe change is ready on my side — three call sites unchanged, the one comparison swapped, and a table test for `validateBasicResource` covering the five negatives, the two oversized cases that flip, and ordinary values. I will hold it until you call the sequencing, @jpbetz, and I will rebase it after the thaw if you would rather it went in behind the tests PR.",
+          "created_at": "2026-08-04T19:35:56Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183727922"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> I'd leave the sequencing to @jpbetz\n\nMy only major sequencing request is that establish coverage on existing functions, by merging the large test PR listed near the top, before we make major changes to them. That's our insurance against accidental regression, which has been a problem in the past for quantity. I'm okay with opening PRs now though, I'll just sequence how they merge.\n",
+          "created_at": "2026-08-04T19:37:53Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183747715"
+        },
+        {
+          "author": "semx",
+          "body": "Opened as #141169. It changes one comparison in `validateBasicResource` plus the value reported in its error, and adds the table test the function was missing — nothing in `resource.Quantity`, so it should not collide with the tests PR landing first.",
+          "created_at": "2026-08-04T19:48:42Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5183850977"
+        },
+        {
+          "author": "thc1006",
+          "body": "The baseline test matrix is up in #141170. It pins `Sign`, `Value`, `MilliValue`, and `String` across the inventory here plus @semx's negative cases, each wrong-today field tagged with a TODO for what its fix should produce. Tests only, passing on current master, no production change, so it is ready whenever you want to slot it into the merge order, @jpbetz. The `validateBasicResource` side stays with @semx's #141169.",
+          "created_at": "2026-08-04T20:43:47Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5184401532"
+        },
+        {
+          "author": "thc1006",
+          "body": "One more in the same family, if it's worth cataloging here. `Scale` is an `int32` and `infScale` returns `inf.Scale(-s)`, so `Scale(math.MinInt32)` negates back to itself instead of flipping sign. It's reachable through `NewScaledQuantity(v, math.MinInt32)` or a parsed exponent that lands on `MinInt32`, and it feeds `AsDec`/`ScaledValue` a wrong scale rather than panicking. It's an absurd input, so it may sit below the line for this, but it's the same int-negation shape as the `-MinInt64` Neg/Sub rows, so I'd rather flag it than sit on it. Happy to add a row or drop it.",
+          "created_at": "2026-08-04T23:21:31Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5185689803"
+        },
+        {
+          "author": "semx",
+          "body": "On the `Scale(MinInt32)` one — reproduced, it belongs in the same family. `infScale()` returns `inf.Scale(-s)`, and `-math.MinInt32` does not fit in `int32`, so `Scale(math.MinInt32).infScale()` comes back as `MinInt32` rather than the positive value. Same shape as the `-MinInt64` Neg/Sub rows.\n\nIt is reachable from a parse, not only from `NewScaledQuantity`: `suffix.go` does `strconv.ParseInt(..., 64)` then `int32(parsed)`, so an exponent that lands on `MinInt32` truncates straight in. So a row seems worth it, in whichever table the arch-independent int-negation cases live.\n\nOne caveat before writing the expected values into a row: at that exponent magnitude the parse path has a separate resource-consumption characteristic I would rather not spell out in the open until I have checked it with the security team — I have sent them the details. So I would either pin this row with a small `MinInt32`-adjacent scale that shows the sign bug without the extreme exponent, or hold the exact-value row until they have weighed in. Happy to follow your call on which.\n",
+          "created_at": "2026-08-05T00:07:44Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5185990087"
+        },
+        {
+          "author": "semx",
+          "body": "Following up on my own caveat above — I'll take the first option: pin this row at a small `MinInt32`-adjacent scale that shows the sign bug (the arch-independent negation, same family as the `-MinInt64` rows) without the extreme exponent, so it can land alongside the other int-negation cases. The resource-consumption behavior at large exponent magnitudes is with the security team separately and doesn't need to hold this row. I'll open a PR with the row plus a regression test. Thanks!\n",
+          "created_at": "2026-08-05T15:15:19Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5193625587"
+        },
+        {
+          "author": "thc1006",
+          "body": "@jpbetz, here's a concrete signature you can react to, so I can code the accessor PR against a fixed contract.\n\nThe internal `int64Amount.AsScaledInt64(Scale) (int64, bool)` already exists, and `ScaledValue` already calls it and drops the bool. So most of this is exposing it publicly across both backends:\n\n```go\nfunc (q *Quantity) AsScaledInt64(scale Scale) (value int64, overflow bool)\nfunc (q *Quantity) AsMilliInt64() (value int64, overflow bool)\n```\n\n`Value`, `MilliValue`, and `ScaledValue` then become one-line wrappers that drop the bool.\n\nFour things I'd want you to decide before I implement:\n\n- Bool polarity: your goal text says `overflow`, but `AsInt64` and the internal method use `ok`. I wrote `overflow` to follow the goal. Tell me if you'd rather keep `ok` so the type stays consistent.\n- Saturation: cap an overflow at the sign-correct rail. That's what turns `NewScaledQuantity(MaxInt64, 1).Value()` from `-10` into `MaxInt64`, replacing the wrapped or zero result in `int64MultiplyScale*` and `scaledValue`.\n- Negative rounding: the doc says `ceil`, but the int64 path rounds away from zero, so they split on `-9.5Gi`. I'd correct the doc to away-from-zero, since that leaves the int64 path unchanged. Say the word if you want ceil.\n- Both backends: make the Dec path match, so `Value()` and `ToDec().Value()` stop giving two different wrong answers (the `1e100` row).\n\nIf that works for you, I'll put up the accessor PR with the boundary cases from the tests matrix as assertions. Any of the four is yours to change first.\n",
+          "created_at": "2026-08-08T02:05:58Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5223995333"
+        },
+        {
+          "author": "thc1006",
+          "body": "Additional non-blocking confirmation for the tracker: on current master, the Dec-backed values near `MinInt64` form a contiguous wrong-sign class rather than only failing at the endpoint. For example, `MinInt64`, `MinInt64+1`, `MinInt64+2`, and `MinInt64+808` currently read back through `Value()` as `0`, `1`, `2`, and `808`, while `AsDec()`, `Cmp()`, and `Sign()` retain the correct values.\n\nThis does not expose a gap in #138510 ; its lower-bound guard fixes the cases I tested, and the existing internal test already covers the relevant out-of-range-intermediate invariant. No PR change requested.",
+          "created_at": "2026-08-10T02:28:55Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5235236326"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> @jpbetz, here's a concrete signature you can react to (...)\n\nI see the polarity problem.  I agree we should keep `ok` with for consistency. Let's make sure all godoc explains it will be false for overflow.\n\nSaturation, Negative rounding, and Dec path: Yes, implement it just like you describe.\n",
+          "created_at": "2026-08-10T17:29:34Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5243687122"
+        },
+        {
+          "author": "thc1006",
+          "body": "Thanks. Contract locked:\n\n- `AsScaledInt64(scale Scale) (int64, bool)` and `AsMilliInt64() (int64, bool)`, returning `ok` (false on overflow), documented on each.\n- Overflow saturates at the sign-correct rail, so `NewScaledQuantity(MaxInt64, 1).Value()` returns `MaxInt64` instead of `-10`, and the Dec backend is brought in line so `Value()` and `ToDec().Value()` agree.\n- Negative rounding stays away-from-zero; I'll fix the `ceil` wording in the doc to match the int64 path.\n\nI'll open the accessor PR with the boundary rows from the test matrix as assertions.\n",
+          "created_at": "2026-08-10T17:36:12Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5243753519"
+        },
+        {
+          "author": "thc1006",
+          "body": "A few things from walking the caller list.\n\n#138507 and #141817 both merged yesterday, so those boxes can be ticked. #141203 covers the `ParseQuantity(\"1e4294967297\")` row in Known Gaps.\n\nOne mismatch: the Goal says `(<value>, overflow bool)` with true for overflow, but what we settled on and what #141305 implements is `(int64, ok bool)` with false for overflow.\n\nWhat I keep hitting in the callers is that saturation gives a safe bound but not a safe comparison. Ordering two quantities, testing integer-ness, and taking a ratio all break at the rail no matter which accessor produced the value. Those want `Cmp` or bounded arithmetic.\n\nSites in that shape that aren't listed yet:\n\n- `pkg/scheduler/framework/events.go:125` and `:150`. Both scale directions compare `MilliValue()`, so two different oversized requests land on the same rail and neither scale event is produced. The generic `Update` fallback still fires, so whether a plugin is woken depends on what it registered for.\n- `pkg/api/pod/warnings.go` and `pkg/api/persistentvolumeclaim/util.go`, eight `MilliValue()%1000` fractional-byte warnings. `MaxInt64 % 1000` is 807, so a whole-byte quantity warns as fractional.\n- `pkg/api/v1/resource/helpers.go` and two kubectl copies of `int64(math.Ceil(float64(a.MilliValue())/float64(b.MilliValue())))`.\n- `noderesources/resource_allocation.go:190`, which adds pod requests on top of the totals #141328 protects.\n- `endpointslice/topologycache.go:264` builds zone ratios from two projections (low priority, real CPU counts are nowhere near the rail).\n\nOn the unclaimed row: HPA has #141397 for the replica-count narrowing, but `GetResourceUtilizationRatio` still sums unchecked and then does `int32((metricsTotal * 100) / requestsTotal)`. DRA has #140442 and #140666 done, and what's left there is a caveat rather than a bug, since `safeMilliValue` round-trips through `NewMilliQuantity` and compares with `Cmp`, so it rejects lossy conversions and not just overflow. kubelet QoS came out of #141305 and has no row yet. #141334 is adjacent but separate, and #141306 belongs here too.\n\nI haven't measured any of these on a cluster, so I'm not claiming they're reachable in normal operation. Would you rather they become rows here, or separate issues? I can take them either way.\n\n(Edited: corrected the accessor status and the scheduler event wording above.)\n",
+          "created_at": "2026-09-08T20:06:23Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5591142148"
+        },
+        {
+          "author": "thc1006",
+          "body": "@jpbetz, two of the caller migrations have hit the same shape, and I'd rather you settle it once than have me guess twice.\n\n#141349 and #141348 both tighten a check that a parent validator re-runs on update. So the tightening lands on values in stored objects that nobody is touching. `ValidateResourceQuotaUpdate` re-validates every `spec.hard` entry, and LimitRanger re-admits a PVC on every update. The two don't carry the same weight though.\n\nTwo things I'd want you to decide:\n\n- **ResourceQuota (#141349).** The values at risk are the ones the old check accepted because `MilliValue()` wrapped onto a multiple of 1000. `18446744073709551616m` passes today and is not a whole number of pods. Of the eight values I sampled around it, two pass and six don't. None of the eight is whole. What would be preserved is a residue, not a rule, so I'd keep rejecting them. The test there pins the rejection today, and it flips to a ratcheting test if you'd rather protect them.\n- **LimitRanger (#141348).** Below a minimum the user raises the request and moves on. Above a maximum they can't. Correcting means decreasing. `ValidatePersistentVolumeClaimUpdate` refuses a decrease outright, or under `RecoverVolumeExpansionFailure` requires it to stay above `status.capacity`. Take `max: 1073741824.0001` and a stored `requests.storage: 1073741824.0009`. If the bound claim reports `1073741825`, nothing satisfies both. It takes an admin widening the range. That's a worse failure than the quota one, and I don't want to pick it alone. The other option is skipping a constraint when the new object's value for that resource is unchanged.\n\nTwo housekeeping ones you can take together: does that decision hold for the rest of the caller list or only these two, and do the extra caller sites I listed on 8 September belong here as rows or as separate issues? Either way works for me on both.\n",
+          "created_at": "2026-09-09T18:25:03Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5606738283"
+        },
+        {
+          "author": "Dricmoy",
+          "body": "I’d like to work on the canonical exponent overflow TODO, if nobody has picked it up yet.\n\nI’ll start by adding a test for `MustParse(\"1000e2147483647\").String()`, then look into why the exponent wraps and make the smallest fix I can.\n\nPlease let me know if someone is already working on it.",
+          "created_at": "2026-09-14T21:23:38Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5671002883"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> I’d like to work on the canonical exponent overflow TODO, if nobody has picked it up yet.\n> \n> I’ll start by adding a test for `MustParse(\"1000e2147483647\").String()`, then look into why the exponent wraps and make the smallest fix I can.\n> \n> Please let me know if someone is already working on it.\n\nPlease go ahead. Once you have a PR (or draft PR) ready, add a comment here and we'll track it.",
+          "created_at": "2026-09-14T21:27:08Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5671041310"
+        },
+        {
+          "author": "6democratickim9",
+          "body": "I reproduced the fractional-byte warning issue mentioned in the Sep 8 comment in unit tests: integer quantities above MaxInt64 are incorrectly reported as fractional because MilliValue() saturates before the % 1000 check.\n\nI have a small local prototype using Quantity.AsScale(0), with regression coverage for Pod container resources, Pod overhead, and PVC storage. The new unit tests fail on master and both affected packages pass with the prototype. I have not reproduced this in a live cluster.\n\n@thc1006, are you already working on this item? If not, I would be happy to take it.",
+          "created_at": "2026-09-14T22:05:21Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5671451173"
+        },
+        {
+          "author": "Octopusjust",
+          "body": "Hi, I'm working on the \"TODO: scheduler scoring additions and request-change\nevent comparisons\" item and have opened PR #142112. Happy to adjust if needed.",
+          "created_at": "2026-09-15T03:51:19Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5674460478"
+        },
+        {
+          "author": "semx",
+          "body": "Two concrete points from checking the current code and PR diffs.\n\n@6democratickim9, the warning case starts earlier than a byte quantity exceeding MaxInt64: it is the conversion to millibytes that saturates. `9223372036854775` bytes still fits through `MilliValue()`, while `9223372036854776` bytes saturates to MaxInt64 and leaves a remainder of 807. Both are whole-byte quantities. Those two make a useful boundary pair alongside the larger inputs.\n\nFor the `AsScale(0)` change, I would cover all eight warning sites: container memory/ephemeral-storage requests and limits, the two overhead fields, and PVC storage requests and limits. The tests should check that actual fractions still warn, include sub-milli fractions, and exercise both the integer and `ToDec()` paths. The returned bool there means exactness; `AsMilliInt64` and `AsScaledInt64` report overflow, not whether rounding lost a fractional part. That distinction matters for this check.\n\n@Octopusjust @thc1006, #142112 and #141328 currently both replace the same `allocated[i] + podRequests[i]` in `calculateNodeAllocatableRequest`, with separate saturating-add helpers. Please agree which PR carries that hunk and rebase the other after it lands. The event comparisons and the other scoring changes in #142112 still need their own review.\n\nFor closing this tracker, @jpbetz, I suggest requiring each remaining item to have either a merged fix with regression coverage or an explicit decision to defer it to a linked follow-up with an owner. In particular, the unchanged-PVC update case raised on September 9 still needs a recorded compatibility decision and a test for the chosen behavior; #141348's merge does not by itself document that decision. That would give us a concrete exit criterion for the remaining work.\n",
+          "created_at": "2026-09-15T06:51:32Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5676053765"
+        },
+        {
+          "author": "Octopusjust",
+          "body": "> Two concrete points from checking the current code and PR diffs.\n> \n> [@6democratickim9](https://github.com/6democratickim9), the warning case starts earlier than a byte quantity exceeding MaxInt64: it is the conversion to millibytes that saturates. `9223372036854775` bytes still fits through `MilliValue()`, while `9223372036854776` bytes saturates to MaxInt64 and leaves a remainder of 807. Both are whole-byte quantities. Those two make a useful boundary pair alongside the larger inputs.\n> \n> For the `AsScale(0)` change, I would cover all eight warning sites: container memory/ephemeral-storage requests and limits, the two overhead fields, and PVC storage requests and limits. The tests should check that actual fractions still warn, include sub-milli fractions, and exercise both the integer and `ToDec()` paths. The returned bool there means exactness; `AsMilliInt64` and `AsScaledInt64` report overflow, not whether rounding lost a fractional part. That distinction matters for this check.\n> \n> [@Octopusjust](https://github.com/Octopusjust) [@thc1006](https://github.com/thc1006), [#142112](https://github.com/kubernetes/kubernetes/pull/142112) and [#141328](https://github.com/kubernetes/kubernetes/pull/141328) currently both replace the same `allocated[i] + podRequests[i]` in `calculateNodeAllocatableRequest`, with separate saturating-add helpers. Please agree which PR carries that hunk and rebase the other after it lands. The event comparisons and the other scoring changes in [#142112](https://github.com/kubernetes/kubernetes/pull/142112) still need their own review.\n> \n> For closing this tracker, [@jpbetz](https://github.com/jpbetz), I suggest requiring each remaining item to have either a merged fix with regression coverage or an explicit decision to defer it to a linked follow-up with an owner. In particular, the unchanged-PVC update case raised on September 9 still needs a recorded compatibility decision and a test for the chosen behavior; [#141348](https://github.com/kubernetes/kubernetes/pull/141348)'s merge does not by itself document that decision. That would give us a concrete exit criterion for the remaining work.\n\nThanks for the heads-up! I've already removed the saturating-add hunk from #142112 — `resource_allocation.go` is untouched now, so #141328 can carry it without conflict. I'll rebase if needed once it lands. The event comparisons and scoring multiplication guards in #142112 remain for review.",
+          "created_at": "2026-09-15T07:07:07Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5676211029"
+        },
+        {
+          "author": "thc1006",
+          "body": "@6democratickim9 Thanks for the repro. I'm not working on this one, so please go ahead.",
+          "created_at": "2026-09-15T10:49:52Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5678959572"
+        },
+        {
+          "author": "thc1006",
+          "body": "Confirmed, #141328 keeps that hunk. Thanks @Octopusjust for dropping it from #142112.",
+          "created_at": "2026-09-15T10:58:45Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5679064208"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> * **LimitRanger ([limitranger: compare resource quantities exactly to avoid int64 overflow #141348](https://github.com/kubernetes/kubernetes/pull/141348)).** Below a minimum the user raises the request and moves on. Above a maximum they can't. Correcting means decreasing. `ValidatePersistentVolumeClaimUpdate` refuses a decrease outright, or under `RecoverVolumeExpansionFailure` requires it to stay above `status.capacity`. Take `max: 1073741824.0001` and a stored `requests.storage: 1073741824.0009`. If the bound claim reports `1073741825`, nothing satisfies both. It takes an admin widening the range. That's a worse failure than the quota one, and I don't want to pick it alone. The other option is skipping a constraint when the new object's value for that resource is unchanged.\n\nWe must always ratchet in all validation changes. I would prefer we keep this to an absolute minimum.  Ratcheting in changes can be a lot of work, so let's do this only when it adds substantial value.\n\nThe core idea of ratcheting is:  If data is stored, it is by definition valid. This means any update request's validation must treat a value as valid if is unchanged from old value.  Period.  So if we tighten or loosen validation, then we must add the ratcheting logic to ensure this guarantee.",
+          "created_at": "2026-09-16T20:52:05Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5704340854"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> For closing this tracker, [@jpbetz[<img alt=\"\" width=\"15\" height=\"15\" src=\"chrome-extension://dlebflppeeemcdpidccbiblndppbmjmh/ospo-chrome-ext-logo.png\">](https://teams.googleplex.com/redacted@example.com)](https://github.com/jpbetz), I suggest requiring each remaining item to have either a merged fix with regression coverage or an explicit decision to defer it to a linked follow-up with an owner. In particular, the unchanged-PVC update case raised on September 9 still needs a recorded compatibility decision and a test for the chosen behavior; [#141348](https://github.com/kubernetes/kubernetes/pull/141348)'s merge does not by itself document that decision. That would give us a concrete exit criterion for the remaining work.\n\nI agree. I've adopted this into the description.",
+          "created_at": "2026-09-16T20:53:11Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5704353728"
+        },
+        {
+          "author": "Dricmoy",
+          "body": "PR #142156 is ready for review: https://github.com/kubernetes/kubernetes/pull/142156",
+          "created_at": "2026-09-16T22:31:01Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5705496079"
+        },
+        {
+          "author": "thc1006",
+          "body": "@jpbetz thanks, got it. #142170 is up for the LimitRanger row. With it, the stored PVC goes into ValidateLimit on an update, and a request the update leaves alone skips the min and max checks. The tests cover create, and updates that keep, change, add or remove the request, so once it's in I think that row meets the exit criterion @semx suggested.\n\nI was wrong about the quota residues on September 9. An unchanged spec.hard value has to pass on update as well. ValidateResourceQuotaUpdate doesn't do that today, and neither does the pod resize path in LimitRanger. I can take the ResourceQuota one next if that works for you, or leave it to someone else if you'd rather. The pod resize one probably wants its own row so it doesn't get lost.\n",
+          "created_at": "2026-09-17T06:52:59Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5710301900"
+        },
+        {
+          "author": "semx",
+          "body": "Taking the pod-resize side of the LimitRanger line: #142171 passes the stored pod into `PodValidateLimitFunc` and skips min, max and ratio for a container resource whose request and limit are unchanged, and for a pod-level resource whose totals are unchanged. Init containers go through the same check as regular containers. Stacked on #142170's `oldObj` plumbing; I'll rebase once it lands.",
+          "created_at": "2026-09-17T07:20:34Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5710590185"
+        },
+        {
+          "author": "jpbetz",
+          "body": "@semx @thc1006 @Dricmoy \n\nPTAL at https://github.com/kubernetes/kubernetes/pull/142224\n\nI would like us to pause work on PRs for this issue until those tests merge and we've addressed all the regressions identified in those tests.\n\nMost are around edges we are making better, but some have the ability to negatively impact the API, so we need to clear them before we continue.",
+          "created_at": "2026-09-18T15:28:24Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5732228545"
+        },
+        {
+          "author": "thc1006",
+          "body": "Understood. I'll hold my open PRs for this issue and pause new work until #142224 is in and the regressions it records are cleared.\n\nI'm treating those tests as characterization of current behavior. A fix should turn the recorded expectation into the correct one and drop its TODO. I'll start on the review with the stored-value update paths and the LimitRanger cases, including where core validation and the admission plugin differ.\n\nI can take a scoped group of the compatibility follow-ups once we have agreed the expectations and ownership. The merged PVC and ResourceQuota changes cover only their own scope and do not overlap the newly found paths.\n",
+          "created_at": "2026-09-18T17:47:20Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5733950937"
+        },
+        {
+          "author": "Dricmoy",
+          "body": "Gotcha, will pause updates to #142156 until #142224 merges",
+          "created_at": "2026-09-18T18:23:14Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5734369450"
+        },
+        {
+          "author": "semx",
+          "body": "Went through #142224 with the stored-value cases in mind, since they are the ones that touch the API. Two things worth putting on the table before anyone resumes.\n\n**Why those cases exist.** `18446744073709551616m` is 2^64 milli. In apimachinery v0.34.0 `MilliValue()` wraps and returns 0, so the pre-#141349 check (`MilliValue()%1000 != 0`) accepted it as an integer and it could be stored. On main `MilliValue()` saturates to MaxInt64, `AsMilliInt64` reports overflow, and `isIntegerResourceValue` rejects it. Every update of an object that holds such a value now fails with \"must be an integer\", which is what the `TestValidatePodTemplateUpdate` TODOs pin.\n\n**How we have been fixing it.** Three hand-written ratchets in a week: #142170 for the PVC path in LimitRanger, #142171 for the pod path, and 1a39d08 (`isStoredQuantity`) for ResourceQuota, each with its own equality and its own plumbing, because `ValidatePodTemplateUpdate` does not pass the old object below `ValidatePodTemplateSpec`. The remaining TODOs (PodTemplate, RuntimeClass overhead, Node status) would add more copies. I think that is the API risk here, more than any single edge.\n\n**What I would propose instead.** The precedent for \"the stored object violates a check that has since tightened\" is `PodValidationOptions`: `OldPodViolatesMatchLabelKeysValidation` and `AllowIndivisibleHugePagesValues` are computed once from the old spec in `GetValidationOptionsFromPodSpecAndMeta` and gate the check where it runs. The same shape works for quantities: a `StoredResourceQuantities` set built from the old spec, checked in `validateResourceRequirements` before `ValidateResourceQuantityValue`. Prototyped, +61/-2, no new plumbing. Through the real `podtemplate` strategy path: an unchanged stored 2^64m passes, changing it to 1.5 is still rejected, changing it to 2 passes, and create with 2^64m is still rejected. `pkg/apis/core/validation`, `pkg/registry/core/{pod,podtemplate}` and `pkg/api/pod` are green.\n\nOne consequence for #142224: the TODO cases call `ValidatePodTemplateUpdate` with an empty `PodValidationOptions{}`, so an options-based ratchet is invisible to them by construction; they would need to build options the way the `OldPodViolates*` tests do. Longer term the `EachMapVal` ratchet in `apimachinery/pkg/api/validate` is the same primitive, and this is where the declarative migration would land it.\n\nHappy to open this as a PR against the PodTemplate TODOs once #142224 is in, or to hold it if you would rather handle these case by case.\n",
+          "created_at": "2026-09-19T06:24:59Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5739915444"
+        },
+        {
+          "author": "vishals-3",
+          "body": "Picked up the `ceil(MilliValue/MilliValue)` TODO (`pkg/api/v1/resource/helpers.go` and its two kubectl copies) — #142265.\n\nTwo problems in that expression rather than one: `float64` rounds anything above 2^53 before the ceiling is taken, and `MilliValue`/`Value` saturate at the rail so an oversized quantity comes back as a plausible byte count. Both are fixed by reading through `AsScaledInt64` and dividing in integer arithmetic.\n\nScope note: the four conversions (cpu, memory, hugepages, ephemeral-storage) are duplicated across three packages, so the PR collapses each copy onto a shared helper in its own package. That is a slightly wider diff than the TODO implies, but repeating the same guarded arithmetic sixteen times seemed worse. Happy to narrow it to just the cpu case if you would rather keep the change minimal.\n\nI have not claimed anything else on the list — if this shape works I am glad to take more of the unowned TODOs (the kubelet QoS sums, or the endpointslice zone ratios).",
+          "created_at": "2026-09-21T05:00:48Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5755623653"
+        },
+        {
+          "author": "vishals-3",
+          "body": "Also picked up the `kubelet QoS CPU/memory sums and reserve-percentage arithmetic` TODO — #142266.\n\nThe percentage is the interesting half. `value*percent/100` overflows once value exceeds `MaxInt64/percent`, and the wrapped product is unrelated to the input: at `MaxInt64` and 50% it evaluates to 0, so the reservation vanishes rather than merely being wrong by a bit. Replaced with a hundreds/remainder split that cannot overflow and is exactly equal to the original wherever the original does not overflow (pinned across 909 pairs in a test).\n\nCaveat flagged on the PR: `pkg/kubelet/cm` is linux-only and I am on darwin, so the test binary compiles but I could not run it locally. The helpers are pure functions so I executed the same assertions standalone, but CI is the real check.\n\nThat is both of the TODOs I mentioned. Remaining unowned ones I can see are the endpointslice topologycache zone ratios (marked low priority, and it computes a genuine float ratio so the fix there is `AsApproximateFloat64` rather than integer math) and the `String()` fast-path question, which needs the compatibility decision before any code. Happy to take either if you want to steer.",
+          "created_at": "2026-09-21T05:07:49Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5755671887"
+        },
+        {
+          "author": "thc1006",
+          "body": "> [@semx](https://github.com/semx) [@thc1006](https://github.com/thc1006) [@Dricmoy](https://github.com/Dricmoy)\n> \n> PTAL at [#142224](https://github.com/kubernetes/kubernetes/pull/142224)\n> \n> I would like us to pause work on PRs for this issue until those tests merge and we've addressed all the regressions identified in those tests.\n> \n> Most are around edges we are making better, but some have the ability to negatively impact the API, so we need to clear them before we continue.\n\n@vishals-3 Current All related PR creation and updates are suspended!!!\n\nDo not create more PR NOW. This is not a code quality issue now, it's ur PRs don't even follow the [CONTRIBUTING.md](https://github.com/kubernetes/kubernetes/blob/master/CONTRIBUTING.md) rules. !",
+          "created_at": "2026-09-21T05:07:58Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5755672914"
+        },
+        {
+          "author": "semx",
+          "body": "@vishals-3 the pause @jpbetz asked for above covers new PRs against the burndown list, not just the ones already open, and both of yours are on that list. The right move is to leave them on hold (or flip them to draft) until #142224 is in and the list reopens, and use the time to fix EasyCLA — it can't match your commit email to your GitHub account, which is the one thing CONTRIBUTING.md actually requires.\n\n@thc1006 the hold is fine, the exclamation marks aren't needed. The pause is @jpbetz's call, and so are ownership and lifting it; the rest of us are in the same queue. And \"doesn't follow the rules\" is not accurate beyond the CLA — the AI disclosure in those descriptions is exactly what the PR guide asks for.\n",
+          "created_at": "2026-09-21T09:24:27Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5758242017"
+        },
+        {
+          "author": "thc1006",
+          "body": "@semx Let me be clearer about why the hold is there.\n\nThe hold has a reason. not only the EasyCLA problem and also the both PR's commits list Claude as Co-Authored-By, which the AI guidance in pull-requests.md does not allow. \n\nI use exclamation marks bcuz I was confuse , his contributions are too many fundamental problems and create PR in short time.\n",
+          "created_at": "2026-09-21T09:42:25Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5758463706"
+        },
+        {
+          "author": "semx",
+          "body": "@thc1006 the trailer is a real blocker, but it isn't CONTRIBUTING.md — that file is the CLA and nothing else. The rule you mean is the contributor guide's AI section (pull-requests.md#ai-guidance), and it's recent: the co-author ban came in with kubernetes/community#8918 in April, which is why commits from January still carry `Co-Authored-By: Claude` on master (#136136, #136824). Prow doesn't check for it either, so the exact section is worth citing when pointing it out — new contributors will keep tripping on it because the tooling adds the trailer by default.\n\n@vishals-3 that's the actual blocker, and it's mechanical: rewrite both commits without the trailer, force-push, get EasyCLA green; disclosure stays in the description, which is where the guide wants it. The arithmetic itself holds up — `MaxInt64*50/100` does wrap to 0 and the hundreds/remainder split gives the exact floor, and the integer ceiling covers the 2^53 case the float path lost — so once the trailer is gone and the list reopens they're worth a look. Until then, hold.\n",
+          "created_at": "2026-09-21T10:15:58Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5758866785"
+        },
+        {
+          "author": "jpbetz",
+          "body": "https://github.com/kubernetes/kubernetes/pull/142224 has merged. Let's prioritize PR that clear the TODOs listed there.",
+          "created_at": "2026-09-22T14:54:59Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5778738222"
+        },
+        {
+          "author": "thc1006",
+          "body": "Two of the three ratchets you list are mine, and the copying is a fair criticism. A fourth one for the PodTemplate cases would make it worse.\n\nI checked the precedent you point at. `AllowIndivisibleHugePagesValues` and `OldPodViolatesMatchLabelKeysValidation` are both computed from the old spec in `GetValidationOptionsFromPodSpecAndMeta`. The hugepages option already reaches `validateResourceRequirements`, which hands it one call down to `validateResourceQuantityHugePageValue` for the guard. Those options are already in the function you would add the check to. Your reading of #142224 holds as well. `TestValidatePodTemplateUpdate` passes `PodValidationOptions{}`, and those cases cannot see an options ratchet until they build options the way the `OldPodViolates*` tests do.\n\nOne limit before you write it. `ValidateRuntimeClassUpdate` and `ValidateNodeUpdate` take no options parameter, and RuntimeClass validation is defined in a different package. The overhead and node-status cases fall outside a pod-options ratchet. Both of those functions already receive the old object. The direct comparison is open to them without the detour the PodTemplate path needs.\n\nFor the pod family I would take your version over another hand-written check.\n",
+          "created_at": "2026-09-22T15:13:03Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5779016410"
+        },
+        {
+          "author": "jpbetz",
+          "body": "Proposed division of work:\n\n@semx Yes, You can open PR against the `PodTemplate` cases and cover the pod update, ephemeral-container, resize, Node and PVC status paths.\n\n@thc1006 Yes, you can take the LimitRanger and LimitRange ratio cases, and the DRA duplicate-key and roundUpRange cases.\n\nI'll claim the the Cmp and String cases at scale MinInt32 cases.\n\n@vishals-3 #142265 and #142266 are welcome. PTAL at the presubmit errors. Co-Authored-By has restrictions.\n\nAlso, clearly there is some use of AI in these PRs, to ensure we are following CNCF guidelines, please fill out the section in the PR templates about AI use accurately.  Also, please confirm to me here that you are checking the AI work before submitting PRs and responding to comments. The CNCF requires this. If you are unable fully review all the PRs and comments generated with the aid of AI, please let me know.",
+          "created_at": "2026-09-22T16:26:41Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5780114790"
+        },
+        {
+          "author": "thc1006",
+          "body": "@jpbetz Thank you for spelling out the split, and for raising the AI question directly. That is a fair thing to ask. I will gladly take the LimitRanger and LimitRange ratio cases and the two DRA groups, starting with LimitRanger.\n\nYes, I check the work. I read every change before a push, the tests and linters run locally first, and I decide what goes into a PR. The AI usage section on #141327, #141328 and #141306 describes how the assistant is used. It drafts code and text for me, including replies such as this one, and I review and edit before anything is posted. The guidelines put the responsibility on the author, and that is how I treat it.\n\nI know you have put a lot of time into these reviews, and I have been moving quickly this week. I will slow the pace to what I can review with care. If you would prefer the commit messages rewritten by hand, I will do that. Whatever works best for you and the other reviewers is fine with me.\n",
+          "created_at": "2026-09-22T16:57:45Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5780563411"
+        },
+        {
+          "author": "semx",
+          "body": "@jpbetz PR up: #142323 — covers the pod update, ephemeral-container, resize, PodTemplate, Node and PVC status paths, plus two bugs the ratchet design itself would have shipped with (Node's update path calls both `ValidateNode` and `ValidateNodeUpdate` and appends both error lists, so the create-path call needed the stored set too or it silently re-rejected what the update-path call had just ratcheted; and the stored set was originally keyed by resource name alone, which would let an unchanged value in one container wave through a genuinely new occurrence of the same value in a different container). Both are covered by tests that go through the real registry strategy, not just the validation-package unit tests.\n\nOn checking the work: I look at the actual code before deciding a diagnosis or a fix is right, then use an assistant for a second pass and for drafting — text like this reply included — and read that back against the source before anything gets posted or pushed. I'm the one deciding what ships.\n\nOne open item: Node `capacity`/`allocatable` is in #142323, but RuntimeClass `overhead` from the same bullet isn't claimed by anyone in the split above. It's a small, separate fix (`ValidateRuntimeClassUpdate` and the overhead check already take the old object directly, no options plumbing needed) — happy to pick it up if it's still unclaimed, or leave it if you'd rather someone else take it.\n",
+          "created_at": "2026-09-22T18:19:17Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5781675031"
+        },
+        {
+          "author": "antcybersec",
+          "body": "Two notes on the caller list:\n\n- The downward API ceiling line currently points at #142265, but #142232 covers the same change and was opened 09-18, three days earlier. I've flagged the overlap on both PRs so they can be consolidated.\n- I'd like to take the `CalculateTimeoutForVolume` item (cap at MaxInt32, 3 cases). It is `pkg/volume/util/util.go:153`: `pvSize := pvQty.Value()` saturates, and `(pvSize / giSize) * int64(timeoutIncrement)` can then overflow before the result is used as a timeout. Will open one PR for it unless someone is already on it.",
+          "created_at": "2026-09-23T02:08:48Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5787735681"
+        },
+        {
+          "author": "AryanKansagara",
+          "body": "I'd like to take the unclaimed TODO for csi_client NodeExpandVolume rejecting a\nsize past int64 before the CSI call (the #141181 follow-up).\n\nThe test case is already in tree at pkg/volume/csi/csi_client_test.go:869 with\nmustFail: false. Plan: read the size through AsScaledInt64(0) instead of Value()\nin NodeExpandVolume and return an error when ok is false, then flip that case.\n\n/assign\n",
+          "created_at": "2026-09-23T21:02:23Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5802878921"
+        },
+        {
+          "author": "jpbetz",
+          "body": "Could I get someone to open a PR to fix \"objects written by a <=1.37 apiserver with an out-of-int32 exponent (e.g. cpu: 1e4294967296) fail to decode on master since #141203\" ? This regressed and so is a priority.",
+          "created_at": "2026-09-24T16:07:34Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5817729514"
+        },
+        {
+          "author": "antcybersec",
+          "body": "@jpbetz I'd like to take this one.\n\nReproduced on master: `1e4294967296` and `1e2147483648` both fail with `unable to parse quantity's suffix`, while `1e2147483647` still parses, so the cut is exactly the int32 bound #141203 introduced.\n\nBefore I write it, which shape do you want, since the table says this needs a decision:\n\n1. Accept the legacy spelling in `ParseQuantity` and clamp the exponent to the int32 range, so stored objects decode again, and reject it in validation on write instead. Stored objects become readable without a new entry point, but `ParseQuantity` stops rejecting what #141203 deliberately started rejecting.\n2. Keep `ParseQuantity` strict and make only the decode path lenient. Narrower, but `Quantity.UnmarshalJSON` goes through `ParseQuantity`, so this needs a separate lenient entry point for decoding, and the same for the protobuf path since 1.37 stored the spelling verbatim there too.\n\nEither way I would add a round trip test for a 1.37-era object carrying `cpu: 1e4294967296`, and one covering the etcd3 LIST case the table mentions, so a single undecodable object cannot fail the whole list.",
+          "created_at": "2026-09-24T16:12:56Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5817812153"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> 1. Accept the legacy spelling in `ParseQuantity` and clamp the exponent to the int32 range, so stored objects decode again, and reject it in validation on write instead. Stored objects become readable without a new entry point, but `ParseQuantity` stops rejecting what [Reject decimal exponents that do not fit the int32 scale #141203](https://github.com/kubernetes/kubernetes/pull/141203) deliberately started rejecting.\n\nWe need to be fully backward compatible (API and exported functions). The way I recommend doing this is:\n\n- Checkout release 1.37 code\n- Write tests against the `ParseQuantity` behavior that regressed (encode and decode paths). These tests should pass on 1.37 code.\n- Create a PR against master with the tests. The tests should fail in a way that shows the regression on master.\n- Fix `ParseQuantity` to pass the tests.\n- Consider introducing a opt-in strict mode for `ParseQuantity` (vararg options? new function?) to make it easier for callers to use a safer implementation. Only introduce this if we've made the strict function fully safe. I don't want to have to introduce a 3rd or 4th variant later because we only fix 1 of N problems like this.\n\nThanks!",
+          "created_at": "2026-09-24T16:21:08Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5817936167"
+        },
+        {
+          "author": "thc1006",
+          "body": "[#141203](https://github.com/kubernetes/kubernetes/pull/141203) was mine, so the `1e4294967296` decode failure on master was too.\n\nantcybersec's [#142395](https://github.com/kubernetes/kubernetes/pull/142395) restores the 1.37 narrowing, with the rows pinned against release-1.37, and [#141306](https://github.com/kubernetes/kubernetes/pull/141306) is now rebased on top of it.\n",
+          "created_at": "2026-09-26T02:52:20Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5842540083"
+        },
+        {
+          "author": "thc1006",
+          "body": "One more piece of the #141203 regression: zeros like `0e2147483648` parse as `0` on v1.37.1 but still return `ErrSuffix` at HEAD, since the `MinInt32` check from #142395 looks at the exponent before the value. #142452 accepts zero there and keeps the error for nonzero values, with tests that pass on v1.37.1. Thanks to antcybersec and jpbetz for #142395.",
+          "created_at": "2026-09-27T03:23:50Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5852270085"
+        },
+        {
+          "author": "semx",
+          "body": "I'll take the exact-oracle law test for the resource package (item (4) in the order of work): a `math/big.Rat` oracle over both backends, a boundary grid (digit counts, int64 rails, int32 exponent edges, all suffixes) and per-case timeouts so a hang is a red test, green on master with an explicit allowlist for the Known Gaps so it can serve as the merge gate. PR in the next few days.",
+          "created_at": "2026-09-27T22:18:53Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5860357421"
+        },
+        {
+          "author": "itzPranshul",
+          "body": "Hi @jpbetz, I'd like to work on the \"TODO: String() fast path caches non-canonical spellings \nverbatim (+1, 01, 1E3, 1e+21, 1e0)\" item from the TODO list.\n\nI'll start by:\n1. Adding tests for the non-canonical spellings in quantity_golden_test.go\n2. Modifying the fast path in ParseQuantity to canonicalize before caching\n3. Updating test expectations to match the canonical forms\n4. Creating regression tests to ensure different spellings produce the same canonical output\n\nPlease let me know if someone is already working on this or if you have any guidance.",
+          "created_at": "2026-10-01T00:55:44Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5922530414"
+        },
+        {
+          "author": "jpbetz",
+          "body": "@itzPranshul We're currently backlogged so if you work on it, you might not get a review any time soon.\n\nThe problem I've hit is that there has been heavy use of AI coding assistents to help with this issue, and the current generations of LLMs are goal seeking and are not getting to the bottom of the systemic problems of the quantity type very well. As a result, even with my best attempts are careful review, we've regressed behavior compared with 1.37.\n\nFor now, I'm focusing on by-hand fixes to make quantity's receiver functions immutable which I will then use to simplify implementation and make it easier to make stable progress here. I don't plan to spend time reviewing PRs until I feel caught up and things are in better shape.  Help with review welcome, but only if all comments are human curated (AI is fine to use, but read and understand ALL comments before posting please).",
+          "created_at": "2026-10-01T01:09:42Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5922675025"
+        },
+        {
+          "author": "itzPranshul",
+          "body": "> [@itzPranshul](https://github.com/itzPranshul) We're currently backlogged so if you work on it, you might not get a review any time soon.\n> \n> The problem I've hit is that there has been heavy use of AI coding assistents to help with this issue, and the current generations of LLMs are goal seeking and are not getting to the bottom of the systemic problems of the quantity type very well. As a result, even with my best attempts are careful review, we've regressed behavior compared with 1.37.\n> \n> For now, I'm focusing on by-hand fixes to make quantity's receiver functions immutable which I will then use to simplify implementation and make it easier to make stable progress here. I don't plan to spend time reviewing PRs until I feel caught up and things are in better shape. Help with review welcome, but only if all comments are human curated (AI is fine to use, but read and understand ALL comments before posting please).\n\nAck., I'll wait until the backlog has been completed, In the meantime,  I'll try helping with the reviews exactly as you stated. Thanks!",
+          "created_at": "2026-10-01T01:23:28Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5922820317"
+        },
+        {
+          "author": "thc1006",
+          "body": "Part of your v1.37 regressions list is mine. I ran the compat test from your [quantity-v137-decode-corpus](https://github.com/jpbetz/kubernetes/tree/quantity-v137-decode-corpus) branch against master and against [#142452](https://github.com/kubernetes/kubernetes/pull/142452).\n\nMaster passes. On the PR's branch the six zero entries in `regressions` (`0e2147483648` and `0e-2147483648`, with and without a sign) fail with \"accepted as 0, want rejected\", and they can come off the list when it merges. v1.37.0 parses all six as 0.\n\nThe other 29 entries, the \"reject these\" ones, are the same on both trees. I went looking for where they come from. On v1.37.0 `ParseQuantity` does not come back on any of them. I gave each one two seconds, and the one I left running was still going after five minutes.\n\nThe 14 with an exponent above MinInt32 have parsed to their current spellings since [#141938](https://github.com/kubernetes/kubernetes/pull/141938). The other 15, at MinInt32 or one below it, were rejected from [#141203](https://github.com/kubernetes/kubernetes/pull/141203) on and started parsing with [#142395](https://github.com/kubernetes/kubernetes/pull/142395), which brought back the 1.37 narrowing.\n\n~~Since v1.37.0 does not come back from any of the 29, I don't see how one of those spellings could be sitting in etcd, and rejecting them looks safe to me.~~\n\nThe bisect has a limit. It swapped only the resource package at each merge since v1.37.0 and left the rest of the tree at v1.37.0. Take it as a package-level check.\n\n---\n\nEdit 2026-10-01: I withdraw the inference in the paragraph that starts \"Since v1.37.0\", that none of these spellings can be in etcd and that rejecting them is safe.\n\nA parse that does not return within two seconds, or within five minutes for the one I left running, is an observation about that time. It is not proof that it never returns, or that nothing was ever stored. The measurements above stand.\n\n",
+          "created_at": "2026-10-01T03:08:36Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5923933272"
+        },
+        {
+          "author": "jpbetz",
+          "body": "@thc1006 \n\n> Master passes\n\nDid you notice that the regressions are listed, but disabled? https://github.com/jpbetz/kubernetes/commit/a9078a77c9d702f7427990ea8a5664f61e79f246#diff-9f21fed118c5681c2e12205f292263bbebbecf9aa44b2e2ba03bedd69ddc9843R517-R556\n\nWhat happens if you test those regressions on master vs 1.37?",
+          "created_at": "2026-10-01T03:14:43Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5923997233"
+        },
+        {
+          "author": "thc1006",
+          "body": "@jpbetz Yes, and \"master passes\" was a useless sentence on my part, sorry: those entries are pinned to what master does today, and passing says nothing about them. I did run the 35 inputs themselves on v1.37.0 and on master.\n\nOn v1.37.0 the zero entries parse as 0, and on master they fail with `ErrSuffix`. [#142452](https://github.com/kubernetes/kubernetes/pull/142452) gives the 0 back.\n\nThe other 29 never return from `ParseQuantity` on v1.37.0 (two seconds each, and one I left running for five minutes). Master accepts all 29. 26 come back with the exponent wrapped, 3 with the right value (`1000000000000000000e-2147483649` is `1e-2147483631`). When their `String()` is parsed again, 25 hang and 4 come back, the four with a fraction and exponent -2147483647 (`9223372036854775.807e-2147483647` turns into `9223372036854775807e2147483646`).\n",
+          "created_at": "2026-10-01T03:20:39Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5924055884"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> [@jpbetz[<img alt=\"\" width=\"15\" height=\"15\" src=\"chrome-extension://dlebflppeeemcdpidccbiblndppbmjmh/ospo-chrome-ext-logo.png\">](https://teams.googleplex.com/redacted@example.com)](https://github.com/jpbetz) Yes, and \"master passes\" was a useless sentence on my part, sorry: those entries are pinned to what master does today, and passing says nothing about them. I did run the 35 inputs themselves on v1.37.0 and on master.\n> \n> On v1.37.0 the zero entries parse as 0, and on master they fail with `ErrSuffix`. [#142452](https://github.com/kubernetes/kubernetes/pull/142452) gives the 0 back.\n> \n> The other 29 never return from `ParseQuantity` on v1.37.0 (two seconds each, and one I left running for five minutes). Master accepts all 29. 26 come back with the exponent wrapped, 3 with the right value (`1000000000000000000e-2147483649` is `1e-2147483631`). When their `String()` is parsed again, 25 hang and 4 come back, the four with a fraction and exponent -2147483647 (`9223372036854775.807e-2147483647` turns into `9223372036854775807e2147483646`).\n\n@thc1006 Can you confirm if AI was used to generate this comment and if you are full reviewing these comments before submitting? I appreciate the contributions. I want to ensure comments help progress the conversation and help the people working on this problem communicate.",
+          "created_at": "2026-10-01T03:24:29Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5924092454"
+        },
+        {
+          "author": "thc1006",
+          "body": "@jpbetz Yes. Claude Code ran the checks and drafted that comment, and this reply. I read it before posting, but I did not read it against your test file, and that is how the \"master passes\" line got out. From here, anything I post in this issue I will write myself. Sorry for the noise.\n",
+          "created_at": "2026-10-01T03:31:07Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5924162038"
+        },
+        {
+          "author": "jpbetz",
+          "body": "> @jpbetz Yes. Claude Code ran the checks and drafted that comment, and this reply. I read it before posting, but I did not read it against your test file, and that is how the \"master passes\" line got out. From here, anything I post in this issue I will write myself. Sorry for the noise.\n\nOK. Please also consider if a comment needs to  be posted or not.  If it's just an AI saying it understands something but doesn't answer a question you, as a person, needs an answer to, or help another person, it might not need to be posted.",
+          "created_at": "2026-10-01T03:34:00Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141166#issuecomment-5924191750"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141121,
+      "title": "hack/README.md: writing quality issues (weasel words, comma splice, wordiness, missing space, passive voice)",
+      "body": "What happened?\n\nhack/README.md has several writing quality issues:\n\nLine 8 — \"many\" is a weasel word that weakens meaning\nLines 15–16 — Comma splice: \"redirection, Please\" — \"Please\" starts a new sentence and should not be joined with a comma\nLines 15 & 17 — \"It is equivalent\" is wordy phrasing\nLine 17 — Missing space: \".It is\"\nLine 20 — Passive voice: \"must be run\" — could be rewritten in active voice",
+      "author": "Bhupesh-081",
+      "state": "open",
+      "labels": [
+        "kind/cleanup",
+        "sig/testing",
+        "needs-triage"
+      ],
+      "created_at": "2026-08-02T17:46:08Z",
+      "updated_at": "2026-08-02T17:46:45Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141121",
+      "comments_count": 2,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-08-02T17:46:17Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141121#issuecomment-5159583643"
+        },
+        {
+          "author": "Bhupesh-081",
+          "body": "/sig testing \n/kind cleanup",
+          "created_at": "2026-08-02T17:46:40Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141121#issuecomment-5159585079"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 141120,
+      "title": "hack/README.md: punctuation errors (comma splice and missing space) in vestigial redirection notice",
+      "body": "**What happened?**\n\n`hack/README.md` contains punctuation errors that affect the readability of the documentation.\n\n**Line 15–16 — Comma splice:**\nA comma is used where a period is required; \"Please\" begins a new sentence and should not be joined to the previous one with a comma.\n\n    This script is a vestigial redirection, Please do not add \"real\" logic.\n\n**Line 17 — Missing space between sentences:**\nThere is no space between the period and the following sentence.\n\n    The `true` target of this makerule is `hack/make-rules/update.sh`.It is equivalent to `make update`.\n\n**What did you expect to happen?**\n\nBoth sentences should be separated correctly with a period and a single space, consistent with standard English punctuation:\n\n    This script is a vestigial redirection. Please do not add \"real\" logic.\n\n    The `true` target of this makerule is `hack/make-rules/update.sh`. It is equivalent to `make update`.\n\n**Anything else we need to know?**\n\nThis is a documentation-only fix — no code or behavior is affected. A PR with the corrected punctuation is ready to follow this issue.\n\n<details>",
+      "author": "Bhupesh-081",
+      "state": "closed",
+      "labels": [
+        "kind/cleanup",
+        "sig/testing",
+        "needs-triage"
+      ],
+      "created_at": "2026-08-02T17:30:48Z",
+      "updated_at": "2026-08-02T17:35:40Z",
+      "closed_at": "2026-08-02T17:35:40Z",
+      "url": "https://github.com/kubernetes/kubernetes/issues/141120",
+      "comments_count": 4,
+      "comments": [
+        {
+          "author": "Bhupesh-081",
+          "body": "/assign \n",
+          "created_at": "2026-08-02T17:30:56Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141120#issuecomment-5159525208"
+        },
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-08-02T17:30:58Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141120#issuecomment-5159525289"
+        },
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "@Bhupesh-081: The label(s) `sig/cleanup` cannot be applied, because the repository doesn't have them.\n\n<details>\n\nIn response to [this](https://github.com/kubernetes/kubernetes/issues/141120#issuecomment-5159528508):\n\n>/sig testing \n>/sig cleanup \n>\n\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-08-02T17:31:54Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141120#issuecomment-5159528721"
+        },
+        {
+          "author": "Bhupesh-081",
+          "body": "/sig testing\n/kind cleanup",
+          "created_at": "2026-08-02T17:33:10Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/141120#issuecomment-5159533490"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 140940,
+      "title": "Remove the retired Go Report Card badge from README",
+      "body": "**What happened**\n\nThe README still shows a Go Report Card badge. Go Report Card has been sunset — https://goreportcard.com/report/github.com/kubernetes/kubernetes now returns a retirement notice instead of a grade, so the badge no longer links to anything meaningful.\n\n**What you expected to happen**\n\nREADME badges point to live services.\n\n**Anything else we need to know?**\n\nProposal: drop the badge from README.md. The upstream site recommends golangci-lint, which this repo already runs in CI.\n\n/sig contributor-experience\n/kind cleanup",
+      "author": "xiantang",
+      "state": "closed",
+      "labels": [
+        "kind/cleanup",
+        "sig/contributor-experience",
+        "needs-triage"
+      ],
+      "created_at": "2026-07-26T06:28:51Z",
+      "updated_at": "2026-08-27T08:53:54Z",
+      "closed_at": "2026-08-27T08:53:54Z",
+      "url": "https://github.com/kubernetes/kubernetes/issues/140940",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-07-26T06:28:59Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140940#issuecomment-5082365214"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 140915,
+      "title": "Add back `admissioninitializer.WantsAuthorizer` for v1.37",
+      "body": "As part of implementing [Conditional Authorization](https://github.com/kubernetes/enhancements/issues/5681), in https://github.com/kubernetes/kubernetes/pull/138801 we did a literal rename from \n\n```go\nif wants, ok := plugin.(WantsAuthorizer); ok {\n\twants.SetAuthorizer(i.authorizer)\n}\n```\n\nto\n\n```go\nif wants, ok := plugin.(WantsUnconditionalAuthorizer); ok {\n\twants.SetUnconditionalAuthorizer(i.authorizer)\n}\n```\n\nusing a fully mechanical rename, with `authorizer.UnconditionalAuthorizer` corresponding to the authorizer interface that existed in v1.36, and `authorizer.Authorizer` growing new capabilities in v1.37.\n\nThe intention was to add `admissioninitializer.WantsAuthorizer` in a subsequent PR as a clean diff to show new usage of new features. \n\nIf commit https://github.com/kubernetes/kubernetes/commit/833f712b4259a5a18a4bd4aee078f422dd3ec776, admission plugins that provide `SetAuthorizer(authorizer.Authorizer)` in v1.36 would either:\n\na) get a compile error in v1.37 if they locked their implementation like `var _ admissioninitializer.WantsAuthorizer = fooPlugin{}`\nb) fail silently at runtime during `ValidateInitialization() error` as `SetAuthorizer` wouldn't be called\n\n...until the admission plugin performed the same rename.\n\nThis code was initially part of https://github.com/kubernetes/kubernetes/pull/137633 (and its prefactor https://github.com/kubernetes/kubernetes/pull/140715), but given this larger feature PR will not be part of v1.37, I propose to break out the commit to a dedicated PR, which targets v1.37 as a bug fix, to not break existing clients that depended on `admissioninitializer.WantsAuthorizer`.\n\n/sig auth\n/kind cleanup\n/assign",
+      "author": "luxas",
+      "state": "closed",
+      "labels": [
+        "kind/cleanup",
+        "sig/auth",
+        "needs-triage"
+      ],
+      "created_at": "2026-07-24T15:53:45Z",
+      "updated_at": "2026-07-28T15:35:59Z",
+      "closed_at": "2026-07-28T15:35:59Z",
+      "url": "https://github.com/kubernetes/kubernetes/issues/140915",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-07-24T15:53:54Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140915#issuecomment-5071770189"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 140901,
+      "title": "E2E Test Flakiness: API Server Timeouts, Silent Failures, and Resource Cleanup Issues",
+      "body": "The e2e test framework has several patterns that cause flakiness, silent resource leaks, and hard-to-debug failures, especially in disruptive tests that restart API servers or control plane components. PR 137832 addresses these across 13 files (185 additions, 41 deletions), touching SIG api-machinery, apps, cloud-provider, network, node, storage, and testing.\n\nError suppression hides resource leaks. Across the test suite, cleanup code discards errors from Delete calls. In test/e2e/apimachinery/aggregator.go, the cleanupSampleAPIServer function has 10 such calls (APIService, Deployment, Secret, Service, ServiceAccount, RoleBinding, ClusterRoleBinding, ClusterRole) all silently swallowed. Same pattern in test/e2e/apimachinery/apply.go (4 deployments/pods), test/e2e/apps/rc.go (DeleteCollection), and test/e2e/apps/statefulset.go (ConfigMaps in defer blocks). When these fail, resources leak into subsequent tests with zero trace of what went wrong.\n\nNo retry on transient API server errors. GetControlPlaneNodes in test/e2e/framework/util.go calls Nodes().List() and immediately fails on any error. During disruptive tests (daemon restarts, etcd failure injection), the API server is expected to be briefly unreachable. The same issue exists in allNodesReady at test/e2e/framework/node/helper.go and RestartNodes at test/e2e/common/util.go. A transient connection refused or 503 kills the entire test instead of retrying. The fix introduces IsRetryableAPIError which checks for connection refused/reset, server timeout, 429, 503, 500, and unexpected server errors, plus a new WaitForControlPlaneNodes that wraps the listing in a polling loop with retry-on-transient logic.\n\nHealthz returns 200 before daemon is ready. RestartDaemonConfig.waitUp in test/e2e/apps/daemon_restart.go considers the daemon ready when /healthz returns HTTP 200. After a kubelet restart, the health endpoint can report ok while kubelet is still recovering. Logs show errors, pods are not yet scheduled. The fix adds verifyDaemonReadiness which SSHes into the node and checks the last 20 lines of /var/log/kubelet.log for error patterns before declaring readiness.\n\nGoroutines not gracefully stopped. In test/e2e/apps/daemon_restart.go, a cache.NewInformer controller is started with go controller.Run(backgroundCtx.Done()). The cleanup calls cancel() but does not wait for the controller goroutine to finish. The fix replaces this with a dedicated stopCh channel and DeferCleanup that closes the channel then sleeps 100ms to allow graceful shutdown.\n\nPVC deletion races with pod references. DeleteAllStatefulSets in test/e2e/framework/statefulset/rest.go has a TODO comment about not checking whether pods still reference PVCs before deleting them. The current code deletes PVCs immediately, which can fail or leave orphaned PVs when pods are still running. The fix lists pods, checks volume references, and only deletes PVCs that are not in use, with foreground propagation.\n\nDuplicated control plane filtering. GetControlPlaneNodes and WaitForControlPlaneNodes both contain the same node filtering logic (check for control-plane label and NoSchedule taint). The second commit extracts this into a shared filterControlPlaneNodes helper.\n\nAll changes are in e2e test code, no user-facing impact.\n\nRelated issues:\n- 109600: prevent the Expect(err).NotTo(HaveOccurred()) and ExpectNoError(err) anti-pattern in e2e tests (same category of error handling problems)\n- 86253: sample-apiserver returns error instead of falling back to second Accept type (directly affects the aggregator.go test modified in this PR)\n- 135285: GOAWAY are not handled gracefully in apiserver when aggregating (related network error handling)\n- 105536: Orphaned pod found, but error not a directory occurred when trying to remove the volumes dir (related resource cleanup issue)\n\n/kind bug\n/kind cleanup\n/kind failing-test\n/area e2e-test-framework\n/sig testing\n/sig api-machinery\n/sig node\n/sig storage\n/sig apps\n/sig cloud-provider\n/sig network",
+      "author": "kairosci",
+      "state": "closed",
+      "labels": [
+        "kind/bug",
+        "sig/network",
+        "kind/cleanup",
+        "sig/storage",
+        "sig/node",
+        "sig/api-machinery",
+        "sig/apps",
+        "sig/testing",
+        "kind/failing-test",
+        "sig/cloud-provider",
+        "area/e2e-test-framework",
+        "needs-triage"
+      ],
+      "created_at": "2026-07-24T06:59:49Z",
+      "updated_at": "2026-07-28T18:39:43Z",
+      "closed_at": "2026-07-24T10:59:19Z",
+      "url": "https://github.com/kubernetes/kubernetes/issues/140901",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "kubernetes-prow[bot]",
+          "body": "This issue is currently awaiting triage.\n\nIf a SIG or subproject determines this is a relevant issue, they will accept it by applying the `triage/accepted` label and provide further guidance.\n\nThe `triage/accepted` label can be added by org members by writing `/triage accepted` in a comment.\n\n\n<details>\n\nInstructions for interacting with me using PR comments are available [here](https://git.k8s.io/community/contributors/guide/pull-requests.md).  If you have questions or suggestions related to my behavior, please file an issue against the [kubernetes-sigs/prow](https://github.com/kubernetes-sigs/prow/issues/new?title=Prow%20issue:) repository.\n</details>",
+          "created_at": "2026-07-24T06:59:56Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140901#issuecomment-5067052717"
+        },
+        {
+          "author": "dims",
+          "body": "please do targetted PRs for specific things in consultation with the SIGs responsible for the code. A generic catch-all, possibly AI generated analysis is not useful to anyone here.\n\nplease disclose AI usage:\nhttps://github.com/kubernetes/community/blob/714be5e1b3fce0ac12a56ff571aab3596dcea38b/contributors/guide/pull-requests.md#ai-guidance",
+          "created_at": "2026-07-24T10:59:19Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140901#issuecomment-5069111853"
+        },
+        {
+          "author": "kairosci",
+          "body": "Since I've been able to verify and confirm everything I wrote, I'll split it into several PRs",
+          "created_at": "2026-07-28T18:39:43Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140901#issuecomment-5108285960"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "number": 140503,
+      "title": "Evaluate enforcement of `+listType=map` and `+listMapKey=uid` for OwnerReference in ObjectMeta",
+      "body": "### What happened?\nDuring the review of PR #140381 (Configure DV on objectMeta OwnerReference), it was observed that `OwnerReference` in `ObjectMeta` has the following tags in `staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/types.go`:\n```go\n// +patchStrategy=merge\n// +listType=map\n// +listMapKey=uid\n```\nHowever, there are currently no corresponding handwritten validations that fully enforce these constraints. \n\n### Why was this not addressed in PR #140381?\nAs discussed in [this comment thread](https://github.com/kubernetes/kubernetes/pull/140381#discussion_r3572186534), adding Declarative Validation (DV) for these markers right now could potentially break existing workflows. The scope of PR #140381 was strictly limited to mirroring the existing handwritten validations to ensure exact structural error reporting and deduplication parity.\n\n### Action Items\n- [ ] Investigate the impact of fully enforcing `+listMapKey=uid` and `+listType=map` on `OwnerReference`.\n- [ ] Determine a safe rollout strategy if we decide to enforce these validations.\n- [ ] Alternatively, if they should remain unenforced, add appropriate comments/documentation explaining this limitation.\n\n/sig api-machinery\n/kind cleanup\n",
+      "author": "lalitc375",
+      "state": "open",
+      "labels": [
+        "kind/cleanup",
+        "sig/api-machinery",
+        "triage/accepted",
+        "area/api-validation"
+      ],
+      "created_at": "2026-07-13T17:35:05Z",
+      "updated_at": "2026-08-11T15:59:57Z",
+      "closed_at": "",
+      "url": "https://github.com/kubernetes/kubernetes/issues/140503",
+      "comments_count": 4,
+      "comments": [
+        {
+          "author": "lalitc375",
+          "body": "/area api-validation",
+          "created_at": "2026-07-13T17:35:16Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140503#issuecomment-4960810012"
+        },
+        {
+          "author": "lalitc375",
+          "body": "/triage accepted",
+          "created_at": "2026-07-13T17:35:24Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140503#issuecomment-4960811132"
+        },
+        {
+          "author": "hiepnnguyentcu",
+          "body": "@lalitc375 I would want to take up this issue if possible",
+          "created_at": "2026-07-14T08:29:56Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140503#issuecomment-4966946922"
+        },
+        {
+          "author": "AnjaliMishra1st",
+          "body": "Hi @lalitc375, I’m exploring Declarative Validation as part of my preparation for the Term 3 mentorship project.\n\nI’ve been reading through this issue and PR #140580 to understand the ObjectMeta/OwnerReference validation gap. I’m still new to API Machinery and DV, so I’m trying to learn by following existing migration work.\n\nWould you recommend a beginner-friendly DV issue or migration that I could study and potentially contribute to? I’d especially like to start with a small task around ObjectMeta, Pod validation, or validation-gen if there is something currently available.\n\nThank you!\n",
+          "created_at": "2026-08-11T15:59:57Z",
+          "url": "https://github.com/kubernetes/kubernetes/issues/140503#issuecomment-5255600612"
+        }
+      ],
+      "comments_collected": true
+    }
+  ]
+}

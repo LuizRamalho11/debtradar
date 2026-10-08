@@ -1,0 +1,846 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "",
+    "sources": [
+      "commits"
+    ],
+    "requested": 100,
+    "collected": 100,
+    "collected_at": "2026-10-08T10:59:42+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 3,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:07+00:00"
+  },
+  "totals": {
+    "documents": 97,
+    "debt_documents": 16,
+    "tokens": 11204,
+    "sentences": 722,
+    "explicit_debt_documents": 3,
+    "classified_documents": 16,
+    "first_date": "2026-10-06",
+    "last_date": "2026-10-08"
+  },
+  "by_type": {
+    "commit": {
+      "documents": 97,
+      "debt_documents": 16
+    }
+  },
+  "classification": {
+    "code": {
+      "yes": 4,
+      "possible": 10,
+      "no": 83
+    },
+    "architecture": {
+      "yes": 0,
+      "possible": 1,
+      "no": 96
+    },
+    "tests": {
+      "yes": 12,
+      "possible": 18,
+      "no": 67
+    },
+    "documentation": {
+      "yes": 0,
+      "possible": 0,
+      "no": 97
+    },
+    "dependencies": {
+      "yes": 0,
+      "possible": 3,
+      "no": 94
+    }
+  },
+  "resolution": {
+    "with_debt": {
+      "documents": 0,
+      "closed": 0,
+      "median_days_to_close": null
+    },
+    "without_debt": {
+      "documents": 0,
+      "closed": 0,
+      "median_days_to_close": null
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "documents": 97,
+      "positive": 24,
+      "neutral": 55,
+      "negative": 18,
+      "mean_compound": 0.0179
+    },
+    "by_category": {
+      "code": {
+        "documents": 4,
+        "positive": 2,
+        "neutral": 1,
+        "negative": 1,
+        "mean_compound": 0.0522
+      },
+      "architecture": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "tests": {
+        "documents": 12,
+        "positive": 3,
+        "neutral": 7,
+        "negative": 2,
+        "mean_compound": 0.0106
+      },
+      "documentation": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      },
+      "dependencies": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      }
+    }
+  },
+  "frequencies": {
+    "terms": {
+      "noun": [
+        {
+          "name": "chat",
+          "count": 81,
+          "documents": 29
+        },
+        {
+          "name": "test",
+          "count": 72,
+          "documents": 29
+        },
+        {
+          "name": "session",
+          "count": 71,
+          "documents": 31
+        },
+        {
+          "name": "tool",
+          "count": 47,
+          "documents": 10
+        },
+        {
+          "name": "host",
+          "count": 46,
+          "documents": 20
+        },
+        {
+          "name": "client",
+          "count": 39,
+          "documents": 12
+        },
+        {
+          "name": "agent",
+          "count": 36,
+          "documents": 18
+        },
+        {
+          "name": "model",
+          "count": 36,
+          "documents": 13
+        },
+        {
+          "name": "catalog",
+          "count": 28,
+          "documents": 9
+        },
+        {
+          "name": "row",
+          "count": 28,
+          "documents": 9
+        },
+        {
+          "name": "runtime",
+          "count": 26,
+          "documents": 13
+        },
+        {
+          "name": "output",
+          "count": 24,
+          "documents": 4
+        },
+        {
+          "name": "user",
+          "count": 24,
+          "documents": 13
+        },
+        {
+          "name": "default",
+          "count": 23,
+          "documents": 19
+        },
+        {
+          "name": "result",
+          "count": 23,
+          "documents": 13
+        },
+        {
+          "name": "server",
+          "count": 23,
+          "documents": 12
+        },
+        {
+          "name": "root",
+          "count": 22,
+          "documents": 8
+        },
+        {
+          "name": "source",
+          "count": 22,
+          "documents": 10
+        },
+        {
+          "name": "tier",
+          "count": 22,
+          "documents": 3
+        },
+        {
+          "name": "title",
+          "count": 22,
+          "documents": 6
+        }
+      ],
+      "adjective": [
+        {
+          "name": "new",
+          "count": 18,
+          "documents": 11
+        },
+        {
+          "name": "active",
+          "count": 17,
+          "documents": 10
+        },
+        {
+          "name": "local",
+          "count": 15,
+          "documents": 9
+        },
+        {
+          "name": "native",
+          "count": 12,
+          "documents": 8
+        },
+        {
+          "name": "old",
+          "count": 12,
+          "documents": 7
+        },
+        {
+          "name": "remote",
+          "count": 12,
+          "documents": 9
+        },
+        {
+          "name": "separate",
+          "count": 11,
+          "documents": 8
+        },
+        {
+          "name": "synchronous",
+          "count": 11,
+          "documents": 4
+        },
+        {
+          "name": "unchanged",
+          "count": 11,
+          "documents": 9
+        },
+        {
+          "name": "exact",
+          "count": 10,
+          "documents": 8
+        },
+        {
+          "name": "live",
+          "count": 9,
+          "documents": 8
+        },
+        {
+          "name": "plugin",
+          "count": 9,
+          "documents": 3
+        },
+        {
+          "name": "current",
+          "count": 8,
+          "documents": 6
+        },
+        {
+          "name": "multi",
+          "count": 8,
+          "documents": 3
+        },
+        {
+          "name": "real",
+          "count": 8,
+          "documents": 7
+        },
+        {
+          "name": "structured",
+          "count": 8,
+          "documents": 2
+        },
+        {
+          "name": "open",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "root",
+          "count": 7,
+          "documents": 1
+        },
+        {
+          "name": "temporary",
+          "count": 7,
+          "documents": 6
+        },
+        {
+          "name": "late",
+          "count": 6,
+          "documents": 5
+        }
+      ],
+      "verb": [
+        {
+          "name": "write",
+          "count": 65,
+          "documents": 30
+        },
+        {
+          "name": "preserve",
+          "count": 47,
+          "documents": 28
+        },
+        {
+          "name": "add",
+          "count": 41,
+          "documents": 25
+        },
+        {
+          "name": "exist",
+          "count": 32,
+          "documents": 23
+        },
+        {
+          "name": "remove",
+          "count": 21,
+          "documents": 16
+        },
+        {
+          "name": "retain",
+          "count": 21,
+          "documents": 16
+        },
+        {
+          "name": "use",
+          "count": 21,
+          "documents": 15
+        },
+        {
+          "name": "restore",
+          "count": 20,
+          "documents": 9
+        },
+        {
+          "name": "run",
+          "count": 20,
+          "documents": 10
+        },
+        {
+          "name": "change",
+          "count": 19,
+          "documents": 16
+        },
+        {
+          "name": "complete",
+          "count": 14,
+          "documents": 9
+        },
+        {
+          "name": "fix",
+          "count": 14,
+          "documents": 13
+        },
+        {
+          "name": "hide",
+          "count": 13,
+          "documents": 6
+        },
+        {
+          "name": "keep",
+          "count": 13,
+          "documents": 7
+        },
+        {
+          "name": "pende",
+          "count": 13,
+          "documents": 8
+        },
+        {
+          "name": "share",
+          "count": 13,
+          "documents": 10
+        },
+        {
+          "name": "await",
+          "count": 12,
+          "documents": 7
+        },
+        {
+          "name": "fail",
+          "count": 12,
+          "documents": 8
+        },
+        {
+          "name": "hold",
+          "count": 12,
+          "documents": 2
+        },
+        {
+          "name": "pass",
+          "count": 12,
+          "documents": 9
+        }
+      ]
+    },
+    "noun_phrases": [
+      {
+        "name": "agent host",
+        "count": 18,
+        "documents": 13
+      },
+      {
+        "name": "mission control",
+        "count": 9,
+        "documents": 8
+      },
+      {
+        "name": "copilot sdk",
+        "count": 7,
+        "documents": 3
+      },
+      {
+        "name": "tool search",
+        "count": 7,
+        "documents": 1
+      },
+      {
+        "name": "regression coverage",
+        "count": 5,
+        "documents": 5
+      },
+      {
+        "name": "chunk state",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "escape sequence",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "background shells preview",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "bundled runtime",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "copilot runtime",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "older client",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "oldest row",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "session changeset refreshe",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "shell edit",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "visual studio",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "active agent title generation",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "active chat",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "append shell output chunk",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "auto tier",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "background shell description",
+        "count": 2,
+        "documents": 1
+      }
+    ],
+    "technologies": [
+      {
+        "name": "Copilot",
+        "category": "tool",
+        "count": 85,
+        "documents": 36
+      },
+      {
+        "name": "Git",
+        "category": "tool",
+        "count": 12,
+        "documents": 5
+      },
+      {
+        "name": "VS Code",
+        "category": "tool",
+        "count": 12,
+        "documents": 9
+      },
+      {
+        "name": "GitHub",
+        "category": "tool",
+        "count": 11,
+        "documents": 7
+      },
+      {
+        "name": "Windows",
+        "category": "platform",
+        "count": 8,
+        "documents": 6
+      },
+      {
+        "name": "Codex",
+        "category": "tool",
+        "count": 6,
+        "documents": 4
+      },
+      {
+        "name": "ESLint",
+        "category": "tool",
+        "count": 5,
+        "documents": 1
+      },
+      {
+        "name": "Electron",
+        "category": "framework",
+        "count": 5,
+        "documents": 4
+      },
+      {
+        "name": "Linux",
+        "category": "platform",
+        "count": 5,
+        "documents": 3
+      },
+      {
+        "name": "SQL",
+        "category": "language",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "SQLite",
+        "category": "database",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "macOS",
+        "category": "platform",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "npm",
+        "category": "tool",
+        "count": 2,
+        "documents": 2
+      }
+    ],
+    "entities": [
+      {
+        "name": "Copilot [ORG]",
+        "text": "Copilot",
+        "label": "ORG",
+        "count": 18,
+        "documents": 13
+      },
+      {
+        "name": "MCP [ORG]",
+        "text": "MCP",
+        "label": "ORG",
+        "count": 18,
+        "documents": 12
+      },
+      {
+        "name": "SDK [ORG]",
+        "text": "SDK",
+        "label": "ORG",
+        "count": 16,
+        "documents": 10
+      },
+      {
+        "name": "CI [ORG]",
+        "text": "CI",
+        "label": "ORG",
+        "count": 9,
+        "documents": 6
+      },
+      {
+        "name": "Git [PERSON]",
+        "text": "Git",
+        "label": "PERSON",
+        "count": 9,
+        "documents": 4
+      },
+      {
+        "name": "VS Code [PRODUCT]",
+        "text": "VS Code",
+        "label": "PRODUCT",
+        "count": 7,
+        "documents": 6
+      },
+      {
+        "name": "GitHub [ORG]",
+        "text": "GitHub",
+        "label": "ORG",
+        "count": 6,
+        "documents": 5
+      },
+      {
+        "name": "AHP [ORG]",
+        "text": "AHP",
+        "label": "ORG",
+        "count": 5,
+        "documents": 4
+      },
+      {
+        "name": "Background Shells [FAC]",
+        "text": "Background Shells",
+        "label": "FAC",
+        "count": 5,
+        "documents": 3
+      },
+      {
+        "name": "Copilot SDK [ORG]",
+        "text": "Copilot SDK",
+        "label": "ORG",
+        "count": 5,
+        "documents": 2
+      },
+      {
+        "name": "Mission Control [ORG]",
+        "text": "Mission Control",
+        "label": "ORG",
+        "count": 5,
+        "documents": 5
+      },
+      {
+        "name": "OTel [ORG]",
+        "text": "OTel",
+        "label": "ORG",
+        "count": 5,
+        "documents": 4
+      },
+      {
+        "name": "Electron [ORG]",
+        "text": "Electron",
+        "label": "ORG",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "HydraFusion [ORG]",
+        "text": "HydraFusion",
+        "label": "ORG",
+        "count": 4,
+        "documents": 1
+      },
+      {
+        "name": "SQL [ORG]",
+        "text": "SQL",
+        "label": "ORG",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "Windows [NORP]",
+        "text": "Windows",
+        "label": "NORP",
+        "count": 4,
+        "documents": 4
+      },
+      {
+        "name": "BaseWindow [ORG]",
+        "text": "BaseWindow",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "Cloud [PERSON]",
+        "text": "Cloud",
+        "label": "PERSON",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "Copilot [PERSON]",
+        "text": "Copilot",
+        "label": "PERSON",
+        "count": 3,
+        "documents": 3
+      },
+      {
+        "name": "Node [ORG]",
+        "text": "Node",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      }
+    ],
+    "regex_patterns": [
+      {
+        "name": "legacy",
+        "category": "general",
+        "count": 13,
+        "documents": 5
+      },
+      {
+        "name": "cleanup",
+        "category": "general",
+        "count": 8,
+        "documents": 7
+      },
+      {
+        "name": "unit_test",
+        "category": "tests",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "architecture",
+        "category": "architecture",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "flaky_test",
+        "category": "tests",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "integration_test",
+        "category": "tests",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "workaround",
+        "category": "general",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "debt_categories": [
+      {
+        "name": "tests",
+        "yes": 12,
+        "possible": 18,
+        "no": 67
+      },
+      {
+        "name": "code",
+        "yes": 4,
+        "possible": 10,
+        "no": 83
+      },
+      {
+        "name": "dependencies",
+        "yes": 0,
+        "possible": 3,
+        "no": 94
+      },
+      {
+        "name": "architecture",
+        "yes": 0,
+        "possible": 1,
+        "no": 96
+      },
+      {
+        "name": "documentation",
+        "yes": 0,
+        "possible": 0,
+        "no": 97
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "month": "2026-10",
+      "documents": 97,
+      "debt_documents": 16,
+      "explicit_debt": 3,
+      "categories": {
+        "code": 4,
+        "architecture": 0,
+        "tests": 12,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0179
+    }
+  ]
+}

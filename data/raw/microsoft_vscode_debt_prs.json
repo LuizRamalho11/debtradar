@@ -1,0 +1,364 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "debt",
+    "sources": [
+      "prs"
+    ],
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T11:01:27+00:00",
+    "comments_complete": true,
+    "warning": ""
+  },
+  "issues": [
+    {
+      "type": "pull_request",
+      "id": "#337128",
+      "number": 337128,
+      "title": "Remove obsolete Copilot SDK postinstall patch",
+      "body": "Removes the obsolete postinstall rewrite for `@github/copilot-sdk/dist/session.js`. The pinned SDK already emits the explicit `vscode-jsonrpc/node.js` import, so the workaround is no longer needed; the Foundry Local patch is unchanged.\n\nOriginal implementation by @squarepots, carried unchanged from #337065.\n\nFixes #337061. Related to #326491.\n\nValidation:\n- `npm run gulp -- compile-client`",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-09-21T19:36:31Z",
+      "updated_at": "2026-09-21T20:58:41Z",
+      "closed_at": "2026-09-21T20:58:41Z",
+      "url": "https://github.com/microsoft/vscode/pull/337128",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#333653",
+      "number": 333653,
+      "title": "npm: remove deprecated script explorer setting",
+      "body": "## Summary\r\n\r\n- remove the deprecated `npm.enableScriptExplorer` setting\r\n- update the npm extension README because the Script Explorer is now always available through the Explorer's Views menu\r\n- remove the stale localization entry\r\n\r\nThe setting has had no runtime consumer since the Script Explorer became generally available.\r\n\r\n## Validation\r\n\r\n- parsed the edited extension manifest and localization file as JSON\r\n- verified no remaining references to `npm.enableScriptExplorer`\r\n- ran `git diff --check`\r\n",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "tasks",
+        "debt"
+      ],
+      "created_at": "2026-08-31T21:41:20Z",
+      "updated_at": "2026-09-01T18:01:56Z",
+      "closed_at": "2026-09-01T17:59:40Z",
+      "url": "https://github.com/microsoft/vscode/pull/333653",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#333651",
+      "number": 333651,
+      "title": "html: remove deprecated mirror cursor setting",
+      "body": "## Summary\r\n\r\n- remove the deprecated `html.mirrorCursorOnMatchingTag` setting\r\n- remove its stale localization strings\r\n\r\nThe setting has been superseded by `editor.linkedEditing` and has no runtime consumer.\r\n\r\n## Validation\r\n\r\n- parsed the edited extension manifest and localization file as JSON\r\n- verified no remaining references to `html.mirrorCursorOnMatchingTag`\r\n- ran `git diff --check`\r\n",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "html",
+        "debt"
+      ],
+      "created_at": "2026-08-31T21:40:09Z",
+      "updated_at": "2026-09-01T18:01:35Z",
+      "closed_at": "2026-09-01T18:00:35Z",
+      "url": "https://github.com/microsoft/vscode/pull/333651",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "aeschli",
+          "body": "Thanks @dmitrivMS !",
+          "created_at": "2026-09-01T17:59:00Z",
+          "url": "https://github.com/microsoft/vscode/pull/333651#issuecomment-5498165110"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#333650",
+      "number": 333650,
+      "title": "chat: remove deprecated agent debug log setting",
+      "body": "## Summary\r\n\r\n- remove the deprecated `github.copilot.chat.agentDebugLog.enabled` setting\r\n- remove its completed migration registration, localization, and stale core constant/comment\r\n- retain `github.copilot.chat.agentDebugLog.fileLogging.enabled` as the authoritative extension-host debug logging toggle\r\n\r\nThis does not change the separate `chat.agentHost.agentDebugLog.enabled` setting used by agent host sessions.\r\n\r\n## Validation\r\n\r\n- parsed the edited extension manifests as JSON\r\n- verified no remaining references to the removed setting or constants\r\n- ran `git diff --check`\r\n",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "chat"
+      ],
+      "created_at": "2026-08-31T21:38:57Z",
+      "updated_at": "2026-09-01T17:37:54Z",
+      "closed_at": "2026-09-01T17:36:49Z",
+      "url": "https://github.com/microsoft/vscode/pull/333650",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#333649",
+      "number": 333649,
+      "title": "chat: remove unused inline edits displayLine setting",
+      "body": "## Summary\r\n\r\n- remove the unused `github.copilot.chat.inlineEdits.nextCursorPrediction.displayLine` setting\r\n- remove its stale configuration registry and localization entries\r\n\r\nThe setting's only runtime consumer was removed with the old NES jump label implementation.\r\n\r\n## Validation\r\n\r\n- parsed the edited extension manifests as JSON\r\n- verified no remaining references to the setting or `InlineEditsNextCursorPredictionDisplayLine`\r\n- ran `git diff --check`\r\n",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "inline-completions",
+        "chat"
+      ],
+      "created_at": "2026-08-31T21:37:21Z",
+      "updated_at": "2026-09-01T08:51:01Z",
+      "closed_at": "2026-09-01T08:49:59Z",
+      "url": "https://github.com/microsoft/vscode/pull/333649",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#333418",
+      "number": 333418,
+      "title": "refactor: migrate AsyncIterableObject to AsyncIterableProducer to fix memory leaks",
+      "body": "",
+      "author": "veerjain-1",
+      "state": "closed",
+      "labels": [
+        "freeze-slow-crash-leak",
+        "debt",
+        "triage-needed"
+      ],
+      "created_at": "2026-08-30T18:30:31Z",
+      "updated_at": "2026-09-29T05:04:52Z",
+      "closed_at": "2026-09-29T05:04:52Z",
+      "url": "https://github.com/microsoft/vscode/pull/333418",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "veerjain-1",
+          "body": "Hi team! Friendly ping on this. Please let me know if there's anything I can do to help move this along or if you have any feedback.",
+          "created_at": "2026-09-10T17:24:59Z",
+          "url": "https://github.com/microsoft/vscode/pull/333418#issuecomment-5622715865"
+        },
+        {
+          "author": "veerjain-1",
+          "body": "Hi team, another friendly ping on this! Let me know if you need anything else from my end.",
+          "created_at": "2026-09-17T18:03:03Z",
+          "url": "https://github.com/microsoft/vscode/pull/333418#issuecomment-5718996162"
+        },
+        {
+          "author": "dmitrivMS",
+          "body": "Thanks for working on this. Closing in favor of #338611: the migrated producer has no toPromise() method, so the existing flush path fails. This version also makes late source writes throw and deletes an unrelated Monaco test fixture. A focused terminal fix needs to preserve those contracts and avoid unrelated changes.",
+          "created_at": "2026-09-29T05:04:52Z",
+          "url": "https://github.com/microsoft/vscode/pull/333418#issuecomment-5884010237"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#329069",
+      "number": 329069,
+      "title": "Restrict terminal auto-approval setting in untrusted workspaces ",
+      "body": "Fixes #329106\n\n- Mark terminal auto-approval enablement, command rules, default-rule overrides, and detected file-write policy as restricted settings.\n- Also restrict the deprecated `chat.agent.terminal.autoApprove` compatibility setting.\n- Ignore workspace-provided values for these settings while the workspace is untrusted.\n- Preserve user, remote, default, and trusted-workspace behavior.\n- Keep terminal, Agent Host, warning, sandbox, and permission logic unchanged.\n- Add parser-level regressions for untrusted single-folder and `.code-workspace` settings, plus a trusted-workspace negative control.\n\n-----------------------------------------\nInspirations from:\n\n- Restricted-setting filtering follows [`ConfigurationModelParser.shouldInclude`](https://github.com/microsoft/vscode/blob/8e3f97149d1aa801237904995cc3839c1c8220e8/src/vs/platform/configuration/common/configurationModels.ts#L462-L472), which skips properties marked `restricted` when `skipRestricted` is enabled.\n- Untrusted workspace loading and trust-change reparsing follow [`WorkspaceService.reload`](https://github.com/microsoft/vscode/blob/8e3f97149d1aa801237904995cc3839c1c8220e8/src/vs/workbench/services/configuration/browser/configuration.ts#L679-L683) and [`WorkspaceService.reparseWorkspaceSettings`](https://github.com/microsoft/vscode/blob/8e3f97149d1aa801237904995cc3839c1c8220e8/src/vs/workbench/services/configuration/browser/configuration.ts#L707-L712).\n- The restriction convention matches the neighboring [`chat.tools.terminal.autoApproveWorkspaceNpmScripts`](https://github.com/microsoft/vscode/blob/8e3f97149d1aa801237904995cc3839c1c8220e8/src/vs/workbench/contrib/terminalContrib/chatAgentTools/common/terminalChatAgentToolsConfiguration.ts#L394-L401) setting.",
+      "author": "anthonykim1",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "terminal-auto-approve"
+      ],
+      "created_at": "2026-08-04T23:09:50Z",
+      "updated_at": "2026-09-19T23:24:42Z",
+      "closed_at": "2026-08-05T04:36:18Z",
+      "url": "https://github.com/microsoft/vscode/pull/329069",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#324017",
+      "number": 324017,
+      "title": "Fix flaky unit-test test",
+      "body": "Fixes #320974\n",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-07-02T08:55:15Z",
+      "updated_at": "2026-08-16T23:28:43Z",
+      "closed_at": "2026-07-02T09:09:15Z",
+      "url": "https://github.com/microsoft/vscode/pull/324017",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#321168",
+      "number": 321168,
+      "title": "Voice Mode: migrate from vendored libs to VS Code patterns",
+      "body": "Resolves #321142\n\n## Summary\n\nMigrates the voice UI from vendored `lit-html` and `@preact/signals-core` to VS Code's native patterns.\n\n### 1. preact-signals → VS Code observables\n- 23 `signal()` → `observableValue()`\n- 1 `computed()` → `derived()`\n- 3 `effect()` → `autorun()`\n- All `.value` reads → `.read(reader)` (tracked) or `.get()` (untracked)\n- All `.value` writes → `.set(value, undefined)`\n\n### 2. lit-html → imperative DOM construction\nEach component is now a factory function returning `{ element, update(props) }`:\n- **`element`**: stable DOM node created once\n- **`update()`**: targeted mutations (no full rebuilds)\n\nThis preserves focus, scroll position, and textarea state across re-renders.\n\n### 3. Glow animation decoupled from reactive system\nThe glow/waveform animation (running at 60fps via requestAnimationFrame) previously updated two observables each frame, triggering full autorun re-renders. Now it directly updates the glow element's CSS — the autorun only fires for actual state changes.\n\n### 4. Vendored libraries removed\n- Deleted `src/vs/base/common/lit-html/` (11 files)\n- Deleted `src/vs/base/common/signals-core/` (3 files)\n\nNo other consumers existed.\n\n### Files changed\n- `agentsVoiceWidget.ts` — signals + render loop migration\n- 8 component files in `components/` — lit-html → DOM\n- Vendored library directories removed",
+      "author": "meganrogge",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "voice-mode"
+      ],
+      "created_at": "2026-06-12T15:30:09Z",
+      "updated_at": "2026-07-27T23:41:35Z",
+      "closed_at": "2026-06-12T16:56:44Z",
+      "url": "https://github.com/microsoft/vscode/pull/321168",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#295040",
+      "number": 295040,
+      "title": "chore: bump extension versions",
+      "body": "This PR bumps the version number of several built-in extensions in order to stop Component Governance (CG) from flagging them as outdated. CG currently does not distinguish between VS Code built-in extensions and published third-party npm packages with the same names.\r\n\r\nAfter this PR is merged, we will be able to revert microsoft/component-detection#1348, re-enable Component Governance scanning for our built-in extensions, and unblock downstream teams. CC @dtivel\r\n\r\nVerification build: https://dev.azure.com/monacotools/Monaco/_build/results?buildId=406336&view=results",
+      "author": "rzhao271",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-02-12T21:45:03Z",
+      "updated_at": "2026-03-29T23:31:34Z",
+      "closed_at": "2026-02-12T23:15:03Z",
+      "url": "https://github.com/microsoft/vscode/pull/295040",
+      "comments_count": 1,
+      "comments": [
+        {
+          "author": "vs-code-engineering[bot]",
+          "body": "## 📬 CODENOTIFY\n\nThe following users are being notified based on files changed in this PR:\n\n### @lszomoru\n\nMatched files:\n- `extensions/git-base/package-lock.json`\n- `extensions/git-base/package.json`\n- `extensions/git/package-lock.json`\n- `extensions/git/package.json`\n",
+          "created_at": "2026-02-12T22:57:52Z",
+          "url": "https://github.com/microsoft/vscode/pull/295040#issuecomment-3893857912"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#291686",
+      "number": 291686,
+      "title": "add missing team members to endgame notebook",
+      "body": "",
+      "author": "eleanorjboyd",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-01-29T17:48:25Z",
+      "updated_at": "2026-03-15T23:31:24Z",
+      "closed_at": "2026-01-29T20:02:15Z",
+      "url": "https://github.com/microsoft/vscode/pull/291686",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#276810",
+      "number": 276810,
+      "title": "Ignore double-click event on Quick Pick title when the target is a button",
+      "body": "Fixes #275068",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-11T21:29:59Z",
+      "updated_at": "2025-12-29T23:28:38Z",
+      "closed_at": "2025-11-14T20:54:32Z",
+      "url": "https://github.com/microsoft/vscode/pull/276810",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#276798",
+      "number": 276798,
+      "title": "Move accent-insensitive filtering to common",
+      "body": "Fixes #270711\r\n\r\nAdded new `tryNormalizeToBase` method to `normalization.ts` which will perform NFD+accent removal+lower casing and cache the result.\r\n\r\nRemoved `removeAccents` since it was not used after this change and it is not safe to use (does not preserve the indices).\r\n\r\nMoved accent-insensitive logic to `filters.txt` by using the new `tryNormalizeToBase` method.\r\n\r\nReplaced filters that match on natural language and used `matchesPrefix` or `matchesContiguousSubString` with a single call to `matchesBaseContiguousSubString` filter which will do both. This does change the order of preferences (contiguous substring will now take precedence other words), but it will make one less filtering call per item.\r\n\r\nUpdated unit-tests.\r\n\r\n**Note**: The intent of `getAlternateCodes` is similar to what `tryNormalizeToBase` is doing, but at the same time building tables for all Unicode accents and combined characters into our code seems impractical, so keep those two separate, although normalization will occur before Korean replacement, so the two will work together in `matchesWords` case.",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-11T20:17:21Z",
+      "updated_at": "2025-12-27T23:27:53Z",
+      "closed_at": "2025-11-11T23:58:07Z",
+      "url": "https://github.com/microsoft/vscode/pull/276798",
+      "comments_count": 3,
+      "comments": [
+        {
+          "author": "vs-code-engineering[bot]",
+          "body": "## 📬 CODENOTIFY\n\nThe following users are being notified based on files changed in this PR:\n\n### @rzhao271\n\nMatched files:\n- `src/vs/workbench/contrib/preferences/browser/preferencesSearch.ts`\n",
+          "created_at": "2025-11-11T20:17:54Z",
+          "url": "https://github.com/microsoft/vscode/pull/276798#issuecomment-3518599114"
+        },
+        {
+          "author": "Copilot",
+          "body": "@dmitrivMS I've opened a new pull request, #276800, to work on those changes. Once the pull request is ready, I'll request review from you.",
+          "created_at": "2025-11-11T20:30:16Z",
+          "url": "https://github.com/microsoft/vscode/pull/276798#issuecomment-3518634648"
+        },
+        {
+          "author": "Copilot",
+          "body": "@dmitrivMS I've opened a new pull request, #276801, to work on those changes. Once the pull request is ready, I'll request review from you.",
+          "created_at": "2025-11-11T20:31:12Z",
+          "url": "https://github.com/microsoft/vscode/pull/276798#issuecomment-3518637033"
+        }
+      ],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#276640",
+      "number": 276640,
+      "title": "Fix folder icons not rendering correctly for QuickPickItems with resourceUri",
+      "body": "",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-11T00:53:44Z",
+      "updated_at": "2025-12-26T23:28:20Z",
+      "closed_at": "2025-11-11T22:56:09Z",
+      "url": "https://github.com/microsoft/vscode/pull/276640",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    },
+    {
+      "type": "pull_request",
+      "id": "#276632",
+      "number": 276632,
+      "title": "Add 'Go to Offset...' command",
+      "body": "Fixes #275317",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-10T23:59:44Z",
+      "updated_at": "2025-12-26T23:28:20Z",
+      "closed_at": "2025-11-11T22:54:33Z",
+      "url": "https://github.com/microsoft/vscode/pull/276632",
+      "comments_count": 0,
+      "comments": [],
+      "comments_collected": true
+    }
+  ]
+}

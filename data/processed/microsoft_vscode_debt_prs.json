@@ -1,0 +1,2278 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "debt",
+    "sources": [
+      "prs"
+    ],
+    "requested": 15,
+    "collected": 15,
+    "collected_at": "2026-10-08T11:01:27+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:10+00:00"
+  },
+  "documents": [
+    {
+      "type": "pull_request",
+      "id": "#337128",
+      "number": 337128,
+      "title": "Remove obsolete Copilot SDK postinstall patch",
+      "url": "https://github.com/microsoft/vscode/pull/337128",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-09-21T19:36:31Z",
+      "updated_at": "2026-09-21T20:58:41Z",
+      "closed_at": "2026-09-21T20:58:41Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Remove obsolete Copilot SDK postinstall patch\n\nRemoves the obsolete postinstall rewrite for @github/copilot-sdk/dist/session.js. The pinned SDK already emits the explicit vscode-jsonrpc/node.js import, so the workaround is no longer needed; the Foundry Local patch is unchanged.\n\nOriginal implementation by , carried unchanged from #337065.\n\nFixes #337061. Related to #326491.\n\nValidation:\nnpm run gulp -- compile-client",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": true,
+        "patterns": {
+          "workaround": 1
+        },
+        "categories": {
+          "general": 1
+        },
+        "matches": [
+          {
+            "pattern": "workaround",
+            "category": "general",
+            "explicit": true,
+            "text": "workaround",
+            "source": "text",
+            "start": 209,
+            "end": 219,
+            "context": "he explicit vscode-jsonrpc/node.js import, so the workaround is no longer needed; the Foundry Local patch is u"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 79,
+        "sentences": 7,
+        "pos": {
+          "NOUN": 17,
+          "PUNCT": 13,
+          "VERB": 8,
+          "PROPN": 8,
+          "SYM": 7,
+          "ADJ": 6,
+          "DET": 5,
+          "NUM": 5,
+          "ADP": 4,
+          "ADV": 3,
+          "AUX": 2,
+          "CCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "postinstall": 2,
+            "patch": 2,
+            "sdk": 2,
+            "rewrite": 1,
+            "copilot": 1,
+            "dist": 1,
+            "import": 1,
+            "workaround": 1,
+            "implementation": 1,
+            "fix": 1,
+            "validation": 1,
+            "npm": 1,
+            "compile": 1,
+            "client": 1
+          },
+          "adjective": {
+            "obsolete": 2,
+            "unchanged": 2,
+            "explicit": 1,
+            "original": 1
+          },
+          "verb": {
+            "remove": 2,
+            "pin": 1,
+            "emit": 1,
+            "need": 1,
+            "carry": 1,
+            "relate": 1,
+            "run": 1
+          }
+        },
+        "noun_phrases": {
+          "obsolete copilot sdk postinstall patch": 1,
+          "obsolete postinstall rewrite": 1,
+          "pinned sdk": 1,
+          "explicit vscode jsonrpc import": 1,
+          "foundry local patch": 1,
+          "original implementation": 1,
+          "compile client": 1
+        },
+        "entities": [
+          {
+            "text": "Copilot SDK",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "SDK",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Foundry Local",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 2
+        },
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 1
+        },
+        {
+          "name": "Node.js",
+          "category": "framework",
+          "count": 1
+        },
+        {
+          "name": "npm",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {
+              "workaround": 1
+            },
+            "terms": {
+              "obsolete": 2
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0342,
+        "sentences": 8,
+        "positive_sentences": 1,
+        "negative_sentences": 2,
+        "neutral_sentences": 5
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#333653",
+      "number": 333653,
+      "title": "npm: remove deprecated script explorer setting",
+      "url": "https://github.com/microsoft/vscode/pull/333653",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "tasks",
+        "debt"
+      ],
+      "created_at": "2026-08-31T21:41:20Z",
+      "updated_at": "2026-09-01T18:01:56Z",
+      "closed_at": "2026-09-01T17:59:40Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "npm: remove deprecated script explorer setting\n\nSummary\n\nremove the deprecated npm.enableScriptExplorer setting\nupdate the npm extension README because the Script Explorer is now always available through the Explorer's Views menu\nremove the stale localization entry\n\nThe setting has had no runtime consumer since the Script Explorer became generally available.\n\nValidation\n\nparsed the edited extension manifest and localization file as JSON\nverified no remaining references to npm.enableScriptExplorer\nran git diff --check",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 73,
+        "sentences": 6,
+        "pos": {
+          "NOUN": 22,
+          "VERB": 13,
+          "PROPN": 10,
+          "DET": 10,
+          "PUNCT": 3,
+          "SCONJ": 3,
+          "ADV": 3,
+          "ADJ": 3,
+          "AUX": 2,
+          "ADP": 2,
+          "PART": 1,
+          "CCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "setting": 2,
+            "extension": 2,
+            "localization": 2,
+            "script": 1,
+            "explorer": 1,
+            "update": 1,
+            "npm": 1,
+            "readme": 1,
+            "view": 1,
+            "menu": 1,
+            "entry": 1,
+            "runtime": 1,
+            "consumer": 1,
+            "validation": 1,
+            "manifest": 1,
+            "file": 1,
+            "reference": 1
+          },
+          "adjective": {
+            "available": 2,
+            "stale": 1
+          },
+          "verb": {
+            "remove": 3,
+            "deprecate": 2,
+            "set": 1,
+            "parse": 1,
+            "edit": 1,
+            "verify": 1,
+            "remain": 1,
+            "run": 1
+          }
+        },
+        "noun_phrases": {
+          "script explorer": 2,
+          "deprecated script explorer": 1,
+          "deprecated setting update": 1,
+          "npm extension readme": 1,
+          "explorer views menu": 1,
+          "stale localization entry": 1,
+          "runtime consumer": 1,
+          "edited extension manifest localization file": 1,
+          "remaining reference": 1,
+          "git diff": 1
+        },
+        "entities": [
+          {
+            "text": "npm",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "the Script Explorer",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Explorer",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Views",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "JSON",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "npm",
+          "category": "tool",
+          "count": 2
+        },
+        {
+          "name": "Git",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "possible",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {
+              "readme": 1
+            }
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 10,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 10
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#333651",
+      "number": 333651,
+      "title": "html: remove deprecated mirror cursor setting",
+      "url": "https://github.com/microsoft/vscode/pull/333651",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "html",
+        "debt"
+      ],
+      "created_at": "2026-08-31T21:40:09Z",
+      "updated_at": "2026-09-01T18:01:35Z",
+      "closed_at": "2026-09-01T18:00:35Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "html: remove deprecated mirror cursor setting\n\nSummary\n\nremove the deprecated html.mirrorCursorOnMatchingTag setting\nremove its stale localization strings\n\nThe setting has been superseded by editor.linkedEditing and has no runtime consumer.\n\nValidation\n\nparsed the edited extension manifest and localization file as JSON\nverified no remaining references to html.mirrorCursorOnMatchingTag\nran git diff --check\n\nThanks !",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 54,
+        "sentences": 8,
+        "pos": {
+          "NOUN": 16,
+          "VERB": 14,
+          "PROPN": 7,
+          "DET": 5,
+          "PUNCT": 3,
+          "AUX": 2,
+          "ADP": 2,
+          "CCONJ": 2,
+          "PRON": 1,
+          "ADJ": 1,
+          "SCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "setting": 2,
+            "localization": 2,
+            "mirror": 1,
+            "cursor": 1,
+            "string": 1,
+            "runtime": 1,
+            "consumer": 1,
+            "validation": 1,
+            "extension": 1,
+            "manifest": 1,
+            "file": 1,
+            "reference": 1,
+            "thank": 1
+          },
+          "adjective": {
+            "stale": 1
+          },
+          "verb": {
+            "remove": 3,
+            "deprecate": 2,
+            "set": 1,
+            "supersede": 1,
+            "parse": 1,
+            "edit": 1,
+            "verify": 1,
+            "remain": 1,
+            "run": 1
+          }
+        },
+        "noun_phrases": {
+          "deprecated setting": 1,
+          "stale localization string": 1,
+          "runtime consumer": 1,
+          "edited extension manifest localization file": 1,
+          "remaining reference": 1,
+          "git diff": 1
+        },
+        "entities": [
+          {
+            "text": "JSON",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "HTML",
+          "category": "language",
+          "count": 1
+        },
+        {
+          "name": "Git",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0493,
+        "sentences": 10,
+        "positive_sentences": 1,
+        "negative_sentences": 0,
+        "neutral_sentences": 9
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#333650",
+      "number": 333650,
+      "title": "chat: remove deprecated agent debug log setting",
+      "url": "https://github.com/microsoft/vscode/pull/333650",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "chat"
+      ],
+      "created_at": "2026-08-31T21:38:57Z",
+      "updated_at": "2026-09-01T17:37:54Z",
+      "closed_at": "2026-09-01T17:36:49Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "chat: remove deprecated agent debug log setting\n\nSummary\n\nremove the deprecated github.copilot.chat.agentDebugLog.enabled setting\nremove its completed migration registration, localization, and stale core constant/comment\nretain github.copilot.chat.agentDebugLog.fileLogging.enabled as the authoritative extension-host debug logging toggle\n\nThis does not change the separate chat.agentHost.agentDebugLog.enabled setting used by agent host sessions.\n\nValidation\n\nparsed the edited extension manifests as JSON\nverified no remaining references to the removed setting or constants\nran git diff --check",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 75,
+        "sentences": 6,
+        "pos": {
+          "NOUN": 22,
+          "VERB": 20,
+          "PUNCT": 6,
+          "DET": 6,
+          "ADJ": 5,
+          "PROPN": 4,
+          "ADP": 3,
+          "PRON": 2,
+          "CCONJ": 2,
+          "X": 1,
+          "SYM": 1,
+          "AUX": 1,
+          "PART": 1,
+          "SCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "agent": 2,
+            "extension": 2,
+            "host": 2,
+            "setting": 2,
+            "chat": 1,
+            "log": 1,
+            "migration": 1,
+            "registration": 1,
+            "localization": 1,
+            "core": 1,
+            "comment": 1,
+            "retain": 1,
+            "toggle": 1,
+            "session": 1,
+            "validation": 1,
+            "manifest": 1,
+            "reference": 1,
+            "constant": 1
+          },
+          "adjective": {
+            "stale": 1,
+            "constant": 1,
+            "authoritative": 1,
+            "separate": 1,
+            "removed": 1
+          },
+          "verb": {
+            "remove": 3,
+            "deprecate": 2,
+            "set": 2,
+            "complete": 1,
+            "debug": 1,
+            "log": 1,
+            "change": 1,
+            "parse": 1,
+            "edit": 1,
+            "verify": 1,
+            "remain": 1,
+            "run": 1
+          }
+        },
+        "noun_phrases": {
+          "deprecated agent": 1,
+          "completed migration registration localization stale core constant comment retain": 1,
+          "authoritative extension host": 1,
+          "separate setting": 1,
+          "agent host session": 1,
+          "edited extension manifest": 1,
+          "remaining reference": 1,
+          "removed setting": 1,
+          "git diff": 1
+        },
+        "entities": [
+          {
+            "text": "JSON",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Git",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 10,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 10
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#333649",
+      "number": 333649,
+      "title": "chat: remove unused inline edits displayLine setting",
+      "url": "https://github.com/microsoft/vscode/pull/333649",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "inline-completions",
+        "chat"
+      ],
+      "created_at": "2026-08-31T21:37:21Z",
+      "updated_at": "2026-09-01T08:51:01Z",
+      "closed_at": "2026-09-01T08:49:59Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "chat: remove unused inline edits displayLine setting\n\nSummary\n\nremove the unused github.copilot.chat.inlineEdits.nextCursorPrediction.displayLine setting\nremove its stale configuration registry and localization entries\n\nThe setting's only runtime consumer was removed with the old NES jump label implementation.\n\nValidation\n\nparsed the edited extension manifests as JSON\nverified no remaining references to the setting or InlineEditsNextCursorPredictionDisplayLine\nran git diff --check",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 59,
+        "sentences": 6,
+        "pos": {
+          "NOUN": 19,
+          "VERB": 12,
+          "DET": 6,
+          "ADJ": 5,
+          "PROPN": 5,
+          "PUNCT": 3,
+          "PRON": 2,
+          "CCONJ": 2,
+          "ADP": 2,
+          "PART": 1,
+          "AUX": 1,
+          "SCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "setting": 2,
+            "chat": 1,
+            "inline": 1,
+            "configuration": 1,
+            "registry": 1,
+            "localization": 1,
+            "entry": 1,
+            "runtime": 1,
+            "consumer": 1,
+            "jump": 1,
+            "label": 1,
+            "implementation": 1,
+            "validation": 1,
+            "extension": 1,
+            "manifest": 1,
+            "reference": 1
+          },
+          "adjective": {
+            "unused": 2,
+            "stale": 1,
+            "old": 1
+          },
+          "verb": {
+            "remove": 4,
+            "edit": 2,
+            "set": 2,
+            "parse": 1,
+            "verify": 1,
+            "remain": 1,
+            "run": 1
+          }
+        },
+        "noun_phrases": {
+          "unused inline": 1,
+          "stale configuration registry": 1,
+          "localization entry": 1,
+          "setting runtime consumer": 1,
+          "old nes jump label implementation": 1,
+          "edited extension manifest": 1,
+          "remaining reference": 1,
+          "git diff": 1
+        },
+        "entities": [
+          {
+            "text": "NES",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "JSON",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "git diff",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Git",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "possible",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {
+              "unused": 2
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 9,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 9
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#333418",
+      "number": 333418,
+      "title": "refactor: migrate AsyncIterableObject to AsyncIterableProducer to fix memory leaks",
+      "url": "https://github.com/microsoft/vscode/pull/333418",
+      "author": "veerjain-1",
+      "state": "closed",
+      "labels": [
+        "freeze-slow-crash-leak",
+        "debt",
+        "triage-needed"
+      ],
+      "created_at": "2026-08-30T18:30:31Z",
+      "updated_at": "2026-09-29T05:04:52Z",
+      "closed_at": "2026-09-29T05:04:52Z",
+      "comments_count": 3,
+      "bot_comments_ignored": 0,
+      "text": "refactor: migrate AsyncIterableObject to AsyncIterableProducer to fix memory leaks\n\nHi team! Friendly ping on this. Please let me know if there's anything I can do to help move this along or if you have any feedback.\n\nHi team, another friendly ping on this! Let me know if you need anything else from my end.\n\nThanks for working on this. Closing in favor of #338611: the migrated producer has no toPromise() method, so the existing flush path fails. This version also makes late source writes throw and deletes an unrelated Monaco test fixture. A focused terminal fix needs to preserve those contracts and avoid unrelated changes.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": true,
+        "patterns": {
+          "refactor": 1
+        },
+        "categories": {
+          "general": 1
+        },
+        "matches": [
+          {
+            "pattern": "refactor",
+            "category": "general",
+            "explicit": true,
+            "text": "refactor",
+            "source": "text",
+            "start": 0,
+            "end": 8,
+            "context": "refactor: migrate AsyncIterableObject to AsyncIterableProd"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 122,
+        "sentences": 10,
+        "pos": {
+          "VERB": 24,
+          "NOUN": 21,
+          "PUNCT": 15,
+          "PRON": 13,
+          "ADJ": 9,
+          "DET": 9,
+          "ADP": 8,
+          "PROPN": 5,
+          "SCONJ": 4,
+          "PART": 3,
+          "ADV": 3,
+          "CCONJ": 3,
+          "INTJ": 2,
+          "AUX": 1,
+          "SYM": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "team": 2,
+            "ping": 2,
+            "memory": 1,
+            "leak": 1,
+            "feedback": 1,
+            "end": 1,
+            "thank": 1,
+            "favor": 1,
+            "producer": 1,
+            "method": 1,
+            "path": 1,
+            "version": 1,
+            "source": 1,
+            "test": 1,
+            "fixture": 1,
+            "fix": 1,
+            "contract": 1,
+            "change": 1
+          },
+          "adjective": {
+            "friendly": 2,
+            "unrelated": 2,
+            "flush": 1,
+            "late": 1,
+            "focused": 1,
+            "terminal": 1
+          },
+          "verb": {
+            "let": 2,
+            "know": 2,
+            "need": 2,
+            "fix": 1,
+            "help": 1,
+            "work": 1,
+            "close": 1,
+            "migrate": 1,
+            "exist": 1,
+            "fail": 1,
+            "make": 1,
+            "write": 1,
+            "throw": 1,
+            "delete": 1,
+            "preserve": 1,
+            "avoid": 1
+          }
+        },
+        "noun_phrases": {
+          "friendly ping": 2,
+          "memory leak": 1,
+          "migrated producer": 1,
+          "existing flush path": 1,
+          "late source": 1,
+          "unrelated monaco test fixture": 1,
+          "focused terminal fix": 1,
+          "unrelated change": 1
+        },
+        "entities": [
+          {
+            "text": "Monaco",
+            "label": "NORP",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "possible",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {
+              "refactor": 1
+            },
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {
+              "refactor": 1
+            },
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 1
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.2165,
+        "sentences": 10,
+        "positive_sentences": 5,
+        "negative_sentences": 0,
+        "neutral_sentences": 5
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#329069",
+      "number": 329069,
+      "title": "Restrict terminal auto-approval setting in untrusted workspaces ",
+      "url": "https://github.com/microsoft/vscode/pull/329069",
+      "author": "anthonykim1",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "terminal-auto-approve"
+      ],
+      "created_at": "2026-08-04T23:09:50Z",
+      "updated_at": "2026-09-19T23:24:42Z",
+      "closed_at": "2026-08-05T04:36:18Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Restrict terminal auto-approval setting in untrusted workspaces\n\nFixes #329106\n\nMark terminal auto-approval enablement, command rules, default-rule overrides, and detected file-write policy as restricted settings.\nAlso restrict the deprecated chat.agent.terminal.autoApprove compatibility setting.\nIgnore workspace-provided values for these settings while the workspace is untrusted.\nPreserve user, remote, default, and trusted-workspace behavior.\nKeep terminal, Agent Host, warning, sandbox, and permission logic unchanged.\nAdd parser-level regressions for untrusted single-folder and .code-workspace settings, plus a trusted-workspace negative control.\n\nInspirations from:\n\nRestricted-setting filtering follows ConfigurationModelParser.shouldInclude, which skips properties marked restricted when skipRestricted is enabled.\nUntrusted workspace loading and trust-change reparsing follow WorkspaceService.reload and WorkspaceService.reparseWorkspaceSettings.\nThe restriction convention matches the neighboring chat.tools.terminal.autoApproveWorkspaceNpmScripts setting.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 153,
+        "sentences": 12,
+        "pos": {
+          "NOUN": 56,
+          "PUNCT": 34,
+          "VERB": 22,
+          "ADJ": 9,
+          "CCONJ": 7,
+          "DET": 6,
+          "PROPN": 5,
+          "ADP": 4,
+          "SCONJ": 3,
+          "NUM": 2,
+          "AUX": 2,
+          "SYM": 1,
+          "ADV": 1,
+          "PRON": 1
+        },
+        "lemmas": {
+          "noun": {
+            "workspace": 7,
+            "setting": 6,
+            "auto": 2,
+            "approval": 2,
+            "rule": 2,
+            "default": 2,
+            "fix": 1,
+            "enablement": 1,
+            "command": 1,
+            "override": 1,
+            "file": 1,
+            "policy": 1,
+            "compatibility": 1,
+            "value": 1,
+            "user": 1,
+            "behavior": 1,
+            "terminal": 1,
+            "warning": 1,
+            "sandbox": 1,
+            "permission": 1,
+            "logic": 1,
+            "parser": 1,
+            "level": 1,
+            "regression": 1,
+            "folder": 1,
+            "control": 1,
+            "inspiration": 1,
+            "filtering": 1,
+            "property": 1,
+            "loading": 1,
+            "trust": 1,
+            "change": 1,
+            "reparsing": 1,
+            "follow": 1,
+            "restriction": 1,
+            "convention": 1,
+            "neighboring": 1
+          },
+          "adjective": {
+            "untrusted": 3,
+            "terminal": 2,
+            "remote": 1,
+            "unchanged": 1,
+            "single": 1,
+            "negative": 1
+          },
+          "verb": {
+            "restrict": 5,
+            "trust": 2,
+            "detect": 1,
+            "write": 1,
+            "deprecate": 1,
+            "ignore": 1,
+            "provide": 1,
+            "untruste": 1,
+            "add": 1,
+            "set": 1,
+            "follow": 1,
+            "skip": 1,
+            "mark": 1,
+            "enable": 1,
+            "match": 1
+          }
+        },
+        "noun_phrases": {
+          "terminal auto approval setting": 1,
+          "untrusted workspace": 1,
+          "mark terminal auto approval enablement": 1,
+          "command rule": 1,
+          "default rule override": 1,
+          "file write policy": 1,
+          "restricted setting": 1,
+          "deprecated compatibility setting": 1,
+          "workspace provided value": 1,
+          "preserve user": 1,
+          "parser level regression": 1,
+          "untrusted single folder workspace setting": 1,
+          "trusted workspace negative control": 1,
+          "restricted setting filtering": 1,
+          "untrusted workspace loading trust change reparsing follow": 1,
+          "restriction convention": 1,
+          "neighboring setting": 1
+        },
+        "entities": [
+          {
+            "text": "Mark",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Ignore",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.1881,
+        "sentences": 12,
+        "positive_sentences": 1,
+        "negative_sentences": 7,
+        "neutral_sentences": 4
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#324017",
+      "number": 324017,
+      "title": "Fix flaky unit-test test",
+      "url": "https://github.com/microsoft/vscode/pull/324017",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-07-02T08:55:15Z",
+      "updated_at": "2026-08-16T23:28:43Z",
+      "closed_at": "2026-07-02T09:09:15Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Fix flaky unit-test test\n\nFixes #320974",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "unit_test": 1
+        },
+        "categories": {
+          "tests": 1
+        },
+        "matches": [
+          {
+            "pattern": "unit_test",
+            "category": "tests",
+            "explicit": false,
+            "text": "unit-test",
+            "source": "text",
+            "start": 10,
+            "end": 19,
+            "context": "Fix flaky unit-test test Fixes #320974"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 9,
+        "sentences": 2,
+        "pos": {
+          "NOUN": 4,
+          "VERB": 1,
+          "ADJ": 1,
+          "PUNCT": 1,
+          "SYM": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "test": 2,
+            "unit": 1,
+            "fix": 1
+          },
+          "adjective": {
+            "flaky": 1
+          },
+          "verb": {
+            "fix": 1
+          }
+        },
+        "noun_phrases": {
+          "fix flaky unit test test": 1
+        },
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "yes",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "flaky": 1,
+              "test": 2
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 2
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#321168",
+      "number": 321168,
+      "title": "Voice Mode: migrate from vendored libs to VS Code patterns",
+      "url": "https://github.com/microsoft/vscode/pull/321168",
+      "author": "meganrogge",
+      "state": "closed",
+      "labels": [
+        "debt",
+        "voice-mode"
+      ],
+      "created_at": "2026-06-12T15:30:09Z",
+      "updated_at": "2026-07-27T23:41:35Z",
+      "closed_at": "2026-06-12T16:56:44Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Voice Mode: migrate from vendored libs to VS Code patterns\n\nResolves #321142\n\nSummary\n\nMigrates the voice UI from vendored lit-html and @preact/signals-core to VS Code's native patterns.\n\npreact-signals → VS Code observables\n23 signal() → observableValue()\n1 computed() → derived()\n3 effect() → autorun()\nAll .value reads → .read(reader) (tracked) or .get() (untracked)\nAll .value writes → .set(value, undefined)\n\nlit-html → imperative DOM construction\nEach component is now a factory function returning { element, update(props) }:\nelement: stable DOM node created once\nupdate(): targeted mutations (no full rebuilds)\n\nThis preserves focus, scroll position, and textarea state across re-renders.\n\nGlow animation decoupled from reactive system\nThe glow/waveform animation (running at 60fps via requestAnimationFrame) previously updated two observables each frame, triggering full autorun re-renders. Now it directly updates the glow element's CSS — the autorun only fires for actual state changes.\n\nVendored libraries removed\nDeleted src/vs/base/common/lit-html/ (11 files)\nDeleted src/vs/base/common/signals-core/ (3 files)\n\nNo other consumers existed.\n\nFiles changed\nagentsVoiceWidget.ts — signals + render loop migration\n8 component files in components/ — lit-html → DOM\nVendored library directories removed",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 261,
+        "sentences": 12,
+        "pos": {
+          "NOUN": 70,
+          "PUNCT": 57,
+          "VERB": 29,
+          "PROPN": 23,
+          "SYM": 18,
+          "ADJ": 17,
+          "ADP": 11,
+          "DET": 11,
+          "NUM": 10,
+          "ADV": 6,
+          "CCONJ": 4,
+          "PART": 2,
+          "PRON": 2,
+          "AUX": 1
+        },
+        "lemmas": {
+          "noun": {
+            "signal": 5,
+            "element": 3,
+            "file": 3,
+            "pattern": 2,
+            "observable": 2,
+            "autorun": 2,
+            "html": 2,
+            "component": 2,
+            "state": 2,
+            "render": 2,
+            "animation": 2,
+            "library": 2,
+            "src": 2,
+            "base": 2,
+            "migrate": 1,
+            "lib": 1,
+            "voice": 1,
+            "core": 1,
+            "preact": 1,
+            "effect": 1,
+            "construction": 1,
+            "factory": 1,
+            "function": 1,
+            "update": 1,
+            "mutation": 1,
+            "rebuild": 1,
+            "scroll": 1,
+            "position": 1,
+            "system": 1,
+            "glow": 1,
+            "frame": 1,
+            "css": 1,
+            "fire": 1,
+            "change": 1,
+            "consumer": 1,
+            "loop": 1,
+            "migration": 1,
+            "directory": 1
+          },
+          "adjective": {
+            "vendored": 2,
+            "glow": 2,
+            "common": 2,
+            "native": 1,
+            "untracked": 1,
+            "undefined": 1,
+            "imperative": 1,
+            "stable": 1,
+            "reactive": 1,
+            "autorun": 1,
+            "actual": 1
+          },
+          "verb": {
+            "light": 4,
+            "update": 2,
+            "remove": 2,
+            "delete": 2,
+            "resolve": 1,
+            "compute": 1,
+            "derive": 1,
+            "read": 1,
+            "track": 1,
+            "write": 1,
+            "return": 1,
+            "create": 1,
+            "target": 1,
+            "preserve": 1,
+            "focus": 1,
+            "textarea": 1,
+            "decouple": 1,
+            "waveform": 1,
+            "run": 1,
+            "trigger": 1,
+            "exist": 1,
+            "change": 1,
+            "render": 1
+          }
+        },
+        "noun_phrases": {
+          "voice mode": 1,
+          "vendored lib": 1,
+          "code pattern": 1,
+          "vendored lit html": 1,
+          "code native pattern": 1,
+          "preact signal": 1,
+          "code observable": 1,
+          "lit html imperative dom construction": 1,
+          "factory function": 1,
+          "stable dom node": 1,
+          "targeted mutation": 1,
+          "glow animation": 1,
+          "reactive system": 1,
+          "glow waveform animation": 1,
+          "glow element css": 1,
+          "autorun fire": 1,
+          "actual state change": 1,
+          "vendored library": 1,
+          "deleted src base common lit file": 1,
+          "deleted src": 1,
+          "base common signal": 1,
+          "loop migration": 1,
+          "component file": 1,
+          "lit html dom vendored library directory": 1
+        },
+        "entities": [
+          {
+            "text": "VS Code",
+            "label": "PRODUCT",
+            "count": 3
+          },
+          {
+            "text": "DOM",
+            "label": "ORG",
+            "count": 3
+          },
+          {
+            "text": "UI",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Glow",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "CSS",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Files",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "loop migration",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 3
+        },
+        {
+          "name": "HTML",
+          "category": "language",
+          "count": 3
+        },
+        {
+          "name": "CSS",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "possible",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {
+              "decouple": 1
+            }
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0075,
+        "sentences": 26,
+        "positive_sentences": 2,
+        "negative_sentences": 1,
+        "neutral_sentences": 23
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#295040",
+      "number": 295040,
+      "title": "chore: bump extension versions",
+      "url": "https://github.com/microsoft/vscode/pull/295040",
+      "author": "rzhao271",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-02-12T21:45:03Z",
+      "updated_at": "2026-03-29T23:31:34Z",
+      "closed_at": "2026-02-12T23:15:03Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 1,
+      "text": "chore: bump extension versions\n\nThis PR bumps the version number of several built-in extensions in order to stop Component Governance (CG) from flagging them as outdated. CG currently does not distinguish between VS Code built-in extensions and published third-party npm packages with the same names.\n\nAfter this PR is merged, we will be able to revert microsoft/component-detection#1348, re-enable Component Governance scanning for our built-in extensions, and unblock downstream teams. CC\n\nVerification build:",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 96,
+        "sentences": 7,
+        "pos": {
+          "NOUN": 20,
+          "VERB": 16,
+          "PUNCT": 15,
+          "PROPN": 11,
+          "ADP": 9,
+          "ADJ": 5,
+          "DET": 4,
+          "AUX": 4,
+          "PART": 3,
+          "PRON": 3,
+          "SCONJ": 2,
+          "CCONJ": 2,
+          "ADV": 1,
+          "SYM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "extension": 4,
+            "bump": 2,
+            "version": 2,
+            "chore": 1,
+            "number": 1,
+            "order": 1,
+            "party": 1,
+            "npm": 1,
+            "package": 1,
+            "name": 1,
+            "component": 1,
+            "team": 1
+          },
+          "adjective": {
+            "able": 1,
+            "downstream": 1
+          },
+          "verb": {
+            "build": 4,
+            "stop": 1,
+            "flag": 1,
+            "outdate": 1,
+            "distinguish": 1,
+            "publish": 1,
+            "merge": 1,
+            "revert": 1,
+            "enable": 1,
+            "scan": 1,
+            "unblock": 1
+          }
+        },
+        "noun_phrases": {
+          "built extension": 2,
+          "component governance": 2,
+          "extension version": 1,
+          "version number": 1,
+          "code built extension": 1,
+          "party npm package": 1,
+          "microsoft component": 1,
+          "downstream team": 1
+        },
+        "entities": [
+          {
+            "text": "CG",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "VS Code",
+            "label": "PRODUCT",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 1
+        },
+        {
+          "name": "npm",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0377,
+        "sentences": 6,
+        "positive_sentences": 0,
+        "negative_sentences": 1,
+        "neutral_sentences": 5
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#291686",
+      "number": 291686,
+      "title": "add missing team members to endgame notebook",
+      "url": "https://github.com/microsoft/vscode/pull/291686",
+      "author": "eleanorjboyd",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2026-01-29T17:48:25Z",
+      "updated_at": "2026-03-15T23:31:24Z",
+      "closed_at": "2026-01-29T20:02:15Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "add missing team members to endgame notebook",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 7,
+        "sentences": 1,
+        "pos": {
+          "VERB": 3,
+          "NOUN": 3,
+          "PART": 1
+        },
+        "lemmas": {
+          "noun": {
+            "team": 1,
+            "member": 1,
+            "notebook": 1
+          },
+          "adjective": {},
+          "verb": {
+            "add": 1,
+            "miss": 1,
+            "endgame": 1
+          }
+        },
+        "noun_phrases": {
+          "missing team member": 1
+        },
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.296,
+        "sentences": 1,
+        "positive_sentences": 0,
+        "negative_sentences": 1,
+        "neutral_sentences": 0
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#276810",
+      "number": 276810,
+      "title": "Ignore double-click event on Quick Pick title when the target is a button",
+      "url": "https://github.com/microsoft/vscode/pull/276810",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-11T21:29:59Z",
+      "updated_at": "2025-12-29T23:28:38Z",
+      "closed_at": "2025-11-14T20:54:32Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Ignore double-click event on Quick Pick title when the target is a button\n\nFixes #275068",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 18,
+        "sentences": 2,
+        "pos": {
+          "NOUN": 6,
+          "PROPN": 2,
+          "DET": 2,
+          "VERB": 1,
+          "ADJ": 1,
+          "PUNCT": 1,
+          "ADP": 1,
+          "SCONJ": 1,
+          "AUX": 1,
+          "SYM": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "click": 1,
+            "event": 1,
+            "title": 1,
+            "target": 1,
+            "button": 1,
+            "fix": 1
+          },
+          "adjective": {
+            "double": 1
+          },
+          "verb": {
+            "ignore": 1
+          }
+        },
+        "noun_phrases": {
+          "double click event": 1,
+          "quick pick title": 1
+        },
+        "entities": [
+          {
+            "text": "Ignore",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Quick Pick",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "negative",
+        "compound": -0.1806,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 1,
+        "neutral_sentences": 1
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#276798",
+      "number": 276798,
+      "title": "Move accent-insensitive filtering to common",
+      "url": "https://github.com/microsoft/vscode/pull/276798",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-11T20:17:21Z",
+      "updated_at": "2025-12-27T23:27:53Z",
+      "closed_at": "2025-11-11T23:58:07Z",
+      "comments_count": 3,
+      "bot_comments_ignored": 1,
+      "text": "Move accent-insensitive filtering to common\n\nFixes #270711\n\nAdded new tryNormalizeToBase method to normalization.ts which will perform NFD+accent removal+lower casing and cache the result.\n\nRemoved removeAccents since it was not used after this change and it is not safe to use (does not preserve the indices).\n\nMoved accent-insensitive logic to filters.txt by using the new tryNormalizeToBase method.\n\nReplaced filters that match on natural language and used matchesPrefix or matchesContiguousSubString with a single call to matchesBaseContiguousSubString filter which will do both. This does change the order of preferences (contiguous substring will now take precedence other words), but it will make one less filtering call per item.\n\nUpdated unit-tests.\n\nNote: The intent of getAlternateCodes is similar to what tryNormalizeToBase is doing, but at the same time building tables for all Unicode accents and combined characters into our code seems impractical, so keep those two separate, although normalization will occur before Korean replacement, so the two will work together in matchesWords case.\n\nI've opened a new pull request, #276800, to work on those changes. Once the pull request is ready, I'll request review from you.\n\nI've opened a new pull request, #276801, to work on those changes. Once the pull request is ready, I'll request review from you.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {
+          "unit_test": 1
+        },
+        "categories": {
+          "tests": 1
+        },
+        "matches": [
+          {
+            "pattern": "unit_test",
+            "category": "tests",
+            "explicit": false,
+            "text": "unit-tests",
+            "source": "text",
+            "start": 747,
+            "end": 757,
+            "context": "l make one less filtering call per item. Updated unit-tests. Note: The intent of getAlternateCodes is simila"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 244,
+        "sentences": 14,
+        "pos": {
+          "NOUN": 49,
+          "VERB": 31,
+          "PUNCT": 30,
+          "ADJ": 26,
+          "ADP": 21,
+          "AUX": 18,
+          "DET": 17,
+          "PRON": 16,
+          "CCONJ": 9,
+          "NUM": 7,
+          "PART": 6,
+          "PROPN": 4,
+          "SCONJ": 4,
+          "SYM": 3,
+          "ADV": 2,
+          "X": 1
+        },
+        "lemmas": {
+          "noun": {
+            "request": 4,
+            "change": 3,
+            "method": 2,
+            "filter": 2,
+            "pull": 2,
+            "review": 2,
+            "filtering": 1,
+            "fix": 1,
+            "casing": 1,
+            "cache": 1,
+            "result": 1,
+            "index": 1,
+            "logic": 1,
+            "language": 1,
+            "order": 1,
+            "preference": 1,
+            "substring": 1,
+            "word": 1,
+            "item": 1,
+            "unit": 1,
+            "test": 1,
+            "note": 1,
+            "intent": 1,
+            "time": 1,
+            "building": 1,
+            "table": 1,
+            "accent": 1,
+            "character": 1,
+            "code": 1,
+            "normalization": 1,
+            "replacement": 1,
+            "case": 1
+          },
+          "adjective": {
+            "new": 4,
+            "accent": 2,
+            "insensitive": 2,
+            "pull": 2,
+            "ready": 2,
+            "common": 1,
+            "safe": 1,
+            "natural": 1,
+            "single": 1,
+            "contiguous": 1,
+            "precedence": 1,
+            "filtering": 1,
+            "similar": 1,
+            "impractical": 1,
+            "separate": 1,
+            "korean": 1
+          },
+          "verb": {
+            "work": 3,
+            "open": 2,
+            "request": 2,
+            "add": 1,
+            "perform": 1,
+            "remove": 1,
+            "use": 1,
+            "preserve": 1,
+            "move": 1,
+            "replace": 1,
+            "match": 1,
+            "change": 1,
+            "update": 1,
+            "combine": 1,
+            "occur": 1
+          }
+        },
+        "noun_phrases": {
+          "new method": 2,
+          "new pull request": 2,
+          "pull request": 2,
+          "accent insensitive filtering": 1,
+          "accent insensitive logic": 1,
+          "replaced filter": 1,
+          "natural language": 1,
+          "contiguous substring": 1,
+          "updated unit test": 1,
+          "building table": 1,
+          "unicode accent": 1,
+          "combined character": 1,
+          "korean replacement": 1
+        },
+        "entities": [
+          {
+            "text": "Unicode",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Korean",
+            "label": "NORP",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "possible",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {
+              "test": 1
+            }
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.0571,
+        "sentences": 13,
+        "positive_sentences": 3,
+        "negative_sentences": 1,
+        "neutral_sentences": 9
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#276640",
+      "number": 276640,
+      "title": "Fix folder icons not rendering correctly for QuickPickItems with resourceUri",
+      "url": "https://github.com/microsoft/vscode/pull/276640",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-11T00:53:44Z",
+      "updated_at": "2025-12-26T23:28:20Z",
+      "closed_at": "2025-11-11T22:56:09Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Fix folder icons not rendering correctly for QuickPickItems with resourceUri",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 10,
+        "sentences": 1,
+        "pos": {
+          "NOUN": 3,
+          "VERB": 2,
+          "ADP": 2,
+          "PART": 1,
+          "ADV": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "folder": 1,
+            "icon": 1
+          },
+          "adjective": {},
+          "verb": {
+            "fix": 1,
+            "render": 1
+          }
+        },
+        "noun_phrases": {
+          "folder icon": 1
+        },
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 1,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 1
+      }
+    },
+    {
+      "type": "pull_request",
+      "id": "#276632",
+      "number": 276632,
+      "title": "Add 'Go to Offset...' command",
+      "url": "https://github.com/microsoft/vscode/pull/276632",
+      "author": "dmitrivMS",
+      "state": "closed",
+      "labels": [
+        "debt"
+      ],
+      "created_at": "2025-11-10T23:59:44Z",
+      "updated_at": "2025-12-26T23:28:20Z",
+      "closed_at": "2025-11-11T22:54:33Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Add 'Go to Offset...' command\n\nFixes #275317",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 11,
+        "sentences": 2,
+        "pos": {
+          "VERB": 3,
+          "PUNCT": 3,
+          "NOUN": 2,
+          "ADP": 1,
+          "SYM": 1,
+          "NUM": 1
+        },
+        "lemmas": {
+          "noun": {
+            "command": 1,
+            "fix": 1
+          },
+          "adjective": {},
+          "verb": {
+            "add": 1,
+            "offset": 1
+          }
+        },
+        "noun_phrases": {},
+        "entities": []
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 2,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 2
+      }
+    }
+  ]
+}

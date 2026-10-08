@@ -1,0 +1,2641 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "microsoft",
+    "repo": "vscode",
+    "label": "bug",
+    "requested": 20,
+    "collected": 20,
+    "collected_at": "2026-10-07T23:46:16+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 11,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:06+00:00"
+  },
+  "documents": [
+    {
+      "type": "issue",
+      "id": "#340348",
+      "number": 340348,
+      "title": "Support Env Var expansion in VS Code mcp.json",
+      "url": "https://github.com/microsoft/vscode/issues/340348",
+      "author": "vritant24",
+      "state": "open",
+      "labels": [
+        "bug",
+        "feature-request",
+        "ai-customizations"
+      ],
+      "created_at": "2026-10-07T18:43:29Z",
+      "updated_at": "2026-10-07T18:43:29Z",
+      "closed_at": "",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Support Env Var expansion in VS Code mcp.json",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 8,
+        "sentences": 1,
+        "pos": {
+          "PROPN": 3,
+          "VERB": 2,
+          "NOUN": 2,
+          "ADP": 1
+        },
+        "lemmas": {
+          "noun": {
+            "expansion": 1
+          },
+          "adjective": {},
+          "verb": {
+            "support": 1,
+            "var": 1
+          }
+        },
+        "noun_phrases": {
+          "support env": 1
+        },
+        "entities": []
+      },
+      "technologies": [
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0,
+        "sentences": 1,
+        "positive_sentences": 0,
+        "negative_sentences": 0,
+        "neutral_sentences": 1
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340336",
+      "number": 340336,
+      "title": "Sessions: orphaned \"Session\" entries load, then disappear when opened",
+      "url": "https://github.com/microsoft/vscode/issues/340336",
+      "author": "digitarald",
+      "state": "open",
+      "labels": [
+        "bug"
+      ],
+      "created_at": "2026-10-07T17:40:24Z",
+      "updated_at": "2026-10-07T17:50:54Z",
+      "closed_at": "",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Sessions: orphaned \"Session\" entries load, then disappear when opened\n\nCopilot Chat Extension Version: Not recorded\nVS Code Version: Code - Insiders; exact build not recorded\nOS Version: macOS; exact version not recorded\nFeature (e.g. agent/edit/ask mode): Sessions list, local Copilot Agent Host\nSelected model (e.g. GPT 4.1, Claude 3.7 Sonnet): Not applicable to opening the existing entry\nLogs: Agent Host debug export analyzed locally. Sanitized findings below; the raw bundle is not attached because it can contain sensitive content.\n\nSteps to Reproduce:\n\nFind an existing entry titled \"Session\" in the sessions list.\nClick the entry. It loads for about three seconds.\nThe entry disappears from the list instead of opening a conversation.\n\nI do not yet have reliable steps to create the orphaned entry. The observed entry was created the previous day, October 6, 2026, and appeared in the list before I clicked it.\n\nExpected\n\nAn orphaned placeholder should not appear as an ordinary, openable session. If the host discovers that an already-visible entry cannot be opened, explain what happened rather than silently making it disappear.\n\nObserved log sequence\n\nOctober 7, 2026, local time, UTC-07:00:\n\nTime Event\n10:34:54.049 The client subscribes to restore the selected session and its chat.\n10:34:54.082 Copilot reports Adoption declined with marker=missing, provenance=unknown, cached=false.\n10:34:57.067 Restore fails with Session was never created on the backend, protocol error -32001.\n10:34:57.418 The host sends root/sessionRemoved for the selected entry.\n10:34:57.552 The renderer removes the entry. Five other entries disappear in the same batch.\n\nThe session was registered locally, but the host could not resolve its provider metadata. There is no client deletion request in the captured AHP traffic.\n\nInvestigation\n\nThe error matches the provisional-session check in agentService.ts. Once the provider catalogue becomes readable, _refreshPublishedSessionList can retract published entries that remain provisional and have no provider backing. retractSurfacedSession in agentHostStateManager.ts removes the list entry without deleting conversation files.\n\nThis points to a stale placeholder being exposed before catalogue validation, then retracted after the user tries to open it. The logs do not establish why the backing was absent or whether the provisional classification was correct. They do not show conversation data being deleted by the click.\n\nRelated: #321269 and #321469. No \"Mark Done\" action was observed as part of this reproduction.\n\n_🤖 Posted by GitHub Copilot on Harald's behalf._",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 468,
+        "sentences": 37,
+        "pos": {
+          "NOUN": 99,
+          "VERB": 72,
+          "PUNCT": 71,
+          "DET": 42,
+          "PROPN": 38,
+          "ADJ": 26,
+          "ADP": 24,
+          "AUX": 18,
+          "PART": 16,
+          "NUM": 15,
+          "ADV": 14,
+          "PRON": 13,
+          "SCONJ": 9,
+          "CCONJ": 6,
+          "SYM": 5
+        },
+        "lemmas": {
+          "noun": {
+            "entry": 13,
+            "session": 9,
+            "list": 5,
+            "log": 3,
+            "conversation": 3,
+            "host": 3,
+            "provider": 3,
+            "step": 2,
+            "placeholder": 2,
+            "client": 2,
+            "error": 2,
+            "catalogue": 2,
+            "backing": 2,
+            "load": 1,
+            "build": 1,
+            "version": 1,
+            "agent": 1,
+            "edit": 1,
+            "ask": 1,
+            "mode": 1,
+            "model": 1,
+            "export": 1,
+            "finding": 1,
+            "bundle": 1,
+            "content": 1,
+            "second": 1,
+            "day": 1,
+            "sequence": 1,
+            "time": 1,
+            "chat": 1,
+            "report": 1,
+            "marker": 1,
+            "provenance": 1,
+            "protocol": 1,
+            "root": 1,
+            "renderer": 1,
+            "batch": 1,
+            "metadata": 1,
+            "deletion": 1,
+            "request": 1,
+            "traffic": 1,
+            "investigation": 1,
+            "check": 1,
+            "file": 1,
+            "point": 1,
+            "validation": 1,
+            "user": 1,
+            "classification": 1,
+            "datum": 1,
+            "click": 1,
+            "action": 1,
+            "reproduction": 1,
+            "behalf": 1
+          },
+          "adjective": {
+            "provisional": 3,
+            "exact": 2,
+            "local": 2,
+            "applicable": 1,
+            "raw": 1,
+            "sensitive": 1,
+            "reliable": 1,
+            "observed": 1,
+            "previous": 1,
+            "ordinary": 1,
+            "openable": 1,
+            "visible": 1,
+            "unknown": 1,
+            "cached": 1,
+            "false": 1,
+            "backend": 1,
+            "readable": 1,
+            "stale": 1,
+            "absent": 1,
+            "correct": 1
+          },
+          "verb": {
+            "open": 5,
+            "disappear": 4,
+            "orphan": 3,
+            "record": 3,
+            "create": 3,
+            "exist": 2,
+            "click": 2,
+            "appear": 2,
+            "observe": 2,
+            "select": 2,
+            "remove": 2,
+            "retract": 2,
+            "delete": 2,
+            "debug": 1,
+            "analyze": 1,
+            "sanitize": 1,
+            "attach": 1,
+            "contain": 1,
+            "reproduce": 1,
+            "find": 1,
+            "title": 1,
+            "load": 1,
+            "expect": 1,
+            "discover": 1,
+            "explain": 1,
+            "happen": 1,
+            "make": 1,
+            "subscribe": 1,
+            "restore": 1,
+            "decline": 1,
+            "miss": 1,
+            "fail": 1,
+            "send": 1,
+            "register": 1,
+            "resolve": 1,
+            "capture": 1,
+            "match": 1,
+            "publish": 1,
+            "remain": 1,
+            "expose": 1,
+            "try": 1,
+            "establish": 1,
+            "relate": 1,
+            "post": 1
+          }
+        },
+        "noun_phrases": {
+          "sessions list": 2,
+          "orphaned session entries load": 1,
+          "copilot chat extension version": 1,
+          "code version": 1,
+          "code insiders": 1,
+          "recorded version": 1,
+          "recorded feature": 1,
+          "agent edit ask mode": 1,
+          "local copilot agent host selected model": 1,
+          "claude sonnet": 1,
+          "existing entry log": 1,
+          "agent host": 1,
+          "raw bundle": 1,
+          "sensitive content": 1,
+          "existing entry": 1,
+          "reliable step": 1,
+          "orphaned entry": 1,
+          "observed entry": 1,
+          "orphaned placeholder": 1,
+          "ordinary openable session": 1,
+          "visible entry": 1,
+          "observed log sequence": 1,
+          "local time": 1,
+          "time event": 1,
+          "selected session": 1,
+          "copilot report": 1,
+          "backend protocol error": 1,
+          "selected entry": 1,
+          "provider metadata": 1,
+          "client deletion request": 1,
+          "captured ahp traffic": 1,
+          "provisional session check": 1,
+          "provider catalogue": 1,
+          "published entry": 1,
+          "provider backing": 1,
+          "list entry": 1,
+          "conversation file": 1,
+          "stale placeholder": 1,
+          "catalogue validation": 1,
+          "provisional classification": 1,
+          "conversation datum": 1,
+          "mark action": 1,
+          "harald behalf": 1
+        },
+        "entities": [
+          {
+            "text": "Copilot",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "VS Code Version",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "metadata",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "AHP",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Harald",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 4
+        },
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 1
+        },
+        {
+          "name": "macOS",
+          "category": "platform",
+          "count": 1
+        },
+        {
+          "name": "Claude",
+          "category": "tool",
+          "count": 1
+        },
+        {
+          "name": "GitHub",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0247,
+        "sentences": 41,
+        "positive_sentences": 3,
+        "negative_sentences": 7,
+        "neutral_sentences": 31
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340324",
+      "number": 340324,
+      "title": "Completed Agent Host session remains Working in title bar",
+      "url": "https://github.com/microsoft/vscode/issues/340324",
+      "author": "amunger",
+      "state": "open",
+      "labels": [
+        "bug",
+        "agents-window",
+        "agent-host"
+      ],
+      "created_at": "2026-10-07T16:24:12Z",
+      "updated_at": "2026-10-07T16:49:42Z",
+      "closed_at": "",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Completed Agent Host session remains Working in title bar\n\nsession completed the previous day, but status in the title bar still shows working.\n\ndebug log summary from copilot:\n\nThe final response is present, at Oct 6, 21:21:37.135 UTC: \"Replied to and resolved both review threads on #340110, referencing the commits that addressed them.\"\nThe final turn ended normally, immediately afterward at 21:21:37.137 UTC. The response requested no further tools.\nAll 226 tool calls completed, and all 155 assistant turns have matching endings. No unfinished tool or turn was found.\nThe next morning, Agent Host returned status: 40 twice, at 16:02:27 UTC and 16:06:04 UTC.\n40 = InProgress (8) | IsRead (32): the session was marked read, but still marked actively working. Idle and read would instead be 33.\nThe returned summary retained modifiedAt: 21:21:35.362 UTC, about 1.8 seconds before the final response. That is consistent with a summary left behind before completion, although it does not prove why the update was missed.\nThe captured protocol traffic contains no correcting session-status update or new turn activity for this session. Its changesets reported ready.\n\nThere is no evidence that the final response is missing. The strongest explanation is that the session summary's InProgress bit was never cleared—or was incorrectly restored—after normal completion. The archive captures the final execution and the stale status returned the next morning, but not the original completion-time protocol exchange, so it cannot distinguish a missed completion update from a persistence/restoration bug.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 294,
+        "sentences": 19,
+        "pos": {
+          "NOUN": 65,
+          "PUNCT": 42,
+          "VERB": 38,
+          "DET": 31,
+          "ADJ": 19,
+          "PROPN": 17,
+          "ADP": 14,
+          "NUM": 14,
+          "AUX": 13,
+          "ADV": 12,
+          "CCONJ": 11,
+          "PRON": 7,
+          "SCONJ": 5,
+          "PART": 4,
+          "SYM": 2
+        },
+        "lemmas": {
+          "noun": {
+            "session": 6,
+            "status": 4,
+            "summary": 4,
+            "response": 4,
+            "completion": 4,
+            "turn": 3,
+            "tool": 3,
+            "update": 3,
+            "title": 2,
+            "bar": 2,
+            "morning": 2,
+            "protocol": 2,
+            "day": 1,
+            "log": 1,
+            "copilot": 1,
+            "review": 1,
+            "thread": 1,
+            "commit": 1,
+            "call": 1,
+            "matching": 1,
+            "ending": 1,
+            "read": 1,
+            "utc": 1,
+            "second": 1,
+            "traffic": 1,
+            "activity": 1,
+            "changeset": 1,
+            "evidence": 1,
+            "explanation": 1,
+            "bit": 1,
+            "archive": 1,
+            "execution": 1,
+            "time": 1,
+            "exchange": 1,
+            "persistence": 1,
+            "restoration": 1,
+            "bug": 1
+          },
+          "adjective": {
+            "final": 5,
+            "previous": 1,
+            "present": 1,
+            "assistant": 1,
+            "unfinished": 1,
+            "consistent": 1,
+            "new": 1,
+            "ready": 1,
+            "strong": 1,
+            "normal": 1,
+            "stale": 1,
+            "original": 1
+          },
+          "verb": {
+            "complete": 3,
+            "work": 3,
+            "return": 3,
+            "miss": 3,
+            "mark": 2,
+            "capture": 2,
+            "remain": 1,
+            "show": 1,
+            "reply": 1,
+            "resolve": 1,
+            "reference": 1,
+            "address": 1,
+            "end": 1,
+            "request": 1,
+            "turn": 1,
+            "find": 1,
+            "read": 1,
+            "retain": 1,
+            "leave": 1,
+            "prove": 1,
+            "contain": 1,
+            "correct": 1,
+            "report": 1,
+            "clear": 1,
+            "restore": 1,
+            "distinguish": 1
+          }
+        },
+        "noun_phrases": {
+          "final response": 3,
+          "title bar": 2,
+          "completed agent host session": 1,
+          "log summary": 1,
+          "review thread": 1,
+          "final turn": 1,
+          "tool call": 1,
+          "assistant turn": 1,
+          "matching ending": 1,
+          "unfinished tool": 1,
+          "agent host": 1,
+          "utc utc": 1,
+          "returned summary": 1,
+          "captured protocol traffic": 1,
+          "correcting session status update": 1,
+          "new turn activity": 1,
+          "strongest explanation": 1,
+          "session summary bit": 1,
+          "normal completion": 1,
+          "final execution": 1,
+          "stale status": 1,
+          "original completion time protocol exchange": 1,
+          "missed completion update": 1,
+          "persistence restoration bug": 1
+        },
+        "entities": [
+          {
+            "text": "UTC",
+            "label": "ORG",
+            "count": 5
+          },
+          {
+            "text": "IsRead",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "InProgress",
+            "label": "LOC",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0464,
+        "sentences": 18,
+        "positive_sentences": 4,
+        "negative_sentences": 2,
+        "neutral_sentences": 12
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340226",
+      "number": 340226,
+      "title": "Inline chat terminal stops updating for long-running background shells",
+      "url": "https://github.com/microsoft/vscode/issues/340226",
+      "author": "anthonykim1",
+      "state": "closed",
+      "labels": [
+        "bug",
+        "insiders-released",
+        "chat-terminal"
+      ],
+      "created_at": "2026-10-07T06:04:45Z",
+      "updated_at": "2026-10-07T19:02:45Z",
+      "closed_at": "2026-10-07T15:49:12Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Inline chat terminal stops updating for long-running background shells\n\nIn an Agent Host Copilot chat, the inline terminal in a shell tool card doesn't keep up with a long-running background shell's output:\n\nOnce the output passes 8 KiB, it stops updating or collapses to a 128-character fragment of the latest line, the same as the Background Shells preview (#340225), because both read the same Agent Host terminal. #340222 fixes that part for both surfaces.\nWith #340222, the inline terminal still falls behind. In a 2,000-line run it stopped updating at request 1666 and didn't catch up after the shell exited. The window still received terminal data through request 1999 and kept its terminal subscription until after the shell exited, so the output arrives but the tool card stops rendering it.\nIt stopped around the time the shell's Background Shells preview was closed. I haven't confirmed whether that's related.\n\nRepro steps\n\nSave this as stream.py in a folder:\n\nOpen the folder in the Agents window and send this in a Copilot chat:\n\nWhile it runs, watch the inline terminal in the python3 stream.py tool card. Open and close the shell's Background Shells preview a few times.\nWhen the command exits (about 5 minutes), check the inline terminal's last line.\n\nExpected\n\nThe inline terminal keeps up with the output and ends at request 1999.\n\nActual\n\nWithout #340222: it stops at request 046, like the Background Shells preview.\nWith #340222: it stops partway through, at request 1666 in my run.",
+      "code": "import time\n\n   # Long lines, one every 0.15s: passes the 8 KiB large-output limit after ~50 lines.\n   for i in range(2000):\n       print(f\"[main] request {i:03d} served from vscode-file://vscode-app/out/vs/code/electron-main/main.js \" + \"x\" * 80, flush=True)\n       time.sleep(0.15)\nStart `python3 stream.py` in this workspace as an async background shell (attached, not detached). Do not wait for it or read its output; just reply \"started\".",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 300,
+        "sentences": 19,
+        "pos": {
+          "NOUN": 65,
+          "VERB": 38,
+          "PUNCT": 36,
+          "DET": 34,
+          "ADP": 29,
+          "PROPN": 16,
+          "NUM": 16,
+          "PRON": 14,
+          "ADJ": 11,
+          "SCONJ": 9,
+          "ADV": 8,
+          "PART": 7,
+          "CCONJ": 7,
+          "AUX": 5,
+          "SYM": 5
+        },
+        "lemmas": {
+          "noun": {
+            "terminal": 7,
+            "shell": 6,
+            "inline": 5,
+            "request": 5,
+            "output": 4,
+            "chat": 3,
+            "tool": 3,
+            "card": 3,
+            "line": 3,
+            "preview": 3,
+            "background": 2,
+            "run": 2,
+            "window": 2,
+            "time": 2,
+            "folder": 2,
+            "character": 1,
+            "fragment": 1,
+            "fix": 1,
+            "surface": 1,
+            "datum": 1,
+            "subscription": 1,
+            "stop": 1,
+            "step": 1,
+            "command": 1,
+            "minute": 1
+          },
+          "adjective": {
+            "terminal": 2,
+            "shell": 1,
+            "late": 1,
+            "repro": 1,
+            "open": 1,
+            "actual": 1
+          },
+          "verb": {
+            "stop": 6,
+            "update": 3,
+            "run": 3,
+            "exit": 3,
+            "keep": 2,
+            "close": 2,
+            "pass": 1,
+            "collapse": 1,
+            "read": 1,
+            "fall": 1,
+            "catch": 1,
+            "receive": 1,
+            "arrive": 1,
+            "render": 1,
+            "confirm": 1,
+            "relate": 1,
+            "save": 1,
+            "open": 1,
+            "send": 1,
+            "watch": 1,
+            "preview": 1,
+            "check": 1,
+            "expect": 1,
+            "end": 1
+          }
+        },
+        "noun_phrases": {
+          "inline terminal": 4,
+          "background shells preview": 2,
+          "inline chat terminal": 1,
+          "long running background shell": 1,
+          "agent host copilot chat": 1,
+          "shell tool card": 1,
+          "long running background shell output": 1,
+          "character fragment": 1,
+          "latest line": 1,
+          "agent host terminal": 1,
+          "line run": 1,
+          "terminal datum": 1,
+          "terminal subscription": 1,
+          "tool card stop": 1,
+          "shell background shells preview": 1,
+          "repro step": 1,
+          "agents window": 1,
+          "copilot chat": 1,
+          "tool card": 1,
+          "shell background shells": 1,
+          "inline terminal line": 1
+        },
+        "entities": [
+          {
+            "text": "Background Shells",
+            "label": "FAC",
+            "count": 2
+          },
+          {
+            "text": "Inline",
+            "label": "NORP",
+            "count": 1
+          },
+          {
+            "text": "Copilot",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Background Shells",
+            "label": "GPE",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 2
+        },
+        {
+          "name": "Python",
+          "category": "language",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0232,
+        "sentences": 20,
+        "positive_sentences": 2,
+        "negative_sentences": 6,
+        "neutral_sentences": 12
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340225",
+      "number": 340225,
+      "title": "Background Shells preview truncates long-running shell output",
+      "url": "https://github.com/microsoft/vscode/issues/340225",
+      "author": "anthonykim1",
+      "state": "closed",
+      "labels": [
+        "bug",
+        "insiders-released",
+        "chat-terminal"
+      ],
+      "created_at": "2026-10-07T06:04:35Z",
+      "updated_at": "2026-10-07T19:02:50Z",
+      "closed_at": "2026-10-07T07:53:31Z",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Background Shells preview truncates long-running shell output\n\nIn an Agent Host Copilot chat, the Background Shells preview doesn't show a long-running shell's output reliably:\n\nOnce the output passes 8 KiB, the preview stops updating or collapses to a 128-character fragment of the latest line.\nWhen the preview resizes, it clips the middle of its last line instead of re-wrapping it.\nWhile the preview is open, it keeps only terminal.integrated.scrollback rows (1,000 by default). Older lines drop off, and the view jumps while scrolled up.\n\nRepro steps\n\nSave this as stream.py in a folder:\n\nOpen the folder in the Agents window and send this in a Copilot chat:\n\nOpen the Background Shells pill and hover over the shell to show its preview. Keep the pointer on it.\n\nActual\n\nThe preview stops at request 046, where the output passes 8 KiB, while the shell keeps printing until request 1999.\nThe last line is missing its middle: one row ends partway through the URL, such as ...vscode-, and the next row starts at n/main.js.\nOnce every line streams, keep the preview open past request 600 and scroll up while output arrives. The view jumps, and the top is no longer request 000.\n\nExpected\n\nThe preview streams every line, shows its last line in full, and keeps all of the shell's retained output scrollable.",
+      "code": "import time\n\n   # Long lines, one every 0.15s: passes the 8 KiB large-output limit after ~50 lines.\n   for i in range(2000):\n       print(f\"[main] request {i:03d} served from vscode-file://vscode-app/out/vs/code/electron-main/main.js \" + \"x\" * 80, flush=True)\n       time.sleep(0.15)\nStart `python3 stream.py` in this workspace as an async background shell (attached, not detached). Do not wait for it or read its output; just reply \"started\".",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 264,
+        "sentences": 18,
+        "pos": {
+          "NOUN": 54,
+          "VERB": 41,
+          "PUNCT": 33,
+          "DET": 31,
+          "ADP": 22,
+          "ADJ": 15,
+          "PROPN": 13,
+          "PRON": 12,
+          "NUM": 10,
+          "ADV": 8,
+          "CCONJ": 8,
+          "SCONJ": 7,
+          "AUX": 4,
+          "PART": 4,
+          "SYM": 2
+        },
+        "lemmas": {
+          "noun": {
+            "preview": 9,
+            "line": 7,
+            "output": 6,
+            "shell": 4,
+            "row": 3,
+            "request": 3,
+            "chat": 2,
+            "middle": 2,
+            "view": 2,
+            "folder": 2,
+            "character": 1,
+            "fragment": 1,
+            "default": 1,
+            "step": 1,
+            "window": 1,
+            "pill": 1,
+            "hover": 1,
+            "pointer": 1,
+            "scrollable": 1
+          },
+          "adjective": {
+            "open": 2,
+            "shell": 1,
+            "late": 1,
+            "old": 1,
+            "repro": 1,
+            "actual": 1,
+            "past": 1
+          },
+          "verb": {
+            "keep": 3,
+            "run": 2,
+            "pass": 2,
+            "stop": 2,
+            "jump": 2,
+            "scroll": 2,
+            "open": 2,
+            "stream": 2,
+            "truncate": 1,
+            "update": 1,
+            "collapse": 1,
+            "resize": 1,
+            "clip": 1,
+            "wrap": 1,
+            "drop": 1,
+            "save": 1,
+            "send": 1,
+            "print": 1,
+            "miss": 1,
+            "end": 1,
+            "start": 1,
+            "arrive": 1,
+            "request": 1,
+            "expect": 1,
+            "show": 1,
+            "retain": 1
+          }
+        },
+        "noun_phrases": {
+          "background shells preview": 2,
+          "long running shell output": 2,
+          "agent host copilot chat": 1,
+          "character fragment": 1,
+          "latest line": 1,
+          "older line": 1,
+          "repro step": 1,
+          "agents window": 1,
+          "copilot chat": 1,
+          "background shells pill": 1,
+          "past request": 1,
+          "shell retained output scrollable": 1
+        },
+        "entities": [
+          {
+            "text": "Background Shells",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Background Shells",
+            "label": "FAC",
+            "count": 1
+          },
+          {
+            "text": "Copilot",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 2
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0347,
+        "sentences": 18,
+        "positive_sentences": 1,
+        "negative_sentences": 4,
+        "neutral_sentences": 13
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340173",
+      "number": 340173,
+      "title": "Automations: choosing a folder in the automation dialog's workspace picker doesn't add it to history",
+      "url": "https://github.com/microsoft/vscode/issues/340173",
+      "author": "benvillalobos",
+      "state": "open",
+      "labels": [
+        "bug",
+        "automations"
+      ],
+      "created_at": "2026-10-06T23:01:17Z",
+      "updated_at": "2026-10-06T23:01:17Z",
+      "closed_at": "",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Automations: choosing a folder in the automation dialog's workspace picker doesn't add it to history\n\n🤖 AI Assisted Bug Report\n\nWhen creating or editing an automation, choosing a folder through the workspace picker in the automations dialog does not add that folder to the workspace history. The folder doesn't show up as a recent workspace afterward, so it has to be browsed for again next time.\n\nSteps to reproduce\nOpen the Automations view in the Agents window.\nCreate a new automation.\nIn the dialog's workspace picker, browse to and choose a folder that isn't already in the recent list.\nSave the automation, then open the workspace picker again (in the automation dialog or the new session page).\n\nExpected: The chosen folder appears in the recent workspaces history.\n\nActual: The chosen folder is not added to the history.",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 159,
+        "sentences": 10,
+        "pos": {
+          "NOUN": 41,
+          "DET": 24,
+          "VERB": 21,
+          "PUNCT": 17,
+          "ADP": 15,
+          "PART": 9,
+          "ADJ": 7,
+          "AUX": 6,
+          "PROPN": 6,
+          "ADV": 5,
+          "CCONJ": 4,
+          "PRON": 3,
+          "SCONJ": 1
+        },
+        "lemmas": {
+          "noun": {
+            "automation": 7,
+            "folder": 7,
+            "workspace": 7,
+            "dialog": 4,
+            "picker": 4,
+            "history": 4,
+            "time": 1,
+            "step": 1,
+            "view": 1,
+            "window": 1,
+            "list": 1,
+            "session": 1,
+            "page": 1
+          },
+          "adjective": {
+            "recent": 3,
+            "new": 2,
+            "actual": 1
+          },
+          "verb": {
+            "choose": 5,
+            "add": 3,
+            "create": 2,
+            "browse": 2,
+            "open": 2,
+            "edit": 1,
+            "reproduce": 1,
+            "save": 1,
+            "expect": 1,
+            "appear": 1
+          }
+        },
+        "noun_phrases": {
+          "workspace picker": 2,
+          "chosen folder": 2,
+          "automation dialog workspace picker": 1,
+          "assisted bug report": 1,
+          "automations dialog": 1,
+          "workspace history": 1,
+          "recent workspace": 1,
+          "automations view": 1,
+          "agents window": 1,
+          "new automation": 1,
+          "dialog workspace picker": 1,
+          "recent list": 1,
+          "automation dialog": 1,
+          "new session page": 1,
+          "recent workspaces history": 1
+        },
+        "entities": [
+          {
+            "text": "AI Assisted Bug Report",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "positive",
+        "compound": 0.0966,
+        "sentences": 11,
+        "positive_sentences": 3,
+        "negative_sentences": 0,
+        "neutral_sentences": 8
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340165",
+      "number": 340165,
+      "title": "MCP Apps: Agent Host drops structuredContent from tool-result notifications",
+      "url": "https://github.com/microsoft/vscode/issues/340165",
+      "author": "asherjh",
+      "state": "closed",
+      "labels": [
+        "bug",
+        "unreleased"
+      ],
+      "created_at": "2026-10-06T22:24:15Z",
+      "updated_at": "2026-10-07T22:07:03Z",
+      "closed_at": "2026-10-07T22:06:03Z",
+      "comments_count": 2,
+      "bot_comments_ignored": 0,
+      "text": "MCP Apps: Agent Host drops structuredContent from tool-result notifications\n\nCopilot Chat Extension Version: 0.69.0\nVS Code Version: 1.141.0 (2a59476c9bfcb90b3ddc372c36762471b7dfad1c)\nOS Version: Windows 11 ARM64, build 10.0.26310.0\nFeature (e.g. agent/edit/ask mode): Agent mode, MCP Apps, Copilot Agent Host (agent-host-copilotcli)\nSelected model (e.g. GPT 4.1, Claude 3.7 Sonnet): GPT-5.6 Sol (gpt-5.6-sol)\nLogs: Sanitized runtime excerpts and tool-result payloads below. Tenant IDs, session IDs, agent IDs, and service-specific metadata are omitted or replaced with example values.\n\nSummary\n\nA successful MCP Apps tool returns both text content and a separate structuredContent object. In a Copilot Agent Host session, the widget receives a ui/notifications/tool-result notification containing a combined text block, with structuredContent absent. Widgets that validate their opening data consequently receive undefined and fail.\n\nThe same server and widget work when the chat is explicitly started with workbench.action.chat.newLocalChat.\n\nSteps to Reproduce\n\nConfigure a stdio MCP server exposing a widget-bearing tool, such as open_accent_color. The tool declares _meta.ui.resourceUri, and the referenced resource is served with MIME type text/html;profile=mcp-app.\nHave the tool return the successful CallToolResult shown below. The widget consumes params.structuredContent in its ontoolresult handler.\nStart a Copilot Agent Host chat and invoke the tool.\nInspect the widget's incoming ui/notifications/tool-result notification. params.structuredContent is absent, and its serialized JSON appears inside params.content[0].text.\nInvoke the same tool in an explicit Local chat. The widget opens successfully.\n\nServer result\n\nMCP Inspector confirms that the server returns separate text and structured data. This is the result object, with identifying metadata removed:\n\nNotification received by the widget\n\nThe DevTools object also shows isError: undefined, which is omitted by JSON serialization.\n\nExpected behavior\n\nThe widget receives the original structured object in params.structuredContent, including valid null-valued properties, so it can initialize its UI.\n\nActual behavior\n\nparams.structuredContent is undefined. Parsing it with the widget's object schema produces:\n\nThe schema accepts branding: null; the missing root payload causes the failure.\n\nLogs\n\nSelected excerpts from the failing session, with the session identifier redacted (timestamps are local, UTC-07:00):\n\nThe widget notification above was captured from DevTools. The server result was captured independently through MCP Inspector. Full log files and screenshots contain tenant-specific data, so the relevant excerpts are included inline.\n\nSource findings\n\nThe following mappings in the affected VS Code commit omit the structured result:\n\nCopilot completion handling uses the SDK's result.content as a text block. The emitted completion state contains success, pastTenseMessage, content, and error, with no structuredContent mapping. The history replay mapping has the same omission.\ntoMcpCallToolResult() reconstructs the widget result as return { content, isError: isError || undefined };.\n\nThe widget notification sender forwards that reconstructed result unchanged. The Local MCP path retains the original CallToolResult for the widget.\n\nThe exact SDK runtime code that concatenates the success text and serialized JSON has not been isolated, nor was the incoming SDK event captured to confirm whether its optional structuredContent field was populated. The identified VS Code mappings omit that field even when it is available.\n\nWorkaround and impact\n\nExplicitly starting a Local chat with workbench.action.chat.newLocalChat works. Workspace preferences favoring Local plus a reload did not change the selected runtime for the affected chat. The explicit command is hidden from the Command Palette in this build (f1: false), so invoking it required assigning a shortcut.\n\nThis blocks MCP Apps that need structured opening data and makes distributing them to consumers dependent on a runtime-specific workaround.\n\nRelated issue\n\nIssue 290063 - MCP: structuredContent in tool result overrides content[].text sent to model concerns model-facing text handling. This report concerns the structured payload delivered to the MCP App iframe.\n\nThis is related to the mapping added in which doesn't forward structuredContent - was that an intentional omission or can it be added?\n\nthanks for the issue, I had raised a requirement on the copilot SDK to pass structuredContent through properly but forgot to follow up after they did so",
+      "code": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Opened the accent-color editor.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"titleId\": \"example-title\",\n    \"branding\": null\n  },\n  \"isError\": false\n}\n{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"ui/notifications/tool-result\",\n  \"params\": {\n    \"content\": [\n      {\n        \"type\": \"text\",\n        \"text\": \"Opened the accent-color editor.\\n\\n{\\\"titleId\\\":\\\"example-title\\\",\\\"branding\\\":null}\"\n      }\n    ]\n  }\n}\nInvalid input: expected object, received undefined\n2026-10-06 14:37:54.452 [info] [AgentHost] _invokeAgent called for resource: agent-host-copilotcli:/<session-id>\n2026-10-06 14:40:33.132 [info] [Copilot:<sdk-session-id>] Tool started: ess-landing-page-config-open_accent_color",
+      "regex": {
+        "technical_debt_detected": true,
+        "patterns": {
+          "workaround": 2
+        },
+        "categories": {
+          "general": 2
+        },
+        "matches": [
+          {
+            "pattern": "workaround",
+            "category": "general",
+            "explicit": true,
+            "text": "Workaround",
+            "source": "text",
+            "start": 3617,
+            "end": 3627,
+            "context": "pings omit that field even when it is available. Workaround and impact Explicitly starting a Local chat with"
+          },
+          {
+            "pattern": "workaround",
+            "category": "general",
+            "explicit": true,
+            "text": "workaround",
+            "source": "text",
+            "start": 4088,
+            "end": 4098,
+            "context": "them to consumers dependent on a runtime-specific workaround. Related issue Issue 290063 - MCP: structuredCo"
+          }
+        ]
+      },
+      "nlp": {
+        "tokens": 776,
+        "sentences": 59,
+        "pos": {
+          "NOUN": 204,
+          "PUNCT": 116,
+          "VERB": 93,
+          "DET": 74,
+          "PROPN": 73,
+          "ADJ": 56,
+          "ADP": 36,
+          "AUX": 27,
+          "PRON": 22,
+          "CCONJ": 20,
+          "ADV": 18,
+          "NUM": 12,
+          "PART": 10,
+          "SCONJ": 8,
+          "SYM": 7
+        },
+        "lemmas": {
+          "noun": {
+            "widget": 14,
+            "tool": 11,
+            "result": 10,
+            "notification": 8,
+            "text": 7,
+            "object": 5,
+            "mapping": 5,
+            "runtime": 4,
+            "session": 4,
+            "datum": 4,
+            "server": 4,
+            "chat": 4,
+            "agent": 3,
+            "log": 3,
+            "excerpt": 3,
+            "payload": 3,
+            "content": 3,
+            "mode": 2,
+            "model": 2,
+            "mcp": 2,
+            "block": 2,
+            "opening": 2,
+            "work": 2,
+            "json": 2,
+            "behavior": 2,
+            "null": 2,
+            "schema": 2,
+            "copilot": 2,
+            "completion": 2,
+            "handling": 2,
+            "success": 2,
+            "omission": 2,
+            "field": 2,
+            "workaround": 2,
+            "issue": 2,
+            "version": 1,
+            "edit": 1,
+            "ask": 1,
+            "host": 1,
+            "copilotcli": 1,
+            "sol": 1,
+            "service": 1,
+            "metadata": 1,
+            "example": 1,
+            "value": 1,
+            "absent": 1,
+            "step": 1,
+            "stdio": 1,
+            "resource": 1,
+            "type": 1,
+            "handler": 1,
+            "serialization": 1,
+            "property": 1,
+            "branding": 1,
+            "root": 1,
+            "failure": 1,
+            "identifier": 1,
+            "timestamp": 1,
+            "file": 1,
+            "screenshot": 1,
+            "tenant": 1,
+            "inline": 1,
+            "source": 1,
+            "finding": 1,
+            "commit": 1,
+            "omit": 1,
+            "state": 1,
+            "error": 1,
+            "history": 1,
+            "replay": 1,
+            "return": 1,
+            "sender": 1,
+            "path": 1,
+            "code": 1,
+            "event": 1,
+            "impact": 1,
+            "preference": 1,
+            "reload": 1,
+            "command": 1,
+            "build": 1,
+            "shortcut": 1,
+            "consumer": 1,
+            "override": 1,
+            "concern": 1,
+            "report": 1,
+            "iframe": 1,
+            "thank": 1,
+            "requirement": 1,
+            "sdk": 1
+          },
+          "adjective": {
+            "structured": 5,
+            "undefined": 4,
+            "local": 4,
+            "specific": 3,
+            "successful": 2,
+            "separate": 2,
+            "incoming": 2,
+            "explicit": 2,
+            "original": 2,
+            "affected": 2,
+            "combined": 1,
+            "ontoolresult": 1,
+            "absent": 1,
+            "serialized": 1,
+            "valid": 1,
+            "actual": 1,
+            "missing": 1,
+            "relevant": 1,
+            "following": 1,
+            "emitted": 1,
+            "unchanged": 1,
+            "exact": 1,
+            "optional": 1,
+            "available": 1,
+            "false": 1,
+            "dependent": 1,
+            "intentional": 1
+          },
+          "verb": {
+            "receive": 4,
+            "select": 3,
+            "omit": 3,
+            "return": 3,
+            "contain": 3,
+            "start": 3,
+            "capture": 3,
+            "fail": 2,
+            "show": 2,
+            "invoke": 2,
+            "confirm": 2,
+            "identify": 2,
+            "include": 2,
+            "reconstruct": 2,
+            "relate": 2,
+            "add": 2,
+            "drop": 1,
+            "build": 1,
+            "sanitize": 1,
+            "replace": 1,
+            "validate": 1,
+            "reproduce": 1,
+            "expose": 1,
+            "bear": 1,
+            "declare": 1,
+            "reference": 1,
+            "serve": 1,
+            "consume": 1,
+            "chat": 1,
+            "inspect": 1,
+            "appear": 1,
+            "open": 1,
+            "remove": 1,
+            "expect": 1,
+            "value": 1,
+            "initialize": 1,
+            "parse": 1,
+            "produce": 1,
+            "accept": 1,
+            "cause": 1,
+            "redact": 1,
+            "use": 1,
+            "result": 1,
+            "retain": 1,
+            "concatenate": 1,
+            "serialize": 1,
+            "isolate": 1,
+            "populate": 1,
+            "favor": 1,
+            "change": 1,
+            "hide": 1,
+            "require": 1,
+            "assign": 1,
+            "block": 1,
+            "need": 1,
+            "make": 1,
+            "distribute": 1,
+            "send": 1,
+            "model": 1,
+            "face": 1,
+            "concern": 1,
+            "deliver": 1,
+            "raise": 1,
+            "pass": 1,
+            "forget": 1,
+            "follow": 1
+          }
+        },
+        "noun_phrases": {
+          "mcp apps": 2,
+          "copilot agent host": 2,
+          "serialized json": 2,
+          "agent host": 1,
+          "tool result notification": 1,
+          "copilot chat extension version": 1,
+          "code version": 1,
+          "agent edit ask mode": 1,
+          "agent mode": 1,
+          "agent host copilotcli": 1,
+          "selected model": 1,
+          "claude sonnet": 1,
+          "sanitized runtime excerpt": 1,
+          "tool result payload": 1,
+          "service specific metadata": 1,
+          "example value": 1,
+          "text content": 1,
+          "separate object": 1,
+          "copilot agent host session": 1,
+          "notifications tool result notification": 1,
+          "combined text block": 1,
+          "opening datum": 1,
+          "server widget work": 1,
+          "widget bearing tool": 1,
+          "referenced resource": 1,
+          "mime type text": 1,
+          "ontoolresult handler": 1,
+          "widget incoming notifications tool result notification": 1,
+          "explicit local chat": 1,
+          "separate text": 1,
+          "structured datum": 1,
+          "result object": 1,
+          "json serialization": 1,
+          "expected behavior": 1,
+          "original structured object": 1,
+          "valid null valued property": 1,
+          "actual behavior": 1,
+          "widget object schema": 1,
+          "missing root payload": 1,
+          "selected excerpt": 1,
+          "failing session": 1,
+          "session identifier": 1,
+          "widget notification": 1,
+          "server result": 1,
+          "mcp inspector": 1,
+          "log file": 1,
+          "tenant specific datum": 1,
+          "relevant excerpt": 1,
+          "source finding": 1,
+          "following mapping": 1,
+          "affected code commit omit": 1,
+          "structured result": 1,
+          "copilot completion handling": 1,
+          "text block": 1,
+          "emitted completion state": 1,
+          "history replay mapping": 1,
+          "widget result": 1,
+          "widget notification sender": 1,
+          "local mcp path": 1,
+          "exact sdk runtime code": 1,
+          "success text": 1,
+          "incoming sdk event": 1,
+          "optional field": 1,
+          "local chat": 1,
+          "workspace preference": 1,
+          "selected runtime": 1,
+          "affected chat": 1,
+          "explicit command": 1,
+          "command palette": 1,
+          "structured opening datum": 1,
+          "runtime specific workaround": 1,
+          "related issue": 1,
+          "tool result": 1,
+          "concerns model facing text handling": 1,
+          "structured payload": 1,
+          "mcp app iframe": 1,
+          "intentional omission": 1,
+          "copilot sdk": 1
+        },
+        "entities": [
+          {
+            "text": "SDK",
+            "label": "ORG",
+            "count": 4
+          },
+          {
+            "text": "MCP Apps",
+            "label": "PERSON",
+            "count": 2
+          },
+          {
+            "text": "Copilot",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "JSON",
+            "label": "PERSON",
+            "count": 2
+          },
+          {
+            "text": "DevTools",
+            "label": "ORG",
+            "count": 2
+          },
+          {
+            "text": "VS Code",
+            "label": "PRODUCT",
+            "count": 2
+          },
+          {
+            "text": "Copilot Chat Extension Version",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "MCP Apps",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "IDs",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "MCP Apps",
+            "label": "FAC",
+            "count": 1
+          },
+          {
+            "text": "MCP",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "MIME",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "metadata",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "UI",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "MCP Inspector",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Local MCP",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Workaround",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Local",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "the Command Palette",
+            "label": "ORG",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 6
+        },
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 3
+        },
+        {
+          "name": "Windows",
+          "category": "platform",
+          "count": 1
+        },
+        {
+          "name": "Claude",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "yes",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {
+              "workaround": 2
+            },
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": 0.0396,
+        "sentences": 61,
+        "positive_sentences": 9,
+        "negative_sentences": 5,
+        "neutral_sentences": 47
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340157",
+      "number": 340157,
+      "title": "Agent Host: first-turn materialization waits ~8.5s after SDK initialization",
+      "url": "https://github.com/microsoft/vscode/issues/340157",
+      "author": "digitarald",
+      "state": "closed",
+      "labels": [
+        "bug"
+      ],
+      "created_at": "2026-10-06T22:03:01Z",
+      "updated_at": "2026-10-07T22:52:37Z",
+      "closed_at": "2026-10-07T22:50:22Z",
+      "comments_count": 1,
+      "bot_comments_ignored": 0,
+      "text": "Agent Host: first-turn materialization waits ~8.5s after SDK initialization\n\nCopilot Chat Extension Version: Not captured for this report. Agent Host SDK: 1.0.92-4.unstable.r37397886721.gad270aa.\nVS Code Version: 1.141.0-insider, commit 2a59476c9bfcb90b3ddc372c36762471b7dfad1c.\nOS Version: Windows. Exact OS build not captured for this report.\nFeature (e.g. agent/edit/ask mode): Copilot Agent Host, first turn of a new session.\nSelected model (e.g. GPT 4.1, Claude 3.7 Sonnet): Auto, resolved to gpt-6-luna.\nLogs: Sanitized timing findings below from an Agent Host debug-log export. Raw customer logs are not attached publicly.\n\nSteps to Reproduce:\n\nOn Windows, create a new Copilot Agent Host session using a folder that is not a Git repository.\nSubmit a short prompt and capture Agent Host debug logs. Compare SDK initialization completion, host session materialization, and provider dispatch.\n\nThese describe the observed scenario, not a reliable minimal reproduction. The affected Windows environment has not been reproduced locally.\n\nObserved delay\n\nThe host recorded providerPreparation: 8701ms before the first provider dispatch. A separate checkpoint: 1394ms followed it. This issue concerns the preparation delay, not subsequent model or tool latency.\n\nThe October 6 capture contains these milestones, normalized to UTC:\n\nMilestone Timestamp\nSDK wrapper attached 14:23:40.650\nServer tools advertised 14:23:40.688\nHost session materialized 14:23:49.141\nSession ready notification 14:23:49.156\nProvider sendMessage called 14:23:50.542\n\nAbout 8.45 seconds pass after server-tool advertisement before materialization completes. In the deployed implementation, advertisement is the final operation in initializeSession, after its awaited setup. The relevant materialization and Git methods were checked against the exact deployed commit.\n\nExpected behavior: a new session should reach provider dispatch promptly once SDK initialization finishes. Project enrichment and persistence should not introduce an unexplained multi-second wait.\n\nInvestigation\n\nThe remaining awaited path in _materializeProvisional is:\n\nAwait the Git-based project-discovery promise started alongside SDK launch.\nPersist session metadata.\nRead/write the deferred SDK execution marker.\nOptionally persist selected-agent metadata, then finish materialization.\n\nRepeated git rev-parse --show-toplevel failures report that the folder is not a repository. Across five first-session captures, materialization follows the immediately preceding failed probe by 224-276ms.\n\ngetRepositoryRoot serializes same-directory lookups and caches only successful roots. Queued negative lookups each launch another Git process.\n\nA controlled experiment using the actual compiled service, with only its per-instance Git runner replaced by a 100ms probe, confirmed the mechanism:\n\nEight concurrent callers for one directory Probe invocations Maximum concurrent probes Elapsed\nNon-repository result 8 1 808ms\nSuccessful repository result 1 1 102ms\n\nAssertions passed. This verifies amplification of negative lookups, not its contribution to this customer incident.\n\nAttribution is not yet confirmed\n\nAn independent adversarial review confirmed the late materialization wait, but did not establish that Git queueing caused it. The logs omit Git operation IDs, cwd correlation, enqueue times, and execution durations. The failed probes cannot be placed ahead of this session's project lookup in the queue.\n\nMetadata writes also run through database sequencers, so persistence queueing/I/O remains a competing explanation. SDK setup and the identified client resource callbacks do not account for the interval; those callbacks completed in 33-36ms.\n\nNext diagnostic step\n\nInstrument one reproduction on the affected Windows host:\n\nRecord initialization completion, project-promise settlement, project-await resumption, and start/end of each persistence await.\nLink the materialization project lookup to a Git operation ID. Record an opaque directory key, enqueue time, queue-entry time, subprocess completion, and result category.\n\nThis will distinguish redundant Git queue wait from slow Git execution or persistence. Avoid logging prompts, raw paths, credentials, or customer content.\n\nRelated: #333284 covers session-listing starvation and repeated Git probes. This report isolates the remaining first-turn materialization delay after SDK initialization.\n\n_🤖 Posted by GitHub Copilot on Harald's behalf._\n\nFixed in lmk if you see it again",
+      "code": "",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 755,
+        "sentences": 59,
+        "pos": {
+          "NOUN": 219,
+          "PUNCT": 121,
+          "VERB": 88,
+          "PROPN": 66,
+          "ADJ": 58,
+          "DET": 54,
+          "ADP": 38,
+          "NUM": 22,
+          "AUX": 18,
+          "PART": 17,
+          "ADV": 17,
+          "CCONJ": 14,
+          "PRON": 12,
+          "SYM": 6,
+          "SCONJ": 4,
+          "X": 1
+        },
+        "lemmas": {
+          "noun": {
+            "session": 10,
+            "materialization": 9,
+            "project": 6,
+            "probe": 6,
+            "initialization": 5,
+            "log": 5,
+            "lookup": 5,
+            "persistence": 4,
+            "turn": 3,
+            "wait": 3,
+            "report": 3,
+            "customer": 3,
+            "repository": 3,
+            "completion": 3,
+            "host": 3,
+            "provider": 3,
+            "dispatch": 3,
+            "delay": 3,
+            "tool": 3,
+            "operation": 3,
+            "execution": 3,
+            "directory": 3,
+            "time": 3,
+            "queue": 3,
+            "agent": 2,
+            "model": 2,
+            "step": 2,
+            "folder": 2,
+            "prompt": 2,
+            "reproduction": 2,
+            "capture": 2,
+            "advertisement": 2,
+            "setup": 2,
+            "path": 2,
+            "promise": 2,
+            "metadata": 2,
+            "result": 2,
+            "queueing": 2,
+            "enqueue": 2,
+            "callback": 2,
+            "insider": 1,
+            "version": 1,
+            "edit": 1,
+            "ask": 1,
+            "mode": 1,
+            "auto": 1,
+            "luna": 1,
+            "timing": 1,
+            "finding": 1,
+            "debug": 1,
+            "export": 1,
+            "scenario": 1,
+            "environment": 1,
+            "checkpoint": 1,
+            "issue": 1,
+            "preparation": 1,
+            "latency": 1,
+            "milestone": 1,
+            "sdk": 1,
+            "wrapper": 1,
+            "notification": 1,
+            "second": 1,
+            "server": 1,
+            "complete": 1,
+            "implementation": 1,
+            "method": 1,
+            "commit": 1,
+            "behavior": 1,
+            "finish": 1,
+            "enrichment": 1,
+            "investigation": 1,
+            "discovery": 1,
+            "launch": 1,
+            "marker": 1,
+            "git": 1,
+            "toplevel": 1,
+            "failure": 1,
+            "cache": 1,
+            "root": 1,
+            "process": 1,
+            "experiment": 1,
+            "service": 1,
+            "instance": 1,
+            "runner": 1,
+            "mechanism": 1,
+            "caller": 1,
+            "invocation": 1,
+            "concurrent": 1,
+            "assertion": 1,
+            "verifie": 1,
+            "amplification": 1,
+            "contribution": 1,
+            "incident": 1,
+            "review": 1,
+            "cwd": 1,
+            "correlation": 1,
+            "duration": 1,
+            "database": 1,
+            "sequencer": 1,
+            "explanation": 1,
+            "client": 1,
+            "resource": 1,
+            "interval": 1,
+            "settlement": 1,
+            "await": 1,
+            "resumption": 1,
+            "start": 1,
+            "end": 1,
+            "key": 1,
+            "entry": 1,
+            "category": 1,
+            "credential": 1,
+            "content": 1,
+            "starvation": 1,
+            "behalf": 1,
+            "lmk": 1
+          },
+          "adjective": {
+            "new": 3,
+            "exact": 2,
+            "raw": 2,
+            "affected": 2,
+            "successful": 2,
+            "negative": 2,
+            "short": 1,
+            "observed": 1,
+            "reliable": 1,
+            "minimal": 1,
+            "separate": 1,
+            "subsequent": 1,
+            "ready": 1,
+            "final": 1,
+            "relevant": 1,
+            "unexplained": 1,
+            "multi": 1,
+            "second": 1,
+            "persist": 1,
+            "deferred": 1,
+            "parse": 1,
+            "queued": 1,
+            "actual": 1,
+            "concurrent": 1,
+            "non": 1,
+            "repository": 1,
+            "independent": 1,
+            "adversarial": 1,
+            "late": 1,
+            "diagnostic": 1,
+            "record": 1,
+            "opaque": 1,
+            "subprocess": 1,
+            "redundant": 1,
+            "slow": 1
+          },
+          "verb": {
+            "capture": 3,
+            "await": 3,
+            "remain": 3,
+            "confirm": 3,
+            "select": 2,
+            "attach": 2,
+            "reproduce": 2,
+            "record": 2,
+            "follow": 2,
+            "pass": 2,
+            "deploy": 2,
+            "repeat": 2,
+            "fail": 2,
+            "commit": 1,
+            "build": 1,
+            "resolve": 1,
+            "sanitize": 1,
+            "create": 1,
+            "submit": 1,
+            "debug": 1,
+            "compare": 1,
+            "describe": 1,
+            "observe": 1,
+            "concern": 1,
+            "contain": 1,
+            "normalize": 1,
+            "advertise": 1,
+            "materialize": 1,
+            "call": 1,
+            "check": 1,
+            "expect": 1,
+            "reach": 1,
+            "introduce": 1,
+            "base": 1,
+            "start": 1,
+            "write": 1,
+            "persist": 1,
+            "finish": 1,
+            "report": 1,
+            "precede": 1,
+            "serialize": 1,
+            "launch": 1,
+            "control": 1,
+            "compile": 1,
+            "replace": 1,
+            "elapse": 1,
+            "establish": 1,
+            "cause": 1,
+            "omit": 1,
+            "place": 1,
+            "run": 1,
+            "compete": 1,
+            "identify": 1,
+            "account": 1,
+            "complete": 1,
+            "link": 1,
+            "result": 1,
+            "distinguish": 1,
+            "wait": 1,
+            "avoid": 1,
+            "log": 1,
+            "relate": 1,
+            "cover": 1,
+            "list": 1,
+            "isolate": 1,
+            "post": 1,
+            "fix": 1
+          }
+        },
+        "noun_phrases": {
+          "provider dispatch": 3,
+          "agent host": 2,
+          "sdk initialization": 2,
+          "new session": 2,
+          "enqueue time": 2,
+          "turn materialization wait": 1,
+          "copilot chat extension version": 1,
+          "agent host sdk": 1,
+          "code version": 1,
+          "version windows": 1,
+          "agent edit ask mode": 1,
+          "copilot agent host": 1,
+          "selected model": 1,
+          "claude sonnet": 1,
+          "sanitized timing finding": 1,
+          "agent host debug log export": 1,
+          "raw customer log": 1,
+          "new copilot agent host session": 1,
+          "git repository": 1,
+          "short prompt": 1,
+          "sdk initialization completion": 1,
+          "host session materialization": 1,
+          "observed scenario": 1,
+          "reliable minimal reproduction": 1,
+          "affected windows environment": 1,
+          "observed delay": 1,
+          "separate checkpoint": 1,
+          "preparation delay": 1,
+          "subsequent model": 1,
+          "tool latency": 1,
+          "october capture": 1,
+          "milestone timestamp sdk wrapper": 1,
+          "server tool": 1,
+          "host session": 1,
+          "session ready notification provider": 1,
+          "server tool advertisement": 1,
+          "materialization complete": 1,
+          "deployed implementation": 1,
+          "final operation": 1,
+          "awaited setup": 1,
+          "relevant materialization": 1,
+          "git method": 1,
+          "exact deployed commit": 1,
+          "expected behavior": 1,
+          "project enrichment": 1,
+          "unexplained multi second wait": 1,
+          "remaining awaited path": 1,
+          "git based project discovery promise": 1,
+          "sdk launch": 1,
+          "persist session metadata": 1,
+          "deferred sdk execution marker": 1,
+          "optionally persist selected agent metadata": 1,
+          "repeated git rev parse toplevel failure": 1,
+          "session capture": 1,
+          "immediately preceding failed probe": 1,
+          "directory lookup": 1,
+          "successful root": 1,
+          "queued negative lookup": 1,
+          "git process": 1,
+          "controlled experiment": 1,
+          "actual compiled service": 1,
+          "concurrent caller": 1,
+          "maximum concurrent probe": 1,
+          "verifies amplification": 1,
+          "negative lookup": 1,
+          "customer incident": 1,
+          "independent adversarial review": 1,
+          "late materialization wait": 1,
+          "git queueing": 1,
+          "logs omit git operation": 1,
+          "cwd correlation": 1,
+          "execution duration": 1,
+          "failed probe": 1,
+          "session project lookup": 1,
+          "database sequencer": 1,
+          "competing explanation": 1,
+          "sdk setup": 1,
+          "identified client resource callback": 1,
+          "diagnostic step": 1,
+          "affected windows host": 1,
+          "record initialization completion": 1,
+          "project promise settlement": 1,
+          "project await resumption": 1,
+          "start end": 1,
+          "persistence await": 1,
+          "materialization project lookup": 1,
+          "git operation": 1,
+          "opaque directory key": 1,
+          "queue entry time": 1,
+          "subprocess completion": 1,
+          "result category": 1,
+          "redundant git queue": 1,
+          "slow git execution": 1,
+          "raw path": 1,
+          "customer content": 1,
+          "session listing starvation": 1,
+          "repeated git probe": 1,
+          "remaining turn materialization delay": 1,
+          "harald behalf": 1
+        },
+        "entities": [
+          {
+            "text": "Git",
+            "label": "PERSON",
+            "count": 9
+          },
+          {
+            "text": "SDK",
+            "label": "ORG",
+            "count": 6
+          },
+          {
+            "text": "Copilot Chat Extension Version",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "VS Code Version",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Windows",
+            "label": "LOC",
+            "count": 1
+          },
+          {
+            "text": "Copilot",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Compare SDK",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Windows",
+            "label": "NORP",
+            "count": 1
+          },
+          {
+            "text": "UTC",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Probe",
+            "label": "GPE",
+            "count": 1
+          },
+          {
+            "text": "Metadata",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Windows",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Harald",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Git",
+          "category": "tool",
+          "count": 12
+        },
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 4
+        },
+        {
+          "name": "Windows",
+          "category": "platform",
+          "count": 4
+        },
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 1
+        },
+        {
+          "name": "Claude",
+          "category": "tool",
+          "count": 1
+        },
+        {
+          "name": "GitHub",
+          "category": "tool",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "no",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {}
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.032,
+        "sentences": 67,
+        "positive_sentences": 7,
+        "negative_sentences": 12,
+        "neutral_sentences": 48
+      }
+    },
+    {
+      "type": "issue",
+      "id": "#340138",
+      "number": 340138,
+      "title": "Agent Host BYOK bridge drops provider configurationSchema and statusIcon from the model picker",
+      "url": "https://github.com/microsoft/vscode/issues/340138",
+      "author": "fuzzifikation",
+      "state": "open",
+      "labels": [
+        "bug",
+        "model-byok"
+      ],
+      "created_at": "2026-10-06T20:17:24Z",
+      "updated_at": "2026-10-06T20:44:59Z",
+      "closed_at": "",
+      "comments_count": 0,
+      "bot_comments_ignored": 0,
+      "text": "Agent Host BYOK bridge drops provider configurationSchema and statusIcon from the model picker\n\nTitle: Agent Host BYOK bridge replaces extension-published model metadata, so provider configurationSchema submenus and status icons silently disappear from the model picker\n\nLabels: chat, model-byok, agent-host, bug\n\nSummary\n\nWhen an extension provides LanguageModelChatInformation with a configurationSchema (and statusIcon / tooltip / detail / warningText / infoText), the model picker renders those correctly in a Local/unbound chat. As soon as the composer is bound to an Agent Host harness (here: agent-host-copilotcli), the picker renders the Agent Host's bridged copy of the same model instead, and that copy is built only from IMemberModel.capabilities / maxInputTokens / maxOutputTokens. Every provider-supplied UI field is dropped — most visibly the nested configurationSchema submenus (\"Model Mode\", \"Output Length\") and the statusIcon.\n\nThe confusing part for users: there is no duplicate row. The host copy is given modelGroup: { id: <our vendor> }, so it renders inside our own provider's group and silently replaces our fully-described entry with a degraded one.\n\nEnvironment\n\nVS Code 1.140.0 (system build, commit 07f806f999227108933c2e30515b26eecc1fda74, x64)\nWindows 11 Pro, 10.0.26300\nAffected extension: vLLM-Copilot (published as System-Sciences.vllm-copilot) 1.37.0, with chat.agentHost.byokModels.enabled: true and extensions.supportAgentsWindow[\"System-Sciences.vllm-copilot\"]: true\nReproduced in a normal Chat (chat prompt) window, not the Agents window.\n\nSteps to Reproduce\n\nInstall an extension that registers a LanguageModelChatProvider and returns LanguageModelChatInformation including configurationSchema (nested enum properties), statusIcon, tooltip, detail.\nEnable Agent Host BYOK models (chat.agentHost.byokModels.enabled: true).\nOpen a normal chat editor and send one message to the provider's model in a new chat → the picker shows the provider's icon and the configurationSchema submenus.\nReload the window / reopen that conversation.\n\nExpected: picker keeps icon + submenus.\nActual: the icon is gone and the submenus are gone; the model still runs and its configured values are still applied.\n\nEvidence\n\nChatModelSelection log for the affected window — the composer starts in a good state and is moved onto the host by conversation restore:\n\nTrace-level [LM] Resolved language models for vendor ... dumps in the same window, same moment — the provider's own entry is complete (redacted, field names verbatim from the log):\n\nThe Agent Host's resolve (same window) contains our models under a namespaced identifier, missing exactly those fields — note extension: nullExtensionDescription, statusIcon present only as a warning conditional, modelGroup.id set to our vendor, token budgets and capabilities carried over, and no configurationSchema / tooltip / detail / warningText / infoText:\n\nHost-native models in the same dump do get a schema (so the picker path works in general) — _toLanguageModelConfigurationSchema only knows six hardcoded keys:\n\nCause\n\nextensions/agent-host/src/vscode/editor/agentHostLanguageModelProvider.ts → _toChatModelForSession(...) builds every BYOK row from scratch, so a model that has no native configSchema ends up with no configurationSchema at all, and no icon/tooltip/detail/banner/price:\n\nThe picker only builds submenus from that field (languageModels.ts → getModelConfigurationActions → Yji(schema, ...), which returns [] unless schema.properties exists), and the provider's stored configuration is merged back separately — which is why the Model Settings panel still shows and applies Model Mode / Output Length while the picker cannot show them. That makes the bug look like a provider bug to users: their settings work, but the UI to change them is gone.\n\nAlso note the mapping gap even if the schema were forwarded: _groupForConfigKey whitelists only tier|autoTier|thinkingLevel|reasoningEffort → navigation and contextSize|contextTier → tokens, and its own comment warns that an ungrouped property makes the picker hide itself entirely. Provider-defined keys (e.g. maxOutputTokens) map to undefined.\n\nExpected\n\nMetadata for a BYOK model that also comes from a local extension should be enriched from the extension-published entry — e.g. when byokIdentifier !== undefined, take configurationSchema / statusIcon / tooltip / detail / warningText / infoText / price from lookupLanguageModel(byokIdentifier)?.configurationSchema (the same fallback style _catalogueEntryFor already uses for limits and billing). At minimum, a provider configurationSchema should not be silently discarded just because the model is reachable through the host.\n\nProposal\n\nIn _toChatModelForSession, when a byokIdentifier is available, fall back to the locally-published ILanguageModelChatMetadata for configurationSchema, statusIcon, tooltip/detail, warningText/infoText and price.\nFor configurationSchema, either pass the provider schema through as-is or preserve property.group when it is already one of the picker's group ids, so non-hardcoded provider keys still render. (Yji only requires type: 'string' and a non-empty enum.)\nIf the intent is that BYOK models deliberately get no provider UI, then the picker should not pretend otherwise: the degraded host row should not claim our modelGroup while dropping our UI.\n\nNot a problem for you\n\nNo protocol change needed — the host already knows the BYOK identifier and _catalogueEntryFor already performs this kind of fallback for billing and limits. This is an enrichment gap in the editor-side provider.\n\nRelated (open, same area)\n\n[Bug] Some BYOK models report zero context limits (input and output) when selected in the model picker #338099\nAgent Host models should not be registered in global / regular LanguageModelsService #333802\n[Bug] Copilot BYOK: user-configured max output tokens ignored — requests over max context fail with 400 #339509\n[Tracking] Agent Host BYOK models #339761\n\nProvider side for reference: vLLM-Copilot src/vscode/copilot/modelInfo.ts (buildConfigurationSchema, statusIcon, detail, tooltip) and src/vscode/commands/byok.ts (ensureAgentHostModelsEnabled).",
+      "code": "modelPickerTargetChanged conversation-restore   { rememberTarget: 'unbound',   modelTarget: undefined,              rememberedModel: 'vllm-copilot/Qwen/<model>' }\nmodelPickerTargetChanged conversation-restore   { rememberTarget: 'unbound',   modelTarget: 'agent-host-copilotcli', rememberedModel: 'vllm-copilot/Qwen/<model>' }\nmodelPickerTargetChanged conversation-restore   { rememberTarget: 'agent-host-copilotcli', modelTarget: 'agent-host-copilotcli', rememberedModel: 'agent-host-copilotcli:vllm-copilot/Qwen/<model>' }\n[{ \"metadata\": { \"extension\": { \"value\": \"System-Sciences.vllm-copilot\" }, \"id\": \"<model>\", \"vendor\": \"vllm-copilot\" },\n   \"name\": \"<model>\", \"family\": \"vllm-copilot\", \"version\": \"1.0.0\",\n   \"capability\": 39, \"maxInputTokens\": 522240, \"maxOutputTokens\": 5120,\n   \"configurationSchema\": { \"type\": \"object\", \"properties\": {\n       \"reasoningEffort\":  { \"title\": \"Model Mode\",     \"type\": \"string\", \"enum\": [ /* 7 enum items */ ] },\n       \"maxOutputTokens\":  { \"title\": \"Output Length\",  \"type\": \"string\", \"enum\": [ /* 6 enum items */ ] } } },\n   \"configuration\": { \"reasoningEffort\": \"Think (Deep)\", \"maxOutputTokens\": \"Max\" },\n   \"statusIcon\": { \"id\": \"v\" },\n   \"tooltip\": \"...\", \"detail\": \"$0.00 | ctx 524K | out 4K\" }]\n[{ \"identifier\": \"agent-host-copilotcli:vllm-copilot/<model>\",\n   \"metadata\": {\n     \"extension\": { \"value\": \"vs.editor.extension\", \"id\": \"nullExtensionDescription\", \"_lower\": \"nullextensiondescription\" },\n     \"id\": \"<model>\", \"vendor\": \"vllm-copilot\", \"version\": \"1.0\", \"family\": \"<model>\",\n     \"modelGroup\": { \"id\": \"vllm-copilot\" },\n     \"maxInputTokens\": 204800, \"maxOutputTokens\": 5120, \"maxTemperature\": 1,\n     \"inputCapabilities\": { \"image\": true, \"tool_calls\": true },\n     \"outputCapabilities\": { \"text\": true, \"tool_calls\": true } },\n   \"name\": \"<model> [Copilot CLI]\",\n   \"capabilities\": 41,\n   \"statusIcon\": \"<undefined unless notices.rowWarning>\" }]\n\"configurationSchema\": { \"type\": \"object\", \"properties\": {\n    \"thinkingLevel\": { \"type\": \"number\", \"enumItemLabels\": [ ... ], \"enum\": [ ... ] },\n    \"contextSize\":   { \"type\": \"number\", \"enumItemLabels\": [ ... ], \"enum\": [ ... ] } } }\nconst byokMetadata: LanguageModelChatInformation = {\n    extension: nullExtensionDescription.identifier,\n    id: m.ref.id,\n    name: `${m.name} [${session.location.label}]`,\n    version: '1.0',\n    family: m.id,\n    toolCategoriesSupported: undefined,\n    inputCapabilities,\n    outputCapabilities,\n    maxInputTokens: m.maxInputTokens,\n    maxOutputTokens: m.maxOutputTokens,\n    maxTemperature: m.maxTemperature,\n    modelOptions: [],\n    configurationSchema: this._toLanguageModelConfigurationSchema(m.configSchema),\n    requiresAuthorization: false,\n    statusIcon: notices?.rowWarning ? new ThemeIcon('warning') : undefined,\n};",
+      "regex": {
+        "technical_debt_detected": false,
+        "patterns": {},
+        "categories": {},
+        "matches": []
+      },
+      "nlp": {
+        "tokens": 1099,
+        "sentences": 47,
+        "pos": {
+          "NOUN": 271,
+          "PUNCT": 185,
+          "VERB": 106,
+          "PROPN": 90,
+          "DET": 90,
+          "ADJ": 59,
+          "ADP": 56,
+          "SYM": 47,
+          "ADV": 44,
+          "CCONJ": 33,
+          "AUX": 29,
+          "PRON": 26,
+          "SCONJ": 18,
+          "PART": 18,
+          "NUM": 14,
+          "X": 13
+        },
+        "lemmas": {
+          "noun": {
+            "model": 20,
+            "provider": 14,
+            "picker": 13,
+            "extension": 8,
+            "host": 8,
+            "detail": 6,
+            "window": 6,
+            "icon": 5,
+            "byok": 5,
+            "bug": 5,
+            "submenus": 4,
+            "chat": 4,
+            "field": 4,
+            "agent": 3,
+            "copy": 3,
+            "output": 3,
+            "user": 3,
+            "row": 3,
+            "vendor": 3,
+            "entry": 3,
+            "tooltip": 3,
+            "editor": 3,
+            "schema": 3,
+            "key": 3,
+            "price": 3,
+            "limit": 3,
+            "bridge": 2,
+            "composer": 2,
+            "group": 2,
+            "system": 2,
+            "copilot": 2,
+            "enum": 2,
+            "property": 2,
+            "conversation": 2,
+            "log": 2,
+            "identifier": 2,
+            "gap": 2,
+            "token": 2,
+            "fallback": 2,
+            "billing": 2,
+            "context": 2,
+            "status": 1,
+            "harness": 1,
+            "copilotcli": 1,
+            "environment": 1,
+            "step": 1,
+            "message": 1,
+            "value": 1,
+            "evidence": 1,
+            "state": 1,
+            "restore": 1,
+            "trace": 1,
+            "level": 1,
+            "language": 1,
+            "moment": 1,
+            "name": 1,
+            "resolve": 1,
+            "note": 1,
+            "conditional": 1,
+            "budget": 1,
+            "capability": 1,
+            "dump": 1,
+            "path": 1,
+            "scratch": 1,
+            "banner": 1,
+            "configuration": 1,
+            "panel": 1,
+            "setting": 1,
+            "mapping": 1,
+            "whitelist": 1,
+            "navigation": 1,
+            "comment": 1,
+            "map": 1,
+            "style": 1,
+            "minimum": 1,
+            "proposal": 1,
+            "id": 1,
+            "yji": 1,
+            "type": 1,
+            "string": 1,
+            "intent": 1,
+            "problem": 1,
+            "protocol": 1,
+            "change": 1,
+            "kind": 1,
+            "enrichment": 1,
+            "area": 1,
+            "input": 1,
+            "max": 1,
+            "request": 1,
+            "tracking": 1,
+            "reference": 1,
+            "command": 1
+          },
+          "adjective": {
+            "true": 3,
+            "local": 2,
+            "degraded": 2,
+            "affected": 2,
+            "normal": 2,
+            "native": 2,
+            "undefined": 2,
+            "non": 2,
+            "unbound": 1,
+            "bridged": 1,
+            "confusing": 1,
+            "duplicate": 1,
+            "prompt": 1,
+            "new": 1,
+            "actual": 1,
+            "good": 1,
+            "complete": 1,
+            "verbatim": 1,
+            "namespaced": 1,
+            "token": 1,
+            "host": 1,
+            "general": 1,
+            "ungrouped": 1,
+            "reachable": 1,
+            "available": 1,
+            "hardcoded": 1,
+            "related": 1,
+            "open": 1,
+            "global": 1,
+            "regular": 1
+          },
+          "verb": {
+            "publish": 4,
+            "render": 4,
+            "build": 4,
+            "drop": 3,
+            "go": 3,
+            "replace": 2,
+            "nest": 2,
+            "reproduce": 2,
+            "register": 2,
+            "return": 2,
+            "show": 2,
+            "expect": 2,
+            "configure": 2,
+            "apply": 2,
+            "warn": 2,
+            "work": 2,
+            "know": 2,
+            "make": 2,
+            "disappear": 1,
+            "provide": 1,
+            "bind": 1,
+            "supply": 1,
+            "give": 1,
+            "describe": 1,
+            "commit": 1,
+            "include": 1,
+            "enable": 1,
+            "open": 1,
+            "send": 1,
+            "reopen": 1,
+            "keep": 1,
+            "run": 1,
+            "start": 1,
+            "move": 1,
+            "resolve": 1,
+            "dump": 1,
+            "redact": 1,
+            "contain": 1,
+            "miss": 1,
+            "present": 1,
+            "set": 1,
+            "carry": 1,
+            "hardcode": 1,
+            "end": 1,
+            "exist": 1,
+            "store": 1,
+            "merge": 1,
+            "look": 1,
+            "change": 1,
+            "note": 1,
+            "forward": 1,
+            "hide": 1,
+            "define": 1,
+            "come": 1,
+            "enrich": 1,
+            "use": 1,
+            "discard": 1,
+            "fall": 1,
+            "pass": 1,
+            "preserve": 1,
+            "require": 1,
+            "pretend": 1,
+            "claim": 1,
+            "need": 1,
+            "perform": 1,
+            "report": 1,
+            "select": 1,
+            "ignore": 1,
+            "fail": 1
+          }
+        },
+        "noun_phrases": {
+          "model picker": 4,
+          "tooltip detail": 3,
+          "byok model": 3,
+          "agent host byok bridge": 2,
+          "extension published model metadata": 1,
+          "provider submenus": 1,
+          "status icon": 1,
+          "model byok": 1,
+          "agent host": 1,
+          "local unbound chat": 1,
+          "agent host harness": 1,
+          "agent host copilotcli": 1,
+          "agent host bridged copy": 1,
+          "provider supplied field": 1,
+          "visibly nested submenus": 1,
+          "model mode": 1,
+          "output length": 1,
+          "duplicate row": 1,
+          "host copy": 1,
+          "provider group": 1,
+          "fully described entry": 1,
+          "windows pro affected extension": 1,
+          "system copilot": 1,
+          "true copilot": 1,
+          "normal chat": 1,
+          "chat prompt window": 1,
+          "agents window": 1,
+          "nested enum property": 1,
+          "agent host byok model": 1,
+          "normal chat editor": 1,
+          "provider model": 1,
+          "new chat": 1,
+          "provider icon": 1,
+          "configured value": 1,
+          "affected window": 1,
+          "good state": 1,
+          "conversation restore": 1,
+          "trace level": 1,
+          "language model": 1,
+          "provider entry": 1,
+          "complete redacted field name": 1,
+          "agent host resolve": 1,
+          "namespaced identifier": 1,
+          "exactly field": 1,
+          "note extension": 1,
+          "warning conditional": 1,
+          "token budget": 1,
+          "host native model": 1,
+          "picker path": 1,
+          "hardcoded key": 1,
+          "extensions agent host src vscode editor": 1,
+          "byok row": 1,
+          "icon tooltip detail banner price": 1,
+          "provider stored configuration": 1,
+          "model settings panel": 1,
+          "model mode output length": 1,
+          "provider bug": 1,
+          "mapping gap": 1,
+          "ungrouped property": 1,
+          "provider defined key": 1,
+          "local extension": 1,
+          "extension published entry": 1,
+          "tooltip detail price": 1,
+          "fallback style": 1,
+          "locally publish": 1,
+          "provider schema": 1,
+          "picker group id": 1,
+          "non hardcoded provider key": 1,
+          "non enum": 1,
+          "degraded host row": 1,
+          "protocol change": 1,
+          "enrichment gap": 1,
+          "editor provider": 1,
+          "related open area": 1,
+          "zero context limit": 1,
+          "agent host model": 1,
+          "global regular": 1,
+          "copilot byok": 1,
+          "user configured max output token": 1,
+          "max context": 1,
+          "tracking agent host byok model": 1,
+          "src vscode command": 1
+        },
+        "entities": [
+          {
+            "text": "UI",
+            "label": "ORG",
+            "count": 4
+          },
+          {
+            "text": "metadata",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Local",
+            "label": "ORG",
+            "count": 1
+          },
+          {
+            "text": "Model Mode",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "Output Length",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "toLanguageModelConfigurationSchema",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Model Settings",
+            "label": "PRODUCT",
+            "count": 1
+          },
+          {
+            "text": "Model Mode",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Metadata",
+            "label": "PERSON",
+            "count": 1
+          },
+          {
+            "text": "Bug] Copilot BYOK: user-configured",
+            "label": "WORK_OF_ART",
+            "count": 1
+          },
+          {
+            "text": "max",
+            "label": "PERSON",
+            "count": 1
+          }
+        ]
+      },
+      "technologies": [
+        {
+          "name": "Copilot",
+          "category": "tool",
+          "count": 6
+        },
+        {
+          "name": "VS Code",
+          "category": "tool",
+          "count": 4
+        },
+        {
+          "name": "Windows",
+          "category": "platform",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "categories": {
+          "code": "possible",
+          "architecture": "no",
+          "tests": "no",
+          "documentation": "no",
+          "dependencies": "no"
+        },
+        "evidence": {
+          "code": {
+            "patterns": {},
+            "terms": {
+              "duplicate": 1,
+              "hardcode": 1
+            }
+          },
+          "architecture": {
+            "patterns": {},
+            "terms": {}
+          },
+          "tests": {
+            "patterns": {},
+            "terms": {}
+          },
+          "documentation": {
+            "patterns": {},
+            "terms": {}
+          },
+          "dependencies": {
+            "patterns": {},
+            "terms": {}
+          }
+        }
+      },
+      "sentiment": {
+        "label": "neutral",
+        "compound": -0.0073,
+        "sentences": 52,
+        "positive_sentences": 8,
+        "negative_sentences": 8,
+        "neutral_sentences": 36
+      }
+    }
+  ]
+}

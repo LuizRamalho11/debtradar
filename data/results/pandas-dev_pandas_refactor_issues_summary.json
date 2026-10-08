@@ -1,0 +1,873 @@
+{
+  "metadata": {
+    "source": "github",
+    "owner": "pandas-dev",
+    "repo": "pandas",
+    "label": "Refactor",
+    "requested": 12,
+    "collected": 12,
+    "collected_at": "2026-10-08T10:26:05+00:00",
+    "comments_complete": true,
+    "warning": "",
+    "bot_issues_ignored": 0,
+    "spacy_model": "en_core_web_sm 3.8.0",
+    "generated_at": "2026-10-08T11:28:11+00:00"
+  },
+  "totals": {
+    "documents": 12,
+    "debt_documents": 5,
+    "tokens": 4297,
+    "sentences": 277,
+    "explicit_debt_documents": 2,
+    "classified_documents": 5,
+    "first_date": "2023-07-16",
+    "last_date": "2026-07-15"
+  },
+  "by_type": {
+    "issue": {
+      "documents": 12,
+      "debt_documents": 5
+    }
+  },
+  "classification": {
+    "code": {
+      "yes": 3,
+      "possible": 1,
+      "no": 8
+    },
+    "architecture": {
+      "yes": 1,
+      "possible": 1,
+      "no": 10
+    },
+    "tests": {
+      "yes": 2,
+      "possible": 2,
+      "no": 8
+    },
+    "documentation": {
+      "yes": 1,
+      "possible": 1,
+      "no": 10
+    },
+    "dependencies": {
+      "yes": 0,
+      "possible": 0,
+      "no": 12
+    }
+  },
+  "resolution": {
+    "with_debt": {
+      "documents": 5,
+      "closed": 4,
+      "median_days_to_close": 666.3
+    },
+    "without_debt": {
+      "documents": 7,
+      "closed": 6,
+      "median_days_to_close": 108.2
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "documents": 12,
+      "positive": 7,
+      "neutral": 5,
+      "negative": 0,
+      "mean_compound": 0.0892
+    },
+    "by_category": {
+      "code": {
+        "documents": 3,
+        "positive": 3,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.119
+      },
+      "architecture": {
+        "documents": 1,
+        "positive": 1,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.1732
+      },
+      "tests": {
+        "documents": 2,
+        "positive": 2,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.1443
+      },
+      "documentation": {
+        "documents": 1,
+        "positive": 1,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0512
+      },
+      "dependencies": {
+        "documents": 0,
+        "positive": 0,
+        "neutral": 0,
+        "negative": 0,
+        "mean_compound": 0.0
+      }
+    }
+  },
+  "frequencies": {
+    "terms": {
+      "noun": [
+        {
+          "name": "method",
+          "count": 31,
+          "documents": 6
+        },
+        {
+          "name": "dtype",
+          "count": 21,
+          "documents": 4
+        },
+        {
+          "name": "panda",
+          "count": 20,
+          "documents": 6
+        },
+        {
+          "name": "subclass",
+          "count": 16,
+          "documents": 2
+        },
+        {
+          "name": "argument",
+          "count": 13,
+          "documents": 2
+        },
+        {
+          "name": "geopanda",
+          "count": 12,
+          "documents": 1
+        },
+        {
+          "name": "function",
+          "count": 11,
+          "documents": 3
+        },
+        {
+          "name": "test",
+          "count": 11,
+          "documents": 4
+        },
+        {
+          "name": "code",
+          "count": 9,
+          "documents": 6
+        },
+        {
+          "name": "issue",
+          "count": 9,
+          "documents": 6
+        },
+        {
+          "name": "class",
+          "count": 8,
+          "documents": 3
+        },
+        {
+          "name": "constructor",
+          "count": 8,
+          "documents": 1
+        },
+        {
+          "name": "column",
+          "count": 7,
+          "documents": 3
+        },
+        {
+          "name": "functionality",
+          "count": 7,
+          "documents": 3
+        },
+        {
+          "name": "place",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "way",
+          "count": 7,
+          "documents": 3
+        },
+        {
+          "name": "behavior",
+          "count": 6,
+          "documents": 2
+        },
+        {
+          "name": "case",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "describe",
+          "count": 6,
+          "documents": 1
+        },
+        {
+          "name": "file",
+          "count": 6,
+          "documents": 1
+        }
+      ],
+      "adjective": [
+        {
+          "name": "internal",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "new",
+          "count": 6,
+          "documents": 4
+        },
+        {
+          "name": "special",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "easy",
+          "count": 5,
+          "documents": 3
+        },
+        {
+          "name": "main",
+          "count": 5,
+          "documents": 4
+        },
+        {
+          "name": "small",
+          "count": 5,
+          "documents": 2
+        },
+        {
+          "name": "wide",
+          "count": 5,
+          "documents": 1
+        },
+        {
+          "name": "difficult",
+          "count": 4,
+          "documents": 2
+        },
+        {
+          "name": "excel",
+          "count": 4,
+          "documents": 1
+        },
+        {
+          "name": "happy",
+          "count": 4,
+          "documents": 2
+        },
+        {
+          "name": "unnecessary",
+          "count": 4,
+          "documents": 2
+        },
+        {
+          "name": "actual",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "bold",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "correct",
+          "count": 3,
+          "documents": 2
+        },
+        {
+          "name": "current",
+          "count": 3,
+          "documents": 3
+        },
+        {
+          "name": "good",
+          "count": 3,
+          "documents": 3
+        },
+        {
+          "name": "relevant",
+          "count": 3,
+          "documents": 1
+        },
+        {
+          "name": "additional",
+          "count": 2,
+          "documents": 2
+        },
+        {
+          "name": "boxed",
+          "count": 2,
+          "documents": 1
+        },
+        {
+          "name": "cognitive",
+          "count": 2,
+          "documents": 1
+        }
+      ],
+      "verb": [
+        {
+          "name": "need",
+          "count": 16,
+          "documents": 3
+        },
+        {
+          "name": "think",
+          "count": 15,
+          "documents": 7
+        },
+        {
+          "name": "override",
+          "count": 14,
+          "documents": 2
+        },
+        {
+          "name": "look",
+          "count": 12,
+          "documents": 5
+        },
+        {
+          "name": "use",
+          "count": 12,
+          "documents": 6
+        },
+        {
+          "name": "remove",
+          "count": 10,
+          "documents": 7
+        },
+        {
+          "name": "change",
+          "count": 8,
+          "documents": 4
+        },
+        {
+          "name": "deprecate",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "exist",
+          "count": 7,
+          "documents": 4
+        },
+        {
+          "name": "subclasse",
+          "count": 7,
+          "documents": 1
+        },
+        {
+          "name": "add",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "agree",
+          "count": 6,
+          "documents": 2
+        },
+        {
+          "name": "know",
+          "count": 6,
+          "documents": 3
+        },
+        {
+          "name": "check",
+          "count": 5,
+          "documents": 3
+        },
+        {
+          "name": "improve",
+          "count": 5,
+          "documents": 4
+        },
+        {
+          "name": "rid",
+          "count": 5,
+          "documents": 1
+        },
+        {
+          "name": "simplify",
+          "count": 5,
+          "documents": 2
+        },
+        {
+          "name": "write",
+          "count": 5,
+          "documents": 1
+        },
+        {
+          "name": "avoid",
+          "count": 4,
+          "documents": 3
+        },
+        {
+          "name": "call",
+          "count": 4,
+          "documents": 3
+        }
+      ]
+    },
+    "noun_phrases": [
+      {
+        "name": "existing functionality",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "subclass author",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "alternative solutions",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "class object",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "excel file",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "explicit test",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "feature description",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "feature type",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "hard cod",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "new functionality",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "new method",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "problem description",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "relevant place",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "special casing",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "accept document",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "actual describe",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "actual describe computation",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "actual describe function",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "additional context",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "appropriate dtype inference",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "technologies": [
+      {
+        "name": "Claude",
+        "category": "tool",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "entities": [
+      {
+        "name": "TimeGrouper [ORG]",
+        "text": "TimeGrouper",
+        "label": "ORG",
+        "count": 11,
+        "documents": 1
+      },
+      {
+        "name": "Series [EVENT]",
+        "text": "Series",
+        "label": "EVENT",
+        "count": 10,
+        "documents": 4
+      },
+      {
+        "name": "REF [ORG]",
+        "text": "REF",
+        "label": "ORG",
+        "count": 8,
+        "documents": 8
+      },
+      {
+        "name": "DataFrame [ORG]",
+        "text": "DataFrame",
+        "label": "ORG",
+        "count": 6,
+        "documents": 3
+      },
+      {
+        "name": "EA [ORG]",
+        "text": "EA",
+        "label": "ORG",
+        "count": 6,
+        "documents": 2
+      },
+      {
+        "name": "AFAICT [ORG]",
+        "text": "AFAICT",
+        "label": "ORG",
+        "count": 3,
+        "documents": 2
+      },
+      {
+        "name": "ATM [ORG]",
+        "text": "ATM",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "DataFrames [ORG]",
+        "text": "DataFrames",
+        "label": "ORG",
+        "count": 3,
+        "documents": 1
+      },
+      {
+        "name": "GeoSeries [ORG]",
+        "text": "GeoSeries",
+        "label": "ORG",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "IIUC [ORG]",
+        "text": "IIUC",
+        "label": "ORG",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "Problem Description [PERSON]",
+        "text": "Problem Description",
+        "label": "PERSON",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "Styler [ORG]",
+        "text": "Styler",
+        "label": "ORG",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "TimeGroupers [ORG]",
+        "text": "TimeGroupers",
+        "label": "ORG",
+        "count": 2,
+        "documents": 1
+      },
+      {
+        "name": "pandas [ORG]",
+        "text": "pandas",
+        "label": "ORG",
+        "count": 2,
+        "documents": 2
+      },
+      {
+        "name": "CSV [ORG]",
+        "text": "CSV",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Certain Grouper [PERSON]",
+        "text": "Certain Grouper",
+        "label": "PERSON",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "DataFrameGroupBy [ORG]",
+        "text": "DataFrameGroupBy",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "ENH [ORG]",
+        "text": "ENH",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "Expected Behavior [ORG]",
+        "text": "Expected Behavior",
+        "label": "ORG",
+        "count": 1,
+        "documents": 1
+      },
+      {
+        "name": "F [PRODUCT]",
+        "text": "F",
+        "label": "PRODUCT",
+        "count": 1,
+        "documents": 1
+      }
+    ],
+    "regex_patterns": [
+      {
+        "name": "refactor",
+        "category": "general",
+        "count": 6,
+        "documents": 2
+      },
+      {
+        "name": "documentation",
+        "category": "documentation",
+        "count": 4,
+        "documents": 2
+      },
+      {
+        "name": "docs",
+        "category": "documentation",
+        "count": 2,
+        "documents": 1
+      }
+    ],
+    "debt_categories": [
+      {
+        "name": "code",
+        "yes": 3,
+        "possible": 1,
+        "no": 8
+      },
+      {
+        "name": "tests",
+        "yes": 2,
+        "possible": 2,
+        "no": 8
+      },
+      {
+        "name": "architecture",
+        "yes": 1,
+        "possible": 1,
+        "no": 10
+      },
+      {
+        "name": "documentation",
+        "yes": 1,
+        "possible": 1,
+        "no": 10
+      },
+      {
+        "name": "dependencies",
+        "yes": 0,
+        "possible": 0,
+        "no": 12
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "month": "2023-07",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.1954
+    },
+    {
+      "month": "2023-09",
+      "documents": 1,
+      "debt_documents": 1,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 1,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0931
+    },
+    {
+      "month": "2023-10",
+      "documents": 2,
+      "debt_documents": 1,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0723
+    },
+    {
+      "month": "2023-11",
+      "documents": 2,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.017
+    },
+    {
+      "month": "2023-12",
+      "documents": 1,
+      "debt_documents": 1,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 1,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 1,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0512
+    },
+    {
+      "month": "2024-01",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0
+    },
+    {
+      "month": "2024-09",
+      "documents": 1,
+      "debt_documents": 1,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 1,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.1955
+    },
+    {
+      "month": "2025-08",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.0
+    },
+    {
+      "month": "2026-02",
+      "documents": 1,
+      "debt_documents": 1,
+      "explicit_debt": 1,
+      "categories": {
+        "code": 1,
+        "architecture": 1,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.1732
+    },
+    {
+      "month": "2026-07",
+      "documents": 1,
+      "debt_documents": 0,
+      "explicit_debt": 0,
+      "categories": {
+        "code": 0,
+        "architecture": 0,
+        "tests": 0,
+        "documentation": 0,
+        "dependencies": 0
+      },
+      "mean_compound": 0.1837
+    }
+  ]
+}
