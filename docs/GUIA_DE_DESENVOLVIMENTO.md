@@ -231,6 +231,10 @@ Em `main.py`, declare a opção em `build_parser` e trate-a em `main` ou em
   `.docx` de origem (proposta e regras da disciplina).
 - As coletas em `data/` **são versionadas**: são elas que permitem
   demonstrar o programa e refazer os resultados sem rede.
+- Reanalisar uma coleta com `--file` regrava os arquivos de
+  `data/processed/` e `data/results/` com um novo `generated_at`, e o git
+  passa a mostrá-los como modificados. Se nada mais mudou, descarte com
+  `git checkout -- data/processed data/results`.
 - Sugestão para as próximas etapas: um ramo por etapa (`etapa2`,
   `etapa3`), unido ao `main` quando a etapa estiver apresentável, e uma
   marca (`git tag etapa1`) no commit apresentado.
