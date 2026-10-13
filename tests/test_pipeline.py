@@ -169,6 +169,29 @@ def test_collection_with_only_bot_issues_is_rejected(sample_collection, settings
         pipeline.analyze(sample_collection, settings)
 
 
+def test_empty_collection_says_what_was_searched(settings, data_dirs, monkeypatch):
+    class EmptyCollector:
+        """A API devolve uma lista vazia, sem erro, para uma label que não existe."""
+        def __init__(self, token):
+            pass
+
+        def collect(self, owner, repo, limit, label, sources):
+            return {"metadata": {}, "issues": []}
+
+    monkeypatch.setattr(pipeline, "GitHubCollector", EmptyCollector)
+    with pytest.raises(pipeline.PipelineError) as error:
+        pipeline.collect("psf", "requests", 5, "debt", ("issues",), settings)
+    message = str(error.value)
+    assert 'psf/requests com a label "debt"' in message
+    assert "https://github.com/psf/requests/labels" in message
+    assert "deixe a label em branco" in message
+
+    with pytest.raises(pipeline.PipelineError) as error:
+        pipeline.collect("psf", "requests", 5, None, ("issues",), settings)
+    assert "label" not in str(error.value)
+    assert not list(config.RAW_DIR.iterdir())        # nada é gravado
+
+
 def test_missing_spacy_model_has_a_clear_message(sample_collection):
     settings = config.Config(github_token="", spacy_model="modelo_inexistente", default_issues=100)
     with pytest.raises(pipeline.PipelineError, match="spacy download modelo_inexistente"):

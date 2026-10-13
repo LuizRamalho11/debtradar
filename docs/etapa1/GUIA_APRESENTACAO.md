@@ -22,26 +22,26 @@ até conseguir explicar cada bloco com as próprias palavras.
 
 | Bloco | Tempo | Quem | Slide | Conteúdo |
 |---|---|---|---|---|
-| 1 | 0:00 – 1:15 | Integrante 1 | 1 a 3 | Abertura, problema, dívida técnica, pergunta |
-| 2 | 1:15 – 2:15 | Integrante 1 | 4 | Fonte de dados e GitHub API |
-| 3 | 2:15 – 2:45 | Integrante 1 | 5 | Metodologia (o pipeline) |
-| 4 | 2:45 – 4:15 | Integrante 1 | 6 | Pré-processamento e Regex |
-| 5 | 4:15 – 5:30 | Integrante 2 | 7 | spaCy e tecnologias |
-| 6 | 5:30 – 6:45 | Integrante 2 | 8 | Classificação e sentimento |
-| 7 | 6:45 – 7:20 | Integrante 2 | 9 | Resultados |
-| 8 | 7:20 – 8:05 | Integrante 1 | 10 | Diário de bordo |
-| 9 | 8:05 – 9:45 | Integrante 2 | 11 | Demonstração |
-| 10 | 9:45 – 10:00 | Integrante 2 | 12 | Próximas etapas |
+| 1 | 0:00 – 1:15 | Luy | 1 a 3 | Abertura, problema, dívida técnica, pergunta |
+| 2 | 1:15 – 2:15 | Luy | 4 | Fonte de dados e GitHub API |
+| 3 | 2:15 – 2:45 | Luy | 5 | Metodologia (o pipeline) |
+| 4 | 2:45 – 4:15 | Luy | 6 | Pré-processamento e Regex |
+| 5 | 4:15 – 5:30 | Luiz | 7 | spaCy e tecnologias |
+| 6 | 5:30 – 6:45 | Luiz | 8 | Classificação e sentimento |
+| 7 | 6:45 – 7:20 | Luiz | 9 | Resultados |
+| 8 | 7:20 – 8:05 | Luy | 10 | Diário de bordo |
+| 9 | 8:05 – 9:45 | Luiz | 11 | Demonstração |
+| 10 | 9:45 – 10:00 | Luiz | 12 | Próximas etapas |
 
-Integrante 1: 4:15 + 0:45 = 5:00. Integrante 2: 3:05 + 1:55 = 5:00.
+Luy: 4:15 + 0:45 = 5:00. Luiz: 3:05 + 1:55 = 5:00.
 
-A divisão acompanha o código: o Integrante 1 fica com tudo o que acontece
-até a Regex (coleta, limpeza, padrões) e o Integrante 2 com tudo o que
+A divisão acompanha o código: o Luy fica com tudo o que acontece
+até a Regex (coleta, limpeza, padrões) e o Luiz com tudo o que
 vem depois (spaCy, classificação, sentimento, resultado).
 
 ## Roteiro bloco a bloco
 
-### Bloco 1 — Abertura e problema (Integrante 1, 1:15)
+### Bloco 1 — Abertura e problema (Luy, 1:15)
 
 - Dívida técnica: atalhos e decisões de curto prazo que comprometem a
   qualidade e a manutenção do software.
@@ -55,7 +55,7 @@ vem depois (spaCy, classificação, sentimento, resultado).
   dependências. Vale dar um exemplo real: "Security: vulnerable
   dependency image-size" é uma issue de dívida de dependências.
 
-### Bloco 2 — Fonte de dados e GitHub API (Integrante 1, 1:00)
+### Bloco 2 — Fonte de dados e GitHub API (Luy, 1:00)
 
 - Por que a API e não raspagem de página: os dados chegam em JSON, com
   título, corpo, autor, datas, labels e comentários.
@@ -71,15 +71,16 @@ vem depois (spaCy, classificação, sentimento, resultado).
   resposta; como é um gerador, a página seguinte só é pedida se ainda
   faltam registros.
 
-### Bloco 3 — Metodologia (Integrante 1, 0:30)
+### Bloco 3 — Metodologia (Luy, 0:30)
 
 - O pipeline: coleta → pré-processamento → Regex → spaCy e tecnologias →
   classificação → sentimento → estatísticas.
 - Cada etapa acrescenta o seu resultado ao documento da issue.
-- **Mostrar:** `src/pipeline.py`, função `analyze` (linha 194). São seis
-  chamadas, uma por etapa, na mesma ordem do diagrama do slide.
+- **Mostrar:** `src/pipeline.py`, função `analyze` (linha 207). Ela executa
+  os passos 2 a 7 do slide, uma chamada para cada; o passo 1, a coleta,
+  acontece antes, na função `collect`.
 
-### Bloco 4 — Pré-processamento e Regex (Integrante 1, 1:30)
+### Bloco 4 — Pré-processamento e Regex (Luy, 1:30)
 
 - Issue é Markdown: tem código, links, tabelas, HTML. Antes de analisar
   é preciso limpar, sem apagar o que interessa.
@@ -99,7 +100,7 @@ vem depois (spaCy, classificação, sentimento, resultado).
   literal. Em 30 issues rotuladas como `debt` pelos mantenedores do
   VS Code, só 11 têm um padrão explícito. Por isso entra o spaCy.
 
-### Bloco 5 — spaCy e tecnologias (Integrante 2, 1:15)
+### Bloco 5 — spaCy e tecnologias (Luiz, 1:15)
 
 - O spaCy traz conhecimento da língua: tokens, lemas, classes
   gramaticais, stopwords e entidades.
@@ -116,9 +117,10 @@ vem depois (spaCy, classificação, sentimento, resultado).
 - **Mostrar:** `src/technology_analyzer.py`, o dicionário `TECHNOLOGIES`
   (linha 24). Acrescentar uma tecnologia é incluir uma linha.
 - Um número para citar: a lista encontrou 20 menções a Copilot; o NER
-  havia reconhecido 12.
+  reconheceu 12, sendo 11 como organização (o número da tabela do
+  slide) e 1 como pessoa.
 
-### Bloco 6 — Classificação e sentimento (Integrante 2, 1:15)
+### Bloco 6 — Classificação e sentimento (Luiz, 1:15)
 
 - A classificação é um baseline de regras. **Não é Machine Learning.**
 - Dois tipos de evidência: forte (padrão explícito da Regex) e fraca
@@ -131,16 +133,18 @@ vem depois (spaCy, classificação, sentimento, resultado).
 - Sentimento: VADER, um léxico para inglês. Mede o tom do texto, não a
   dívida.
 - A fórmula do VADER: `compound = x / √(x² + 15)`, onde `x` é a soma das
-  valências das palavras. O rótulo é positivo a partir de +0,05 e
+  valências das palavras e 15 é a constante de normalização do VADER
+  (o parâmetro `alpha`). O rótulo é positivo a partir de +0,05 e
   negativo até -0,05.
 - Duas adaptações nossas: média por sentença, e 37 termos técnicos sem
   valência ("shared" contava como elogio).
 - **Onde aprender:** o VADER não foi dado em aula. Indicar o
   repositório `cjhutto/vaderSentiment` no GitHub e o artigo de Hutto e
   Gilbert (2014). Para o spaCy, a documentação em spacy.io e o curso
-  gratuito em course.spacy.io.
+  gratuito em course.spacy.io. As referências completas estão no fim de
+  `DOCUMENTACAO_ACADEMICA.md`.
 
-### Bloco 7 — Resultados (Integrante 2, 0:35)
+### Bloco 7 — Resultados (Luiz, 0:35)
 
 - No corpus principal (30 issues `debt` do VS Code): 16 identificadas,
   53%. Código é o tipo mais comum (7), depois testes (6).
@@ -153,7 +157,7 @@ vem depois (spaCy, classificação, sentimento, resultado).
   mediana de 1,3 dia; as sem dívida, 4,0 dias. No pandas o padrão se
   inverte, então não dá para generalizar.
 
-### Bloco 8 — Diário de bordo (Integrante 1, 0:45)
+### Bloco 8 — Diário de bordo (Luy, 0:45)
 
 Escolher três problemas e contar cada um em uma frase de causa e uma de
 solução. Sugestão:
@@ -166,14 +170,14 @@ solução. Sugestão:
 - **Sentimento distorcido.** "shared" somava +95 pontos em 68
   ocorrências. Solução: neutralizar termos técnicos.
 
-O arquivo `DIARIO_DE_BORDO.md` tem 27 problemas; o slide deve trazer só
+O arquivo `DIARIO_DE_BORDO.md` tem 29 problemas; o slide deve trazer só
 os escolhidos.
 
-### Bloco 9 — Demonstração (Integrante 2, 1:40)
+### Bloco 9 — Demonstração (Luiz, 1:40)
 
 Ver a seção [Demonstração](#demonstração).
 
-### Bloco 10 — Próximas etapas (Integrante 2, 0:15)
+### Bloco 10 — Próximas etapas (Luiz, 0:15)
 
 - 2ª etapa: áudio de podcasts sobre dívida técnica.
 - 3ª etapa: vídeo de palestras.
@@ -181,61 +185,108 @@ Ver a seção [Demonstração](#demonstração).
 
 ## Demonstração
 
+As regras pedem "o programa funcionando com todas as suas opções". O
+roteiro abaixo usa as oito opções em cinco comandos e cabe no 1:40 do
+bloco 9.
+
 ### Antes de começar
 
 - Terminal aberto na pasta do projeto, com o ambiente ativado
   (`source .venv/bin/activate`).
 - Fonte grande e janela com pelo menos 80 colunas.
 - Editor com os arquivos de código já abertos em abas.
-- Rodar uma vez `python main.py --check` minutos antes, para confirmar
-  que o ambiente está pronto.
+- Os cinco comandos já digitados uma vez, para voltarem com a seta para
+  cima.
 
 ### Roteiro
 
-| Passo | Comando ou ação | O que mostrar | Tempo |
-|---|---|---|---|
-| 1 | `python main.py` | O programa pergunta owner, repositório e quantidade | 20 s |
-| 2 | Responder `psf`, `requests`, `5` e Enter na label | A coleta ao vivo e o andamento de `[1/7]` a `[7/7]` | 10 s |
-| 3 | `python main.py --file data/raw/microsoft_vscode_debt_issues.json` | O corpus principal, o mesmo dos slides | 5 s |
-| 4 | Rolar a saída: bloco COLETA | 30 issues, período | 5 s |
-| 5 | Bloco DÍVIDA TÉCNICA | 16 de 30; categorias com "sim" e "possível" | 15 s |
-| 6 | Bloco REGEX | `TODO 1/1`, `debt 9/8`, `refactor 1/1` | 10 s |
-| 7 | Blocos SPACY e TECNOLOGIAS | Lemas; entidades do NER ao lado da lista do projeto | 15 s |
-| 8 | Blocos SENTIMENTO e TEMPO | 8, 15 e 7; issues por mês | 10 s |
-| 9 | `python main.py --text "Authentication needs refactoring and has no tests."` | Uma frase passando por Regex, spaCy (tabela de tokens), classificação e sentimento | 20 s |
+| Passo | Comando ou ação | Opções | O que mostrar | Tempo |
+|---|---|---|---|---|
+| 1 | `python main.py --check` | `--check` | "Ambiente pronto": configuração, spaCy e modelo | 5 s |
+| 2 | `python main.py` e responder `psf`, `requests`, `5` e **Enter na label** | modo interativo | A coleta ao vivo e o andamento de `[1/7]` a `[7/7]` | 20 s |
+| 3 | `python main.py --file data/raw/microsoft_vscode_debt_issues.json` | `--file` | O corpus principal, o mesmo dos slides, sem internet | 40 s |
+| 4 | `python main.py --owner microsoft --repo vscode --limit 5 --label debt --source prs` | `--owner`, `--repo`, `--limit`, `--label`, `--source` | A mesma coleta sem perguntas, agora de pull requests com a label `debt` | 15 s |
+| 5 | `python main.py --text "Authentication needs refactoring and has no tests."` | `--text` | Uma frase passando por Regex, spaCy (tabela de tokens), classificação e sentimento | 20 s |
 
-Os passos 1, 3 e 9 mostram três formas de usar o programa: modo
-interativo, `--file` e `--text`. Vale dizer em uma frase que os mesmos
-valores podem ser passados por `--owner`, `--repo`, `--limit` e
-`--label`, que `--source` escolhe entre issues, pull requests e commits,
-e que `--check` verifica o ambiente.
+Total: 1:40.
 
-O passo 9 funciona sem internet e é o melhor momento para apontar a
+No passo 3, rolar a saída e apontar um número por bloco:
+
+| Bloco da saída | O que apontar | Tempo |
+|---|---|---|
+| COLETA e DÍVIDA TÉCNICA | 30 issues; 16 de 30; categorias com "sim" e "possível" | 15 s |
+| REGEX | `TODO 1/1`, `debt 9/8`, `refactor 1/1` | 5 s |
+| SPACY e TECNOLOGIAS | Lemas; entidades do NER ao lado da lista do projeto | 10 s |
+| SENTIMENTO, RESOLUÇÃO e TEMPO | 8, 15 e 7; 1,3 contra 4,0 dias; issues por mês | 10 s |
+
+O passo 5 funciona sem internet e é o melhor momento para apontar a
 tabela de tokens: `refactoring` e `tests` aparecem com o lema e a classe
 gramatical, e a classificação mostra a evidência de cada categoria.
 
-### O que esperar no passo 2
+### O que esperar nos passos 2 e 4
 
-A coleta ao vivo traz as issues mais recentes, então o resultado muda a
-cada dia. No ensaio de 08/10/2026 vieram 5 issues e 13 comentários em 3
-segundos, e 3 das 5 foram marcadas "com dívida" apenas por repetirem a
-palavra `test`. Se isso aparecer, usem a favor: é a limitação da regra,
-acontecendo ao vivo.
+A coleta ao vivo traz os registros mais recentes, então o resultado muda
+a cada dia. No ensaio de 13/10/2026:
 
-Cada coleta de 5 issues gasta cerca de 6 requisições. Sem token são 60
-por hora: dá para ensaiar umas dez vezes por hora.
+| Passo | Veio | Tempo | Requisições | Resultado |
+|---|---|---|---|---|
+| 2 | 5 issues e 14 comentários | 3,7 s | 6 | 3 de 5 "com dívida" |
+| 4 | 5 pull requests e 1 comentário | 2,5 s | 2 | 1 de 5 "com dívida" |
 
-### Plano B, sem internet
+No passo 2, as 3 issues foram marcadas apenas por repetirem a palavra
+`test`, sem nenhum padrão explícito da Regex. Se isso aparecer, usem a
+favor: é a limitação da regra, acontecendo ao vivo. O passo 4 repete, em
+ponto pequeno, o resultado dos slides: pull requests rendem pouco.
 
-Pular os passos 1 e 2 e começar no passo 3. Dizer por quê: a coleta fica
-gravada em disco, e a análise pode ser refeita sem rede. O passo 3 é o
-que importa; os números dos slides vêm dele.
+A demonstração gasta cerca de 8 requisições. Sem token são 60 por hora
+**por endereço IP**, e em uma rede compartilhada, como a da faculdade, a
+cota pode já ter sido gasta por outras pessoas. Com o token configurado
+no `.env` a cota é de 5000 e é só da conta.
+
+### A label, no passo 2
+
+Na pergunta da label, **só Enter**. O `psf/requests` não tem a label
+`debt`; se ela for digitada, a API devolve uma lista vazia e o programa
+para com:
+
+```text
+Erro: Nenhum registro encontrado em psf/requests com a label "debt".
+      Essa label pode não existir nesse repositório. Confira em
+      https://github.com/psf/requests/labels ou deixe a label em branco.
+```
+
+Foi o que aconteceu em um ensaio (problema 28 do diário de bordo). Se
+acontecer na apresentação, é só rodar de novo e dar Enter.
+
+### Depois de cada ensaio
+
+Os passos 2 e 4 substituem coletas que estão versionadas
+(`psf_requests_issues.json` e `microsoft_vscode_debt_prs.json`); a
+versão anterior vai para `data/raw/backup/`. Para os dados voltarem a
+ser os de `RESULTADOS.md`:
+
+```bash
+git checkout -- data
+```
+
+### Plano B, sem internet ou sem cota
+
+Pular os passos 2 e 4 e dizer por quê: a coleta fica gravada em disco, e
+a análise pode ser refeita sem rede. No lugar do passo 4, para mostrar
+as outras fontes:
+
+```bash
+python main.py --file data/raw/psf_requests_all.json
+```
+
+São as três fontes juntas: 24 registros coletados, 14 de bots, 10
+analisados. O passo 3 é o que importa; os números dos slides vêm dele.
 
 ### Se sobrar tempo
 
-- `python -m pytest -q` termina em um segundo e mostra `118 passed`.
-- `python main.py --file data/raw/psf_requests_all.json` mostra as três
-  fontes juntas: 24 registros coletados, 14 de bots, 10 analisados.
+- `python -m pytest -q` termina em um segundo e mostra `119 passed`.
+- `python main.py --file data/raw/microsoft_vscode_commits.json` mostra
+  só commits: 100 coletados, 97 analisados, 16 com dívida identificada.
 - Abrir `data/processed/microsoft_vscode_debt_issues.json` e buscar
   `"number": 329218` mostra a ocorrência `TODO` com o contexto.
 
@@ -244,16 +295,16 @@ que importa; os números dos slides vêm dele.
 Ninguém precisa decorar arquivos inteiros. Cada trecho abaixo tem poucas
 linhas e uma ideia para explicar.
 
-### Integrante 1
+### Luy
 
 | Arquivo | Trecho | A ideia |
 |---|---|---|
 | `src/github_collector.py` | `_fetch_issues` (linha 177) e `_paginate` (linha 232) | Issues e pull requests vêm na mesma listagem; paginação pelo cabeçalho `Link` |
-| `src/pipeline.py` | `analyze` (linha 194) | Uma chamada por etapa, na ordem do diagrama |
+| `src/pipeline.py` | `analyze` (linha 207) | Uma chamada para cada passo, do 2 ao 7, na ordem do slide |
 | `src/text_preprocessor.py` | `CODE_BLOCK` (linha 21) e `clean_text` (linha 68) | Código é separado, não apagado; cinco passos numerados |
 | `src/regex_analyzer.py` | `PATTERNS` (linha 60) e `comment_marker` (linha 45) | Padrão explícito ou de contexto; `TODO` em maiúsculas |
 
-### Integrante 2
+### Luiz
 
 | Arquivo | Trecho | A ideia |
 |---|---|---|
@@ -275,12 +326,12 @@ linhas e uma ideia para explicar.
 | 1 de 9 | Alarmes no corpus de controle (label `bug`) |
 | 36 (22 + 14) | Padrões de Regex: explícitos + de contexto |
 | 8 contra 12 | Regex `duplicat(?:ed\|ion)` contra o lema `duplicate` |
-| 20 contra 12 | Menções a Copilot: lista do projeto contra o NER |
+| 20 contra 12 | Menções a Copilot: lista do projeto contra o NER (11 como organização, 1 como pessoa) |
 | 40 | Tecnologias na lista do projeto |
 | 8, 15 e 7 | Issues positivas, neutras e negativas |
 | +95 em 68 | Pontos de "shared" no léxico original do VADER |
 | 13 de 16 | Comentários de bot no corpus de controle |
-| 118 | Testes automatizados |
+| 119 | Testes automatizados |
 
 ## O que não dizer
 
@@ -346,7 +397,7 @@ predominantemente neutro: metade das issues.
 **Como sabem se o resultado está certo?**
 Não há gabarito por tipo. A referência usada foram as labels dos
 mantenedores: 29 de 57 issues de dívida identificadas, e 1 alarme em 9
-issues de um corpus de controle. Há também 118 testes automatizados.
+issues de um corpus de controle. Há também 119 testes automatizados.
 
 **Por que só metade das issues é identificada?**
 Porque os desenvolvedores raramente usam o vocabulário esperado. Eles
@@ -389,7 +440,9 @@ ainda fraco, de priorização.
 
 **E se o repositório não tiver a label `debt`?**
 A label é opcional. Sem ela o programa analisa as issues mais recentes,
-como na coleta ao vivo da demonstração.
+como na coleta ao vivo da demonstração. Se for pedida uma label que o
+repositório não tem, a API devolve uma lista vazia e o programa avisa,
+com o endereço onde conferir as labels.
 
 **Precisa de token do GitHub?**
 Não para funcionar. Sem token o limite é de 60 requisições por hora; com

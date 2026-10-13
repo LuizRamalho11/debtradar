@@ -184,3 +184,34 @@ Nas 30 issues `debt` do VS Code, o resultado é 8 positivas, 15 neutras e
 - **Não representa o histórico do repositório.** A análise temporal
   descreve só as issues coletadas, que são as mais recentes.
 - **Não trata áudio nem vídeo,** previstos para as etapas seguintes.
+
+## Referências — de onde vêm os conceitos e as ferramentas?
+
+**Dívida técnica**
+
+- CUNNINGHAM, Ward. The WyCash Portfolio Management System. *OOPSLA '92
+  Experience Report*, 1992. Origem da metáfora da dívida: entregar código
+  imaturo é como tomar um empréstimo, e os juros são o retrabalho.
+- KRUCHTEN, Philippe; NORD, Robert L.; OZKAYA, Ipek. Technical Debt: From
+  Metaphor to Theory and Practice. *IEEE Software*, v. 29, n. 6, 2012.
+- POTDAR, Aniket; SHIHAB, Emad. An Exploratory Study on Self-Admitted
+  Technical Debt. *IEEE International Conference on Software Maintenance
+  and Evolution (ICSME)*, 2014. Estuda a dívida que os próprios
+  desenvolvedores declaram em comentários como `TODO`, `FIXME` e `HACK`,
+  que é o que os marcadores da Regex procuram.
+
+**Ferramentas**
+
+- HUTTO, C. J.; GILBERT, Eric. VADER: A Parsimonious Rule-based Model for
+  Sentiment Analysis of Social Media Text. *International AAAI Conference
+  on Weblogs and Social Media (ICWSM)*, 2014. Código e léxico em
+  <https://github.com/cjhutto/vaderSentiment>.
+- spaCy: documentação em <https://spacy.io> e curso gratuito em
+  <https://course.spacy.io>. Modelo `en_core_web_sm` em
+  <https://spacy.io/models/en>.
+- Módulo `re` do Python: <https://docs.python.org/3/library/re.html>.
+- GitHub REST API: <https://docs.github.com/rest>.
+
+O VADER não foi apresentado em aula; o artigo de Hutto e Gilbert e o
+repositório `cjhutto/vaderSentiment` são o ponto de partida para
+aprendê-lo.

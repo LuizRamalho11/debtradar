@@ -82,6 +82,19 @@ def load_spacy(model_name):
 
 # --- Etapa 1: obter a coleta ---------------------------------------------
 
+def empty_collection_message(owner, repo, label):
+    """Explica uma coleta vazia: diz o que foi procurado e o que tentar."""
+    where = f"{owner}/{repo}"
+    if not label:
+        return (f"Nenhum registro encontrado em {where}.\n"
+                "      O repositório pode não ter registros da fonte escolhida.")
+    # A API devolve uma lista vazia, sem erro, para uma label que não existe:
+    # "debt" existe no microsoft/vscode, mas não no psf/requests.
+    return (f"Nenhum registro encontrado em {where} com a label \"{label}\".\n"
+            "      Essa label pode não existir nesse repositório. Confira em\n"
+            f"      https://github.com/{where}/labels ou deixe a label em branco.")
+
+
 def collect(owner, repo, limit, label, sources, settings):
     """Coleta os registros pela API. Devolve (coleta, arquivo salvo)."""
     start_step(1, "Coletando dados...")
@@ -92,7 +105,7 @@ def collect(owner, repo, limit, label, sources, settings):
         raise PipelineError(str(error)) from None
     records = collection["issues"]
     if not records:
-        raise PipelineError("Nenhum registro encontrado com esses critérios.")
+        raise PipelineError(empty_collection_message(owner, repo, label))
 
     path = save_collection(collection)
     show_records(records)

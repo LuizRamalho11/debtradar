@@ -92,7 +92,7 @@ def ask_parameters(args, settings):
             limit = 0
         # A label só é perguntada no modo interativo; Enter coleta todas as issues.
         if label is None:
-            label = ask("Label (opcional, ex.: debt): ")
+            label = ask("Label (opcional; Enter = sem label): ")
         print()
 
     if not owner or not repo:
@@ -144,12 +144,12 @@ def run_explanation(text, settings):
 
 def build_parser():
     parser = argparse.ArgumentParser(
-        description="DebtRadar — análise de dívida técnica em issues do GitHub."
+        description="DebtRadar — análise de dívida técnica em textos do GitHub."
     )
     parser.add_argument("--owner", help="dono ou organização, ex.: microsoft")
     parser.add_argument("--repo", help="nome do repositório, ex.: vscode")
-    parser.add_argument("--limit", type=int, help="quantidade de issues")
-    parser.add_argument("--label", help="coleta só issues com esta label, ex.: debt")
+    parser.add_argument("--limit", type=int, help="quantidade de registros de cada fonte")
+    parser.add_argument("--label", help="só issues e pull requests com esta label")
     parser.add_argument("--source", choices=[*SOURCES, "all"], default="issues",
                         help="o que coletar: issues (padrão), prs, commits ou all")
     parser.add_argument("--text", help="analisa só este texto e mostra cada etapa")
