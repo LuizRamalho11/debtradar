@@ -404,3 +404,40 @@ issues coletadas do GitHub.
   permaneceram idênticos.
 - **Aprendizado:** dado público não é dado para republicar; a revisão de
   privacidade vem antes da publicação, e não depois.
+
+## Problema 28 — Coleta vazia sem explicação
+
+- **Problema:** em um ensaio da demonstração, a coleta parou com "Nenhum
+  registro encontrado com esses critérios", sem dizer quais critérios.
+- **Causa:** quando a label pedida não existe no repositório, a API do
+  GitHub devolve uma lista vazia, e não um erro. A própria pergunta do
+  programa sugeria a label `debt` como exemplo, e ela existe no
+  `microsoft/vscode`, mas não no `psf/requests`.
+- **Como foi identificado:** no ensaio de 13/10/2026. A lista vazia foi
+  reproduzida com `psf/requests` e a label `debt`: nenhum registro com a
+  label, 5 sem ela.
+- **Solução:** a mensagem passou a dizer o repositório e a label
+  procurados e a indicar a página de labels do repositório. A pergunta
+  deixou de sugerir `debt` e avisa que Enter coleta sem label.
+- **Resultado:** o erro explica o que fazer, e há um teste para a
+  mensagem.
+- **Aprendizado:** uma resposta vazia da API não é um erro para ela, mas
+  é para o usuário; a mensagem precisa dizer o que foi procurado.
+
+## Problema 29 — O ambiente virtual parou de funcionar ao mover a pasta
+
+- **Problema:** depois que a pasta do projeto mudou de lugar,
+  `source .venv/bin/activate` seguido de `python main.py` respondia
+  `command not found: python`, e `pytest` falhava com "bad interpreter".
+- **Causa:** o ambiente virtual grava o caminho completo da pasta no
+  script de ativação e na primeira linha de cada comando instalado.
+- **Como foi identificado:** ao ativar o ambiente em um terminal novo.
+  No terminal do editor o defeito não aparecia, porque o editor coloca o
+  ambiente no caminho de busca por conta própria.
+- **Solução:** o `.venv` foi apagado e recriado na pasta nova, com os
+  mesmos passos de instalação do README.
+- **Resultado:** `python main.py --check` responde "Ambiente pronto" em
+  um terminal novo, com as mesmas versões das bibliotecas.
+- **Aprendizado:** um ambiente virtual não se move junto com a pasta; e
+  "funciona no meu editor" não é o mesmo que "funciona no terminal da
+  apresentação".

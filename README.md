@@ -287,7 +287,7 @@ O programa pergunta o que coletar:
 Owner: microsoft
 Repository: vscode
 Quantidade [100]: 30
-Label (opcional, ex.: debt): debt
+Label (opcional; Enter = sem label): debt
 ```
 
 Depois executa o pipeline, mostrando o andamento, e apresenta o resultado
@@ -404,7 +404,7 @@ programa avisa que os comentários ficaram incompletos.
 python -m pytest
 ```
 
-São 118 testes em `tests/`, que rodam em menos de um segundo e não
+São 119 testes em `tests/`, que rodam em menos de um segundo e não
 acessam a rede: a coleta é testada com respostas simuladas da API e o
 pipeline com uma coleta pequena escrita para o teste. Cada defeito
 encontrado nos dados reais durante o desenvolvimento tem um teste que

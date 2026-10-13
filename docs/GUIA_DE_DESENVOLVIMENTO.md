@@ -69,7 +69,7 @@ pytest.ini              configuração dos testes
 
 ## Os testes
 
-São 118 testes, que rodam em cerca de um segundo e não acessam a rede.
+São 119 testes, que rodam em cerca de um segundo e não acessam a rede.
 
 | Arquivo | Testes | O que cobre |
 |---|---|---|
@@ -77,7 +77,7 @@ São 118 testes, que rodam em cerca de um segundo e não acessam a rede.
 | `tests/test_regex_analyzer.py` | 53 | Um caso por padrão, os falsos positivos conhecidos, contagem única, posições |
 | `tests/test_nlp_and_classification.py` | 20 | Lemas, sentenças, entidades, tecnologias, regra de classificação, sentimento |
 | `tests/test_github_collector.py` | 21 | Normalização, máscara de e-mails, paginação, fontes, erros HTTP, limite da API, token, nomes de arquivo |
-| `tests/test_pipeline.py` | 11 | Pipeline completo, resumo, relatório, `--text`, arquivos inválidos, configuração |
+| `tests/test_pipeline.py` | 12 | Pipeline completo, resumo, relatório, `--text`, arquivos inválidos, coleta vazia, configuração |
 | `tests/conftest.py` | — | Dados de exemplo e recursos compartilhados |
 
 Como os testes evitam a rede:
@@ -227,14 +227,20 @@ Em `main.py`, declare a opção em `build_parser` e trate-a em `main` ou em
 ## Controle de versão
 
 - O ramo principal é `main`.
-- Ficam fora do repositório: `.env`, `.venv/`, caches e os arquivos
-  `.docx` de origem (proposta e regras da disciplina).
+- Ficam fora do repositório: `.env`, `.venv/`, caches, as cópias de
+  segurança em `data/raw/backup/` e os arquivos `.docx` de origem
+  (proposta e regras da disciplina).
 - As coletas em `data/` **são versionadas**: são elas que permitem
   demonstrar o programa e refazer os resultados sem rede.
 - Reanalisar uma coleta com `--file` regrava os arquivos de
   `data/processed/` e `data/results/` com um novo `generated_at`, e o git
   passa a mostrá-los como modificados. Se nada mais mudou, descarte com
   `git checkout -- data/processed data/results`.
+- Uma coleta ao vivo de um repositório já guardado (como a do
+  `psf/requests`, usada na demonstração) substitui também o arquivo de
+  `data/raw/`. Depois de ensaiar, `git checkout -- data` devolve as três
+  pastas ao estado versionado, e os números de `RESULTADOS.md` voltam a
+  valer.
 - Sugestão para as próximas etapas: um ramo por etapa (`etapa2`,
   `etapa3`), unido ao `main` quando a etapa estiver apresentável, e uma
   marca (`git tag etapa1`) no commit apresentado.
@@ -246,7 +252,8 @@ Em `main.py`, declare a opção em `build_parser` e trate-a em `main` ou em
 | "Limite de requisições da API do GitHub atingido" | Cota de 60 por hora, sem token | Esperar o horário indicado, configurar o token ou usar `--file` |
 | "GITHUB_TOKEN inválido ou expirado" | Token errado ou vencido | Gerar outro e colar no `.env` |
 | "Repositório não encontrado" | Nome errado, ou repositório privado | Conferir owner e repositório |
-| "Nenhum registro encontrado com esses critérios" | A label não existe no repositório | Conferir as labels na página do repositório |
+| "Nenhum registro encontrado em … com a label …" | A label não existe no repositório; a API devolve uma lista vazia, sem erro | Conferir as labels no endereço que a mensagem mostra, ou deixar a label em branco |
+| `command not found: python` depois de `source .venv/bin/activate` | A pasta do projeto foi movida ou renomeada; o `.venv` guarda o caminho antigo | Apagar o `.venv` e refazer os passos de "Preparar o ambiente" |
 | "modelo 'en_core_web_sm' não encontrado" | Modelo do spaCy não instalado | `python -m spacy download en_core_web_sm` |
 | `pip install` tenta compilar o spaCy e falha | Python sem pacote pronto da versão mais nova | Usar `pip install --only-binary=:all: -r requirements.txt` |
 | "O arquivo não é uma coleta do DebtRadar" | `--file` apontou para um arquivo de `data/processed/` ou de outro formato | Usar um arquivo de `data/raw/` |

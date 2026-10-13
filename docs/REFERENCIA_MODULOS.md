@@ -17,7 +17,7 @@ campos dos dados que essas funções trocam, veja
 | Módulo | Linhas | Papel em uma frase |
 |---|---|---|
 | [`main.py`](#mainpy) | 180 | Interface de linha de comando |
-| [`src/pipeline.py`](#srcpipelinepy) | 237 | Executa as etapas em ordem |
+| [`src/pipeline.py`](#srcpipelinepy) | 250 | Executa as etapas em ordem |
 | [`src/config.py`](#srcconfigpy) | 80 | Caminhos e leitura do `.env` |
 | [`src/storage.py`](#srcstoragepy) | 12 | JSON em disco |
 | [`src/github_collector.py`](#srcgithub_collectorpy) | 334 | Coleta pela API do GitHub |
@@ -54,7 +54,7 @@ Três caminhos: `--check` chama `run_check`; `--text` chama `run_explanation`; o
 
 ## `src/pipeline.py`
 
-237 linhas. Orquestra as etapas. Cada etapa é uma função curta que chama o módulo responsável, grava o resultado em uma chave do documento e mostra uma linha de andamento.
+250 linhas. Orquestra as etapas. Cada etapa é uma função curta que chama o módulo responsável, grava o resultado em uma chave do documento e mostra uma linha de andamento.
 
 `collect` e `load` são as duas formas de obter a coleta (passo 1). `analyze` executa os passos 2 a 7. `explain` reaproveita os mesmos módulos para um único texto, sem gravar nada.
 
@@ -79,16 +79,17 @@ Três caminhos: `--check` chama `run_check`; `--text` chama `run_explanation`; o
 | `describe_records(records)` | 45 | Resume uma coleta por tipo: "30 issues, 20 pull requests, 14 comentários". |
 | `show_records(records)` | 59 | Fecha a etapa 1; o detalhe por tipo vai para outra linha se for longo. |
 | `load_spacy(model_name)` | 69 | Carrega o pipeline do spaCy e o buscador de tecnologias. |
-| `collect(owner, repo, limit, label, sources, settings)` | 85 | Coleta os registros pela API. Devolve (coleta, arquivo salvo). |
-| `load(path)` | 105 | Lê uma coleta já salva, sem usar a rede. Devolve (coleta, arquivo). |
-| `preprocess(collection)` | 131 | Etapa 2: limpa os textos. Devolve (documentos, registros de bots ignorados). |
-| `apply_regex(documents)` | 150 | Etapa 3: procura os padrões de dívida técnica. |
-| `apply_spacy(documents, model_name)` | 159 | Etapa 4: análise linguística e tecnologias. Devolve o nome do modelo. |
-| `classify(documents)` | 175 | Etapa 5: tipo de dívida de cada documento. |
-| `measure_sentiment(documents)` | 184 | Etapa 6: sentimento de cada documento. |
-| `analyze(collection, settings)` | 194 | Executa as etapas 2 a 7. Devolve (documentos analisados, resumo). |
-| `save_results(documents, summary, raw_path)` | 211 | Grava os documentos analisados e o resumo. Devolve os dois caminhos. |
-| `explain(text, settings)` | 222 | Passa um único texto por todas as análises e devolve cada resultado. |
+| `empty_collection_message(owner, repo, label)` | 85 | Explica uma coleta vazia: diz o que foi procurado e o que tentar. |
+| `collect(owner, repo, limit, label, sources, settings)` | 98 | Coleta os registros pela API. Devolve (coleta, arquivo salvo). |
+| `load(path)` | 118 | Lê uma coleta já salva, sem usar a rede. Devolve (coleta, arquivo). |
+| `preprocess(collection)` | 144 | Etapa 2: limpa os textos. Devolve (documentos, registros de bots ignorados). |
+| `apply_regex(documents)` | 163 | Etapa 3: procura os padrões de dívida técnica. |
+| `apply_spacy(documents, model_name)` | 172 | Etapa 4: análise linguística e tecnologias. Devolve o nome do modelo. |
+| `classify(documents)` | 188 | Etapa 5: tipo de dívida de cada documento. |
+| `measure_sentiment(documents)` | 197 | Etapa 6: sentimento de cada documento. |
+| `analyze(collection, settings)` | 207 | Executa as etapas 2 a 7. Devolve (documentos analisados, resumo). |
+| `save_results(documents, summary, raw_path)` | 224 | Grava os documentos analisados e o resumo. Devolve os dois caminhos. |
+| `explain(text, settings)` | 235 | Passa um único texto por todas as análises e devolve cada resultado. |
 
 ## `src/config.py`
 

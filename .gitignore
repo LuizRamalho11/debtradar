@@ -12,3 +12,6 @@ __pycache__/
 
 # Documentos de origem do projeto (ficam só na máquina local)
 *.docx
+
+# Coletas substituídas (cópias de segurança locais)
+data/raw/backup/

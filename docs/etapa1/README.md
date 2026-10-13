@@ -10,8 +10,8 @@ etapas está na [pasta acima](../README.md).
 |---|---|
 | [RESULTADOS.md](RESULTADOS.md) | Todos os números obtidos com dados reais, coleta por coleta. Gerado a partir dos resumos |
 | [DOCUMENTACAO_ACADEMICA.md](DOCUMENTACAO_ACADEMICA.md) | Por que cada técnica foi usada e como funciona: Regex, spaCy, GitHub API, classificação, sentimento e limitações |
-| [DIARIO_DE_BORDO.md](DIARIO_DE_BORDO.md) | Os 27 problemas encontrados durante o desenvolvimento, com causa, solução e aprendizado |
-| [GUIA_APRESENTACAO.md](GUIA_APRESENTACAO.md) | Roteiro de 10 minutos para dois integrantes, demonstração, trechos de código e perguntas prováveis |
+| [DIARIO_DE_BORDO.md](DIARIO_DE_BORDO.md) | Os 29 problemas encontrados durante o desenvolvimento, com causa, solução e aprendizado |
+| [GUIA_APRESENTACAO.md](GUIA_APRESENTACAO.md) | Roteiro de 10 minutos para Luy e Luiz, demonstração com todas as opções, trechos de código e perguntas prováveis |
 | [ESTRUTURA_SLIDES.md](ESTRUTURA_SLIDES.md) | O conteúdo de cada um dos 12 slides |
 | [CHECKLIST_APRESENTACAO.md](CHECKLIST_APRESENTACAO.md) | O que conferir antes de apresentar |
 
@@ -27,7 +27,7 @@ etapas está na [pasta acima](../README.md).
 - Sentimento com VADER, por sentença.
 - Estatísticas: frequências, contagens por fonte, evolução temporal e
   indicador de resolução.
-- 118 testes automatizados, sem acesso à rede.
+- 119 testes automatizados, sem acesso à rede.
 - Nove coletas reais, de cinco repositórios, guardadas em `data/`.
 
 ## Resultado em uma linha
@@ -55,6 +55,7 @@ reais antes da seguinte.
 | 8. Apresentação | Roteiro, estrutura dos slides e checklist |
 | Varredura | Correção dos problemas acumulados e criação dos testes automatizados |
 | Fechamento | Pull requests e commits como fontes, indicador de resolução, opção `--text`, slides e publicação |
+| Revisão final | Ambiente recriado depois da mudança de pasta, mensagem da coleta vazia, demonstração com todas as opções, referências |
 
 Os problemas de cada fase estão no
 [diário de bordo](DIARIO_DE_BORDO.md), e as escolhas de projeto, em
@@ -73,9 +74,14 @@ segundo regenera o documento de resultados; o terceiro roda os testes.
 
 ## Pendências desta etapa
 
+A apresentação, marcada para 08/10/2026, passou para 14/10/2026. O que
+falta depende dos integrantes e está em
+[CHECKLIST_APRESENTACAO.md](CHECKLIST_APRESENTACAO.md):
+
 - Configurar o token do GitHub e exercitar uma coleta autenticada.
-- Exportar os slides em PDF como `etapa1-DebtRadar.pdf`.
-- Ensaiar a apresentação.
+- Exportar os slides em PDF como `etapa1-DebtRadar.pdf` e submeter no
+  SIGAA.
+- Ensaiar a apresentação, com cronômetro.
 
 As pendências técnicas que seguem para as próximas etapas estão em
 [../PROXIMAS_ETAPAS.md](../PROXIMAS_ETAPAS.md).
