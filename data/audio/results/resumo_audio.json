@@ -1,0 +1,16 @@
+{
+  "arquivo": "seradio224.mp3",
+  "sha256": "35937eaf5f50f42c70e2a610de6b3350f9d289c80a7a6283c00721bbbbcc900d",
+  "duracao_episodio_s": 3421.8756235827664,
+  "duracao_analisada_s": 180.0,
+  "taxa_hz": 44100,
+  "canais_originais": 1,
+  "janela_ms": 25,
+  "limiar_dbfs": -40,
+  "baixa_energia_percentual": 20.144384284325977,
+  "pausas_min_300ms": 32,
+  "maior_pausa_s": 0.8746031746031746,
+  "rms_global": 0.05723745375871658,
+  "pico_absoluto": 0.7755035161972046,
+  "limite": "Baixa energia não comprova silêncio ou ausência de fala. Música e ruído afetam as medidas. As medidas acústicas não identificam dívida técnica."
+}

@@ -15,3 +15,10 @@ __pycache__/
 
 # Coletas substituídas (cópias de segurança locais)
 data/raw/backup/
+
+# Áudio original e arquivos de trabalho da apresentação
+data/audio/raw/
+data/audio/teste/
+work-etapa2/
+outputs/.*
+outputs/*.inspect.ndjson
